@@ -15,35 +15,36 @@ import {
   Sparkles,
   Clock,
   CheckCircle2,
+  Star,
 } from 'lucide-react'
 
 const features = [
   {
     icon: Target,
-    title: 'Personalized Training',
-    description: 'Custom workout programs designed specifically for your goals, body type, and lifestyle.',
+    title: 'Bespoke Training',
+    description: 'Meticulously crafted programs tailored to your unique physiology and aspirations.',
   },
   {
     icon: Users,
-    title: 'Expert Coaches',
-    description: 'Train with certified professionals who are passionate about your success.',
+    title: 'Elite Coaches',
+    description: 'World-class professionals dedicated to elevating your potential.',
   },
   {
     icon: Trophy,
-    title: 'Proven Results',
-    description: 'Join hundreds of members who have transformed their lives at Grams Gym.',
+    title: 'Proven Excellence',
+    description: 'A decade of transforming lives with measurable, lasting results.',
   },
   {
     icon: Clock,
-    title: 'Flexible Hours',
-    description: 'Train on your schedule with extended hours and online booking.',
+    title: 'Your Schedule',
+    description: 'Premium access with flexible hours designed for your lifestyle.',
   },
 ]
 
 const stats = [
-  { value: '10+', label: 'Years Experience' },
-  { value: '500+', label: 'Members Transformed' },
-  { value: '4', label: 'Expert Coaches' },
+  { value: '10+', label: 'Years of Excellence' },
+  { value: '500+', label: 'Lives Transformed' },
+  { value: '4', label: 'Elite Coaches' },
   { value: '98%', label: 'Client Satisfaction' },
 ]
 
@@ -59,25 +60,29 @@ export default function HomePage() {
   const heroY = useTransform(scrollYProgress, [0, 0.5], [0, 100])
 
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-screen bg-noir-950">
       <Header />
 
       {/* Hero Section */}
       <section ref={heroRef} className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        {/* Background gradient */}
+        {/* Sophisticated background */}
         <div className="absolute inset-0">
-          <div className="absolute inset-0 bg-gradient-to-b from-black via-black to-zinc-950" />
-          <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-gold-500/10 rounded-full blur-[120px]" />
-          <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-black to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-b from-noir-950 via-noir-900 to-noir-950" />
+          {/* Champagne radial glow */}
+          <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[1000px] h-[1000px] bg-champagne-500/8 rounded-full blur-[150px]" />
+          {/* Subtle secondary glow */}
+          <div className="absolute bottom-1/4 right-1/4 w-[600px] h-[600px] bg-champagne-600/5 rounded-full blur-[120px]" />
+          {/* Bottom fade */}
+          <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-noir-950 to-transparent" />
         </div>
 
-        {/* Grid pattern overlay */}
+        {/* Refined grid pattern */}
         <div
-          className="absolute inset-0 opacity-[0.03]"
+          className="absolute inset-0 opacity-[0.02]"
           style={{
-            backgroundImage: `linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px),
-                             linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px)`,
-            backgroundSize: '100px 100px',
+            backgroundImage: `linear-gradient(rgba(201, 169, 108, 0.3) 1px, transparent 1px),
+                             linear-gradient(90deg, rgba(201, 169, 108, 0.3) 1px, transparent 1px)`,
+            backgroundSize: '80px 80px',
           }}
         />
 
@@ -86,56 +91,59 @@ export default function HomePage() {
           className="container relative z-10 pt-32 pb-20"
         >
           <div className="max-w-5xl mx-auto text-center">
-            {/* Badge */}
+            {/* Premium badge */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-light mb-8"
+              transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+              className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full glass-subtle mb-10"
             >
-              <Sparkles className="w-4 h-4 text-gold-400" />
-              <span className="text-sm text-zinc-300">Premium Fitness Experience</span>
+              <Star className="w-4 h-4 text-champagne-400 fill-champagne-400" />
+              <span className="text-sm font-medium tracking-wide text-champagne-300/90">Premium Fitness Experience</span>
             </motion.div>
 
-            {/* Main heading */}
+            {/* Main heading - Editorial style */}
             <motion.h1
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.1 }}
-              className="text-5xl md:text-7xl lg:text-8xl font-display font-semibold tracking-tight mb-8"
+              transition={{ duration: 1, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+              className="mb-8"
             >
-              Each Gram
-              <br />
-              <span className="text-gradient">Matters</span>
+              <span className="block text-5xl md:text-7xl lg:text-8xl font-display font-medium tracking-tight text-foreground/95">
+                Each Gram
+              </span>
+              <span className="block text-5xl md:text-7xl lg:text-8xl font-display font-medium tracking-tight mt-2">
+                <span className="text-gradient italic">Matters</span>
+              </span>
             </motion.h1>
 
             {/* Subheadline */}
             <motion.p
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="text-xl md:text-2xl text-zinc-400 max-w-2xl mx-auto mb-12"
+              transition={{ duration: 0.8, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
+              className="text-lg md:text-xl text-noir-200 max-w-2xl mx-auto mb-14 leading-relaxed"
             >
-              Transform your body. Transform your life. Premium personal training
-              in Amman, Jordan.
+              Transform your body. Elevate your life.
+              <span className="text-champagne-400/80"> Premium personal training in Amman, Jordan.</span>
             </motion.p>
 
             {/* CTA Buttons */}
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-              className="flex flex-col sm:flex-row gap-4 justify-center"
+              transition={{ duration: 0.8, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
+              className="flex flex-col sm:flex-row gap-5 justify-center"
             >
               <Link href="/contact">
                 <motion.button
-                  whileHover={{ scale: 1.02, boxShadow: '0 20px 60px rgba(212, 164, 74, 0.3)' }}
+                  whileHover={{ scale: 1.02, boxShadow: '0 20px 60px rgba(201, 169, 108, 0.3)' }}
                   whileTap={{ scale: 0.98 }}
-                  className="btn-premium text-lg px-10 py-4"
+                  className="btn-premium text-base px-10 py-4"
                 >
-                  <span className="flex items-center gap-2">
-                    Start Your Journey
-                    <ArrowRight className="w-5 h-5" />
+                  <span className="flex items-center gap-2.5">
+                    Begin Your Journey
+                    <ArrowRight className="w-4 h-4" />
                   </span>
                 </motion.button>
               </Link>
@@ -143,9 +151,9 @@ export default function HomePage() {
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className="btn-ghost text-lg px-10 py-4"
+                  className="btn-ghost text-base px-10 py-4"
                 >
-                  View Pricing
+                  View Membership
                 </motion.button>
               </Link>
             </motion.div>
@@ -155,31 +163,31 @@ export default function HomePage() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 1.5 }}
-            className="absolute bottom-8 left-1/2 -translate-x-1/2"
+            transition={{ delay: 1.8, duration: 0.8 }}
+            className="absolute bottom-10 left-1/2 -translate-x-1/2"
           >
             <motion.div
-              animate={{ y: [0, 10, 0] }}
-              transition={{ duration: 2, repeat: Infinity }}
-              className="w-6 h-10 rounded-full border-2 border-zinc-700 flex items-start justify-center p-2"
+              animate={{ y: [0, 8, 0] }}
+              transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
+              className="w-5 h-9 rounded-full border border-noir-600 flex items-start justify-center p-1.5"
             >
-              <motion.div className="w-1 h-2 rounded-full bg-gold-400" />
+              <motion.div className="w-1 h-2 rounded-full bg-champagne-500/80" />
             </motion.div>
           </motion.div>
         </motion.div>
       </section>
 
       {/* Stats Section */}
-      <section className="relative py-24 border-y border-zinc-800/50 bg-zinc-950/50">
+      <section className="relative py-28 border-y border-noir-800/50 bg-noir-900/30">
         <div className="container">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-12 md:gap-6">
             {stats.map((stat, i) => (
               <Reveal key={stat.label} delay={i * 0.1}>
                 <div className="text-center">
-                  <div className="text-4xl md:text-5xl font-display font-semibold text-gradient mb-2">
+                  <div className="text-4xl md:text-6xl font-display font-medium text-gradient mb-3">
                     {stat.value}
                   </div>
-                  <div className="text-sm text-zinc-500 uppercase tracking-wider">
+                  <div className="text-xs text-noir-400 uppercase tracking-[0.2em] font-medium">
                     {stat.label}
                   </div>
                 </div>
@@ -190,23 +198,26 @@ export default function HomePage() {
       </section>
 
       {/* Features Section */}
-      <section className="py-32 relative">
-        <div className="container">
-          <div className="max-w-3xl mx-auto text-center mb-20">
+      <section className="py-36 relative overflow-hidden">
+        {/* Subtle background accent */}
+        <div className="absolute top-1/2 left-0 w-[500px] h-[500px] bg-champagne-500/5 rounded-full blur-[150px] -translate-y-1/2" />
+
+        <div className="container relative">
+          <div className="max-w-3xl mx-auto text-center mb-24">
             <Reveal>
-              <span className="text-sm text-gold-400 uppercase tracking-wider font-medium mb-4 block">
-                Why Choose Us
+              <span className="text-xs text-champagne-500 uppercase tracking-[0.25em] font-medium mb-6 block">
+                The Difference
               </span>
             </Reveal>
             <Reveal delay={0.1}>
-              <h2 className="text-4xl md:text-5xl font-display font-semibold mb-6">
-                The Grams Gym <span className="text-gradient">Difference</span>
+              <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-medium mb-8">
+                Why <span className="text-gradient italic">Grams Gym</span>
               </h2>
             </Reveal>
             <Reveal delay={0.2}>
-              <p className="text-lg text-zinc-400">
-                We&apos;re not just a gym. We&apos;re a community dedicated to helping you
-                become the best version of yourself.
+              <p className="text-lg text-noir-300 leading-relaxed">
+                We don&apos;t just build bodies. We craft transformations through
+                precision, dedication, and an unwavering commitment to excellence.
               </p>
             </Reveal>
           </div>
@@ -215,14 +226,14 @@ export default function HomePage() {
             {features.map((feature) => (
               <StaggerItem key={feature.title}>
                 <motion.div
-                  whileHover={{ y: -8 }}
-                  className="group relative p-8 rounded-2xl glass-light card-hover h-full"
+                  whileHover={{ y: -6 }}
+                  className="group relative p-8 rounded-2xl card-glass h-full spotlight"
                 >
-                  <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-gold-500/20 to-gold-600/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                    <feature.icon className="w-7 h-7 text-gold-400" />
+                  <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-champagne-500/15 to-champagne-600/5 border border-champagne-500/10 flex items-center justify-center mb-7 group-hover:border-champagne-500/30 transition-colors duration-500">
+                    <feature.icon className="w-6 h-6 text-champagne-400" />
                   </div>
-                  <h3 className="text-xl font-semibold mb-3">{feature.title}</h3>
-                  <p className="text-zinc-400 text-sm leading-relaxed">
+                  <h3 className="text-xl font-semibold mb-4 text-foreground/95">{feature.title}</h3>
+                  <p className="text-noir-300 text-sm leading-relaxed">
                     {feature.description}
                   </p>
                 </motion.div>
@@ -233,36 +244,36 @@ export default function HomePage() {
       </section>
 
       {/* About Preview Section */}
-      <section className="py-32 bg-zinc-950 relative overflow-hidden">
-        {/* Decorative elements */}
-        <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-gold-500/5 to-transparent" />
+      <section className="py-36 bg-noir-900/50 relative overflow-hidden">
+        {/* Decorative gradient */}
+        <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-champagne-500/5 to-transparent" />
 
         <div className="container relative">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            {/* Image/Visual */}
+          <div className="grid lg:grid-cols-2 gap-20 items-center">
+            {/* Visual element */}
             <Reveal direction="left">
               <div className="relative">
-                <div className="aspect-[4/5] rounded-2xl bg-zinc-900 overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-br from-gold-500/10 via-transparent to-transparent" />
+                <div className="aspect-[4/5] rounded-2xl bg-noir-800/50 overflow-hidden border border-noir-700/50">
+                  <div className="absolute inset-0 bg-gradient-to-br from-champagne-500/10 via-transparent to-transparent" />
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="text-center">
-                      <Dumbbell className="w-24 h-24 text-gold-500/20 mx-auto mb-4" />
-                      <p className="text-zinc-600 text-sm">Premium Facilities</p>
+                      <Dumbbell className="w-28 h-28 text-champagne-500/15 mx-auto mb-4" />
+                      <p className="text-noir-500 text-sm tracking-wide">Premium Facilities</p>
                     </div>
                   </div>
                 </div>
-                {/* Floating stats card */}
+                {/* Floating accent card */}
                 <motion.div
-                  initial={{ opacity: 0, x: 20 }}
+                  initial={{ opacity: 0, x: 30 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
-                  transition={{ delay: 0.4 }}
-                  className="absolute -right-6 bottom-12 glass p-6 rounded-xl"
+                  transition={{ delay: 0.5, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+                  className="absolute -right-8 bottom-16 glass p-7 rounded-xl glow-champagne"
                 >
-                  <div className="text-3xl font-display font-semibold text-gradient mb-1">
+                  <div className="text-4xl font-display font-medium text-gradient mb-2">
                     10+
                   </div>
-                  <div className="text-sm text-zinc-400">Years of Excellence</div>
+                  <div className="text-sm text-noir-300">Years of Excellence</div>
                 </motion.div>
               </div>
             </Reveal>
@@ -270,44 +281,45 @@ export default function HomePage() {
             {/* Content */}
             <div>
               <Reveal>
-                <span className="text-sm text-gold-400 uppercase tracking-wider font-medium mb-4 block">
-                  Our Story
+                <span className="text-xs text-champagne-500 uppercase tracking-[0.25em] font-medium mb-6 block">
+                  Our Legacy
                 </span>
               </Reveal>
               <Reveal delay={0.1}>
-                <h2 className="text-4xl md:text-5xl font-display font-semibold mb-6">
-                  A Family Dedicated to <span className="text-gradient">Your Success</span>
+                <h2 className="text-4xl md:text-5xl font-display font-medium mb-8 leading-[1.1]">
+                  A Family Dedicated to{' '}
+                  <span className="text-gradient italic">Your Success</span>
                 </h2>
               </Reveal>
               <Reveal delay={0.2}>
-                <p className="text-lg text-zinc-400 mb-6">
-                  Founded in 2014, Grams Gym is a family-owned fitness center built on the
-                  belief that every gram of effort counts. Our four expert coaches bring
-                  decades of combined experience to help you achieve your goals.
+                <p className="text-lg text-noir-200 mb-6 leading-relaxed">
+                  Founded in 2014, Grams Gym is a family-owned fitness sanctuary built on the
+                  belief that every gram of effort counts. Our four elite coaches bring
+                  decades of combined expertise to guide your transformation.
                 </p>
               </Reveal>
               <Reveal delay={0.3}>
-                <p className="text-zinc-500 mb-8">
-                  We&apos;re more than just trainers—we&apos;re your partners in transformation.
+                <p className="text-noir-400 mb-10 leading-relaxed">
+                  We&apos;re more than trainers—we&apos;re your partners in evolution.
                   When you join Grams Gym, you become part of our family.
                 </p>
               </Reveal>
               <Reveal delay={0.4}>
-                <div className="flex flex-col sm:flex-row gap-4">
+                <div className="flex flex-col sm:flex-row gap-5">
                   <Link href="/about">
                     <motion.button
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       className="btn-ghost"
                     >
-                      Learn More
+                      Discover Our Story
                     </motion.button>
                   </Link>
                   <Link href="/coaches">
                     <motion.button
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
-                      className="text-gold-400 hover:text-gold-300 font-medium flex items-center gap-2 transition-colors"
+                      className="btn-link"
                     >
                       Meet Our Coaches
                       <ArrowRight className="w-4 h-4" />
@@ -321,22 +333,25 @@ export default function HomePage() {
       </section>
 
       {/* Pricing Preview Section */}
-      <section className="py-32 relative">
-        <div className="container">
+      <section className="py-36 relative overflow-hidden">
+        {/* Background accent */}
+        <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-champagne-500/5 rounded-full blur-[150px]" />
+
+        <div className="container relative">
           <div className="max-w-3xl mx-auto text-center mb-20">
             <Reveal>
-              <span className="text-sm text-gold-400 uppercase tracking-wider font-medium mb-4 block">
+              <span className="text-xs text-champagne-500 uppercase tracking-[0.25em] font-medium mb-6 block">
                 Investment
               </span>
             </Reveal>
             <Reveal delay={0.1}>
-              <h2 className="text-4xl md:text-5xl font-display font-semibold mb-6">
-                Simple, Transparent <span className="text-gradient">Pricing</span>
+              <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-medium mb-8">
+                Transparent <span className="text-gradient italic">Pricing</span>
               </h2>
             </Reveal>
             <Reveal delay={0.2}>
-              <p className="text-lg text-zinc-400">
-                No hidden fees. No long-term contracts. Just results.
+              <p className="text-lg text-noir-300">
+                No hidden fees. No long-term contracts. Just excellence.
               </p>
             </Reveal>
           </div>
@@ -347,48 +362,48 @@ export default function HomePage() {
               { name: 'Quarterly', price: 90, duration: '3 Months', popular: true },
               { name: 'Yearly', price: 300, duration: '12 Months', popular: false },
             ].map((plan, i) => (
-              <BlurFade key={plan.name} delay={i * 0.1}>
+              <BlurFade key={plan.name} delay={i * 0.15}>
                 <motion.div
-                  whileHover={{ y: -8 }}
+                  whileHover={{ y: -6 }}
                   className={`relative p-8 rounded-2xl h-full ${
                     plan.popular
-                      ? 'animated-border glow-gold'
-                      : 'glass-light'
+                      ? 'animated-border glow-champagne'
+                      : 'card-glass'
                   }`}
                 >
                   {plan.popular && (
                     <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                      <span className="px-4 py-1.5 bg-gradient-to-r from-gold-500 to-gold-600 text-black text-xs font-semibold rounded-full">
+                      <span className="px-5 py-2 bg-gradient-to-r from-champagne-500 to-champagne-600 text-noir-950 text-xs font-semibold tracking-wide rounded-full">
                         Most Popular
                       </span>
                     </div>
                   )}
                   <div className="text-center">
-                    <h3 className="text-xl font-semibold mb-2">{plan.name}</h3>
-                    <p className="text-sm text-zinc-500 mb-6">{plan.duration}</p>
-                    <div className="mb-8">
-                      <span className="text-5xl font-display font-semibold">{plan.price}</span>
-                      <span className="text-zinc-500 ml-2">JOD</span>
+                    <h3 className="text-lg font-semibold mb-2 text-foreground/90">{plan.name}</h3>
+                    <p className="text-xs text-noir-400 uppercase tracking-wider mb-8">{plan.duration}</p>
+                    <div className="mb-10">
+                      <span className="text-5xl font-display font-medium">{plan.price}</span>
+                      <span className="text-noir-400 ml-2 text-sm">JOD</span>
                     </div>
-                    <ul className="space-y-3 text-sm text-zinc-400 mb-8">
-                      <li className="flex items-center gap-2">
-                        <CheckCircle2 className="w-4 h-4 text-gold-400" />
-                        Full gym access
+                    <ul className="space-y-4 text-sm text-noir-300 mb-10 text-left">
+                      <li className="flex items-center gap-3">
+                        <CheckCircle2 className="w-4 h-4 text-champagne-500 shrink-0" />
+                        Full facility access
                       </li>
-                      <li className="flex items-center gap-2">
-                        <CheckCircle2 className="w-4 h-4 text-gold-400" />
-                        All equipment
+                      <li className="flex items-center gap-3">
+                        <CheckCircle2 className="w-4 h-4 text-champagne-500 shrink-0" />
+                        Premium equipment
                       </li>
-                      <li className="flex items-center gap-2">
-                        <CheckCircle2 className="w-4 h-4 text-gold-400" />
-                        Locker room
+                      <li className="flex items-center gap-3">
+                        <CheckCircle2 className="w-4 h-4 text-champagne-500 shrink-0" />
+                        Locker amenities
                       </li>
                     </ul>
                     <Link href="/contact" className="block">
                       <motion.button
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
-                        className={`w-full py-3 rounded-lg font-medium transition-all ${
+                        className={`w-full py-3.5 rounded-lg font-medium transition-all ${
                           plan.popular
                             ? 'btn-premium'
                             : 'btn-ghost'
@@ -403,13 +418,10 @@ export default function HomePage() {
             ))}
           </div>
 
-          <Reveal delay={0.4}>
-            <div className="text-center mt-12">
-              <Link
-                href="/pricing"
-                className="text-gold-400 hover:text-gold-300 font-medium inline-flex items-center gap-2 transition-colors"
-              >
-                View All Pricing Options
+          <Reveal delay={0.5}>
+            <div className="text-center mt-14">
+              <Link href="/pricing" className="btn-link">
+                View All Options
                 <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
@@ -418,34 +430,34 @@ export default function HomePage() {
       </section>
 
       {/* Final CTA Section */}
-      <section className="py-32 relative overflow-hidden">
+      <section className="py-36 relative overflow-hidden">
         {/* Background */}
-        <div className="absolute inset-0 bg-gradient-to-b from-zinc-950 to-black" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gold-500/10 rounded-full blur-[150px]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-noir-900/50 via-noir-950 to-noir-950" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-champagne-500/8 rounded-full blur-[180px]" />
 
         <div className="container relative">
           <div className="max-w-3xl mx-auto text-center">
             <Reveal>
-              <h2 className="text-4xl md:text-6xl font-display font-semibold mb-6">
+              <h2 className="text-4xl md:text-6xl lg:text-7xl font-display font-medium mb-8 leading-[1.1]">
                 Your Transformation
                 <br />
-                <span className="text-gradient">Starts Today</span>
+                <span className="text-gradient italic">Begins Today</span>
               </h2>
             </Reveal>
             <Reveal delay={0.1}>
-              <p className="text-xl text-zinc-400 mb-10">
+              <p className="text-xl text-noir-300 mb-12 leading-relaxed">
                 Join Grams Gym and experience the difference that personalized attention
-                and expert coaching can make.
+                and elite coaching can make.
               </p>
             </Reveal>
             <Reveal delay={0.2}>
               <Link href="/contact">
                 <motion.button
-                  whileHover={{ scale: 1.02, boxShadow: '0 20px 60px rgba(212, 164, 74, 0.4)' }}
+                  whileHover={{ scale: 1.02, boxShadow: '0 25px 70px rgba(201, 169, 108, 0.35)' }}
                   whileTap={{ scale: 0.98 }}
-                  className="btn-premium text-lg px-12 py-5"
+                  className="btn-premium text-lg px-14 py-5"
                 >
-                  <span className="flex items-center gap-2">
+                  <span className="flex items-center gap-3">
                     Begin Your Journey
                     <ArrowRight className="w-5 h-5" />
                   </span>

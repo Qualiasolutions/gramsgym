@@ -23,8 +23,8 @@ export const metadata: Metadata = {
     default: "Grams Gym | Each Gram Matters",
     template: "%s | Grams Gym"
   },
-  description: "Transform your body. Transform your life. Premium fitness training in Amman, Jordan.",
-  keywords: ["gym", "fitness", "personal training", "Amman", "Jordan", "workout", "premium gym"],
+  description: "Elevate your potential. Premium personal training in Amman, Jordan. Where every gram of effort matters.",
+  keywords: ["gym", "fitness", "personal training", "Amman", "Jordan", "workout", "premium gym", "luxury fitness"],
   authors: [{ name: "Grams Gym" }],
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://gramsgym.com'),
   openGraph: {

@@ -3,6 +3,9 @@
 import { motion, useInView, type HTMLMotionProps } from 'framer-motion'
 import { useRef, useState, useEffect, type ReactNode } from 'react'
 
+// Premium easing curve for luxury feel
+const easeLuxe = [0.22, 1, 0.36, 1]
+
 // Fade up animation component
 interface FadeUpProps extends HTMLMotionProps<'div'> {
   children: ReactNode
@@ -10,15 +13,15 @@ interface FadeUpProps extends HTMLMotionProps<'div'> {
   duration?: number
 }
 
-export function FadeUp({ children, delay = 0, duration = 0.6, ...props }: FadeUpProps) {
+export function FadeUp({ children, delay = 0, duration = 0.7, ...props }: FadeUpProps) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 30 }}
+      initial={{ opacity: 0, y: 24 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{
         duration,
         delay,
-        ease: [0.16, 1, 0.3, 1], // ease-out-expo
+        ease: easeLuxe,
       }}
       {...props}
     >
@@ -36,13 +39,13 @@ interface RevealProps extends HTMLMotionProps<'div'> {
 
 export function Reveal({ children, delay = 0, direction = 'up', ...props }: RevealProps) {
   const ref = useRef(null)
-  const isInView = useInView(ref, { once: true, margin: '-100px' })
+  const isInView = useInView(ref, { once: true, margin: '-80px' })
 
   const directions = {
-    up: { y: 60 },
-    down: { y: -60 },
-    left: { x: 60 },
-    right: { x: -60 },
+    up: { y: 40 },
+    down: { y: -40 },
+    left: { x: 50 },
+    right: { x: -50 },
   }
 
   return (
@@ -51,9 +54,9 @@ export function Reveal({ children, delay = 0, direction = 'up', ...props }: Reve
       initial={{ opacity: 0, ...directions[direction] }}
       animate={isInView ? { opacity: 1, x: 0, y: 0 } : {}}
       transition={{
-        duration: 0.8,
+        duration: 0.9,
         delay,
-        ease: [0.16, 1, 0.3, 1],
+        ease: easeLuxe,
       }}
       {...props}
     >
@@ -105,13 +108,13 @@ export function StaggerItem({ children, ...props }: StaggerItemProps) {
   return (
     <motion.div
       variants={{
-        hidden: { opacity: 0, y: 30 },
+        hidden: { opacity: 0, y: 24 },
         visible: {
           opacity: 1,
           y: 0,
           transition: {
-            duration: 0.6,
-            ease: [0.16, 1, 0.3, 1],
+            duration: 0.7,
+            ease: easeLuxe,
           },
         },
       }}
@@ -300,12 +303,12 @@ export function BlurFade({ children, delay = 0, ...props }: BlurFadeProps) {
   return (
     <motion.div
       ref={ref}
-      initial={{ opacity: 0, filter: 'blur(10px)', y: 20 }}
+      initial={{ opacity: 0, filter: 'blur(8px)', y: 16 }}
       animate={isInView ? { opacity: 1, filter: 'blur(0px)', y: 0 } : {}}
       transition={{
-        duration: 0.6,
+        duration: 0.8,
         delay,
-        ease: [0.16, 1, 0.3, 1],
+        ease: easeLuxe,
       }}
       {...props}
     >
