@@ -1,7 +1,8 @@
 import { createClient } from '@/lib/supabase/server'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Users, Calendar, CreditCard, TrendingUp } from 'lucide-react'
-import { isDemoMode, demoMembers, demoBookings, demoGymMemberships, demoPTPackages } from '@/lib/demo-data'
+import { isDemoMode } from '@/lib/demo-mode'
+import { demoMembers, demoBookings, demoGymMemberships, demoPTPackages } from '@/lib/demo-data'
 
 export default async function ReportsPage() {
   // Check for demo mode

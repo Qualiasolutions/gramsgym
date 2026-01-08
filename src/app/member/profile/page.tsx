@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { MemberProfileForm } from '@/components/member/profile-form'
-import { isDemoMode, demoMember } from '@/lib/demo-data'
+import { isDemoMode } from '@/lib/demo-mode'
+import { demoMember } from '@/lib/demo-data'
 
 export default async function MemberProfilePage() {
   // Check for demo mode

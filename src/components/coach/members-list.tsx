@@ -47,7 +47,7 @@ const rowVariants = {
   visible: (i: number) => ({
     opacity: 1,
     x: 0,
-    transition: { delay: i * 0.03, duration: 0.4, ease: [0.22, 1, 0.36, 1] }
+    transition: { delay: i * 0.03, duration: 0.4, ease: [0.22, 1, 0.36, 1] as const }
   })
 }
 
@@ -57,7 +57,7 @@ const cardVariants = {
     opacity: 1,
     y: 0,
     scale: 1,
-    transition: { delay: i * 0.05, duration: 0.4, ease: [0.22, 1, 0.36, 1] }
+    transition: { delay: i * 0.05, duration: 0.4, ease: [0.22, 1, 0.36, 1] as const }
   })
 }
 

@@ -1,7 +1,8 @@
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { MemberDetail } from '@/components/coach/member-detail'
-import { isDemoMode, demoMembers, demoCoach, demoGymMembership, demoPTPackage, demoBookings } from '@/lib/demo-data'
+import { isDemoMode } from '@/lib/demo-mode'
+import { demoMembers, demoCoach, demoGymMembership, demoPTPackage, demoBookings } from '@/lib/demo-data'
 
 interface PageProps {
   params: Promise<{ id: string }>

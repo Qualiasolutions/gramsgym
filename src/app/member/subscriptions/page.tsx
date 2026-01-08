@@ -4,7 +4,8 @@ import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { CreditCard, Dumbbell, Calendar, AlertCircle } from 'lucide-react'
 import { format, differenceInDays } from 'date-fns'
-import { isDemoMode, demoGymMembership, demoPTPackage, demoCoach } from '@/lib/demo-data'
+import { isDemoMode } from '@/lib/demo-mode'
+import { demoGymMembership, demoPTPackage, demoCoach } from '@/lib/demo-data'
 
 export default async function MemberSubscriptionsPage() {
   // Check for demo mode

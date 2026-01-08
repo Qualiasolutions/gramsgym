@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { SettingsManager } from '@/components/coach/settings-manager'
-import { isDemoMode, demoGymSettings, demoPricing, demoWorkingHours } from '@/lib/demo-data'
+import { isDemoMode } from '@/lib/demo-mode'
+import { demoGymSettings, demoPricing, demoWorkingHours } from '@/lib/demo-data'
 
 export default async function SettingsPage() {
   // Check for demo mode

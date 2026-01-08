@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { MemberBookingsList } from '@/components/member/bookings-list'
-import { isDemoMode, demoMember, demoBookings } from '@/lib/demo-data'
+import { isDemoMode } from '@/lib/demo-mode'
+import { demoMember, demoBookings } from '@/lib/demo-data'
 
 interface PageProps {
   searchParams: Promise<{ success?: string }>

@@ -1,6 +1,7 @@
 import { BookingsCalendar } from '@/components/coach/bookings-calendar'
 import { startOfWeek, endOfWeek } from 'date-fns'
-import { isDemoMode, demoBookings, demoCoach, demoMembers } from '@/lib/demo-data'
+import { isDemoMode } from '@/lib/demo-mode'
+import { demoBookings, demoCoach, demoMembers } from '@/lib/demo-data'
 import { getCachedBookingsForRange, getCachedCoaches, getCachedMembers } from '@/lib/cache'
 
 export default async function BookingsPage() {

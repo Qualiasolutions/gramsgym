@@ -2,7 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Bell, Mail, MessageSquare } from 'lucide-react'
-import { isDemoMode } from '@/lib/demo-data'
+import { isDemoMode } from '@/lib/demo-mode'
 import { formatDistanceToNow } from 'date-fns'
 
 interface NotificationLog {

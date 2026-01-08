@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { ScheduleManager } from '@/components/coach/schedule-manager'
-import { isDemoMode, demoCoach, demoAvailability, demoBookings } from '@/lib/demo-data'
+import { isDemoMode } from '@/lib/demo-mode'
+import { demoCoach, demoAvailability, demoBookings } from '@/lib/demo-data'
 
 export default async function SchedulePage() {
   // Check for demo mode

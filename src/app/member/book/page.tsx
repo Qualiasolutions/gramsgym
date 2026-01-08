@@ -3,7 +3,8 @@ import { BookingForm } from '@/components/member/booking-form'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { AlertCircle } from 'lucide-react'
 import { startOfWeek, endOfWeek, addWeeks } from 'date-fns'
-import { isDemoMode, demoMember, demoCoach, demoPTPackage, demoAvailability, demoBookings } from '@/lib/demo-data'
+import { isDemoMode } from '@/lib/demo-mode'
+import { demoMember, demoCoach, demoPTPackage, demoAvailability, demoBookings } from '@/lib/demo-data'
 
 export default async function BookSessionPage() {
   // Check for demo mode

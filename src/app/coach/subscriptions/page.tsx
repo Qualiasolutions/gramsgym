@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { SubscriptionsManager } from '@/components/coach/subscriptions-manager'
-import { isDemoMode, demoMembers, demoCoach, demoGymMemberships, demoPTPackages, demoPricing } from '@/lib/demo-data'
+import { isDemoMode } from '@/lib/demo-mode'
+import { demoMembers, demoCoach, demoGymMemberships, demoPTPackages, demoPricing } from '@/lib/demo-data'
 
 interface PageProps {
   searchParams: Promise<{ member?: string; type?: string }>
