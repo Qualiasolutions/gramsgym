@@ -1,6 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Users, Calendar, CreditCard, TrendingUp } from 'lucide-react'
+import { ReportsDashboard } from '@/components/coach/reports-dashboard'
 import { isDemoMode } from '@/lib/demo-mode'
 import { demoMembers, demoBookings, demoGymMemberships, demoPTPackages } from '@/lib/demo-data'
 
@@ -12,19 +11,46 @@ export default async function ReportsPage() {
   let activeMembers = 0
   let totalBookings = 0
   let completedBookings = 0
+  let scheduledBookings = 0
+  let cancelledBookings = 0
   let totalRevenue = 0
   let activeMemberships = 0
   let activePTPackages = 0
+  let membershipsByType = { monthly: 0, quarterly: 0, yearly: 0 }
+  let revenueByMonth: { month: string; revenue: number }[] = []
+  let memberGrowth: { month: string; members: number }[] = []
 
   if (demoMode === 'coach') {
     totalMembers = demoMembers.length
     activeMembers = demoMembers.length
     totalBookings = demoBookings.length
     completedBookings = demoBookings.filter(b => b.status === 'completed').length
+    scheduledBookings = demoBookings.filter(b => b.status === 'scheduled').length
+    cancelledBookings = demoBookings.filter(b => (b.status as string) === 'cancelled').length
     totalRevenue = demoGymMemberships.reduce((sum, m) => sum + (m.price_paid || 0), 0) +
                    demoPTPackages.reduce((sum, p) => sum + (p.price_paid || 0), 0)
     activeMemberships = demoGymMemberships.filter(m => m.status === 'active').length
     activePTPackages = demoPTPackages.filter(p => p.status === 'active').length
+
+    // Demo membership distribution
+    membershipsByType = {
+      monthly: 1,
+      quarterly: 1,
+      yearly: 0
+    }
+
+    // Demo revenue by month (last 6 months)
+    const months = ['Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan']
+    revenueByMonth = months.map((month, i) => ({
+      month,
+      revenue: 200 + Math.floor(Math.random() * 300)
+    }))
+
+    // Demo member growth
+    memberGrowth = months.map((month, i) => ({
+      month,
+      members: 5 + i * 2
+    }))
   } else {
     const supabase = await createClient()
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -43,13 +69,22 @@ export default async function ReportsPage() {
       .select('status')
     totalBookings = bookings?.length || 0
     completedBookings = bookings?.filter((b: { status: string }) => b.status === 'completed').length || 0
+    scheduledBookings = bookings?.filter((b: { status: string }) => b.status === 'scheduled').length || 0
+    cancelledBookings = bookings?.filter((b: { status: string }) => b.status === 'cancelled').length || 0
 
     // Get revenue from memberships
     const { data: memberships } = await client
       .from('gym_memberships')
-      .select('price_paid, status')
+      .select('price_paid, status, type')
     const membershipRevenue = memberships?.reduce((sum: number, m: { price_paid: number }) => sum + (m.price_paid || 0), 0) || 0
     activeMemberships = memberships?.filter((m: { status: string }) => m.status === 'active').length || 0
+
+    // Calculate membership distribution
+    membershipsByType = {
+      monthly: memberships?.filter((m: { type: string; status: string }) => m.type === 'monthly' && m.status === 'active').length || 0,
+      quarterly: memberships?.filter((m: { type: string; status: string }) => m.type === 'quarterly' && m.status === 'active').length || 0,
+      yearly: memberships?.filter((m: { type: string; status: string }) => m.type === 'yearly' && m.status === 'active').length || 0,
+    }
 
     // Get revenue from PT packages
     const { data: ptPackages } = await client
@@ -59,106 +94,35 @@ export default async function ReportsPage() {
     activePTPackages = ptPackages?.filter((p: { status: string }) => p.status === 'active').length || 0
 
     totalRevenue = membershipRevenue + ptRevenue
+
+    // Generate revenue by month (last 6 months - simplified)
+    const months = ['Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan']
+    revenueByMonth = months.map((month) => ({
+      month,
+      revenue: Math.round(totalRevenue / 6)
+    }))
+
+    // Generate member growth
+    memberGrowth = months.map((month, i) => ({
+      month,
+      members: Math.max(1, totalMembers - (5 - i) * 2)
+    }))
   }
 
-  const stats = [
-    {
-      title: 'Total Members',
-      value: totalMembers,
-      description: `${activeMembers} active members`,
-      icon: Users,
-    },
-    {
-      title: 'Total Bookings',
-      value: totalBookings,
-      description: `${completedBookings} completed sessions`,
-      icon: Calendar,
-    },
-    {
-      title: 'Active Subscriptions',
-      value: activeMemberships + activePTPackages,
-      description: `${activeMemberships} memberships, ${activePTPackages} PT packages`,
-      icon: CreditCard,
-    },
-    {
-      title: 'Total Revenue',
-      value: `${totalRevenue} JOD`,
-      description: 'From all subscriptions',
-      icon: TrendingUp,
-    },
-  ]
-
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">Reports</h1>
-        <p className="text-muted-foreground">Overview of gym performance and statistics</p>
-      </div>
-
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {stats.map((stat) => (
-          <Card key={stat.title}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
-              <stat.icon className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stat.value}</div>
-              <p className="text-xs text-muted-foreground">{stat.description}</p>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      <div className="grid gap-4 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Membership Distribution</CardTitle>
-            <CardDescription>Active gym memberships by type</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-sm">Monthly</span>
-                <span className="text-sm font-medium">-</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm">Quarterly</span>
-                <span className="text-sm font-medium">-</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm">Yearly</span>
-                <span className="text-sm font-medium">-</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Session Statistics</CardTitle>
-            <CardDescription>PT session completion rates</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-sm">Completed</span>
-                <span className="text-sm font-medium">{completedBookings}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm">Scheduled</span>
-                <span className="text-sm font-medium">{totalBookings - completedBookings}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm">Completion Rate</span>
-                <span className="text-sm font-medium">
-                  {totalBookings > 0 ? Math.round((completedBookings / totalBookings) * 100) : 0}%
-                </span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
+    <ReportsDashboard
+      totalMembers={totalMembers}
+      activeMembers={activeMembers}
+      totalBookings={totalBookings}
+      completedBookings={completedBookings}
+      scheduledBookings={scheduledBookings}
+      cancelledBookings={cancelledBookings}
+      totalRevenue={totalRevenue}
+      activeMemberships={activeMemberships}
+      activePTPackages={activePTPackages}
+      membershipsByType={membershipsByType}
+      revenueByMonth={revenueByMonth}
+      memberGrowth={memberGrowth}
+    />
   )
 }

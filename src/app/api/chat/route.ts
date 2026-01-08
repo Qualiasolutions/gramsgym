@@ -763,9 +763,10 @@ export async function POST(request: NextRequest) {
       throw fetchError
     }
   } catch (error) {
-    console.error('Chat API error:', error)
+    console.error('Chat API error:', error instanceof Error ? error.message : error)
+    console.error('Chat API stack:', error instanceof Error ? error.stack : 'No stack')
     return NextResponse.json(
-      { error: 'Failed to process message' },
+      { error: 'Failed to process message', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     )
   }
