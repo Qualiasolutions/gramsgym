@@ -88,7 +88,7 @@ export function MemberImport({ coaches }: MemberImportProps) {
     try {
       const formData = new FormData()
       formData.append('file', file)
-      if (selectedCoach) {
+      if (selectedCoach && selectedCoach !== 'none') {
         formData.append('coach_id', selectedCoach)
       }
 
@@ -180,7 +180,7 @@ Ahmad Ali,أحمد علي,ahmad@example.com,+962791234569,+962791234569,yearly,2
                 <SelectValue placeholder="Select a coach to assign to all members" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">No coach assigned</SelectItem>
+                <SelectItem value="none">No coach assigned</SelectItem>
                 {coaches.map((coach) => (
                   <SelectItem key={coach.id} value={coach.id}>
                     {coach.name_en}
