@@ -719,7 +719,7 @@ export async function POST(request: NextRequest) {
           'X-Title': 'Grams Gym Elite Coach',
         },
         body: JSON.stringify({
-          model: 'mistralai/devstral-2512:free', // Free model - add OpenRouter credits for better models
+          model: 'google/gemini-3-flash-preview', // Gemini 3 Flash Preview
           messages,
           temperature: 0.7,
           max_tokens: 4096, // Allow longer, detailed responses
