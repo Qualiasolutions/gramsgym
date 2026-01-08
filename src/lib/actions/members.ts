@@ -1,0 +1,115 @@
+'use server'
+
+import { revalidatePath } from 'next/cache'
+import { redirect } from 'next/navigation'
+import { createAdminClient, createClient } from '@/lib/supabase/server'
+
+export async function createMember(formData: FormData) {
+  const supabase = await createAdminClient()
+
+  const email = formData.get('email') as string
+  const password = formData.get('password') as string
+  const name_en = formData.get('name_en') as string
+  const name_ar = formData.get('name_ar') as string
+  const phone = formData.get('phone') as string
+  const whatsapp_number = formData.get('whatsapp_number') as string
+  const assigned_coach_id = formData.get('assigned_coach_id') as string
+  const preferred_language = formData.get('preferred_language') as 'ar' | 'en'
+  const notification_preference = formData.get('notification_preference') as 'whatsapp' | 'email' | 'both'
+
+  // Create auth user
+  const { data: authData, error: authError } = await supabase.auth.admin.createUser({
+    email,
+    password,
+    email_confirm: true,
+  })
+
+  if (authError) {
+    return { error: authError.message }
+  }
+
+  if (!authData.user) {
+    return { error: 'Failed to create user' }
+  }
+
+  // Create member record with the same ID
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error: memberError } = await (supabase as any).from('members').insert({
+    id: authData.user.id,
+    email,
+    name_en,
+    name_ar,
+    phone: phone || null,
+    whatsapp_number: whatsapp_number || null,
+    assigned_coach_id: assigned_coach_id || null,
+    preferred_language: preferred_language || 'ar',
+    notification_preference: notification_preference || 'whatsapp',
+  })
+
+  if (memberError) {
+    // Rollback: delete the auth user if member creation fails
+    await supabase.auth.admin.deleteUser(authData.user.id)
+    return { error: memberError.message }
+  }
+
+  revalidatePath('/coach/members')
+  redirect('/coach/members')
+}
+
+export async function updateMember(id: string, formData: FormData) {
+  const supabase = await createClient()
+
+  const name_en = formData.get('name_en') as string
+  const name_ar = formData.get('name_ar') as string
+  const phone = formData.get('phone') as string
+  const whatsapp_number = formData.get('whatsapp_number') as string
+  const assigned_coach_id = formData.get('assigned_coach_id') as string
+  const preferred_language = formData.get('preferred_language') as 'ar' | 'en'
+  const notification_preference = formData.get('notification_preference') as 'whatsapp' | 'email' | 'both'
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error } = await (supabase as any)
+    .from('members')
+    .update({
+      name_en,
+      name_ar,
+      phone: phone || null,
+      whatsapp_number: whatsapp_number || null,
+      assigned_coach_id: assigned_coach_id || null,
+      preferred_language: preferred_language || 'ar',
+      notification_preference: notification_preference || 'whatsapp',
+    })
+    .eq('id', id)
+
+  if (error) {
+    return { error: error.message }
+  }
+
+  revalidatePath('/coach/members')
+  revalidatePath(`/coach/members/${id}`)
+  return { success: true }
+}
+
+export async function deleteMember(id: string) {
+  const supabase = await createAdminClient()
+
+  // Delete member record (cascade will handle related records)
+  const { error: memberError } = await supabase
+    .from('members')
+    .delete()
+    .eq('id', id)
+
+  if (memberError) {
+    return { error: memberError.message }
+  }
+
+  // Delete auth user
+  const { error: authError } = await supabase.auth.admin.deleteUser(id)
+
+  if (authError) {
+    return { error: authError.message }
+  }
+
+  revalidatePath('/coach/members')
+  redirect('/coach/members')
+}

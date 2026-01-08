@@ -1,0 +1,204 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "search": "Search",
+    "filter": "Filter",
+    "all": "All",
+    "active": "Active",
+    "expired": "Expired",
+    "cancelled": "Cancelled",
+    "completed": "Completed",
+    "scheduled": "Scheduled",
+    "pending": "Pending",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "submit": "Submit",
+    "confirm": "Confirm",
+    "close": "Close",
+    "yes": "Yes",
+    "no": "No"
+  },
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "coaches": "Coaches",
+    "pricing": "Pricing",
+    "schedule": "Schedule",
+    "contact": "Contact",
+    "memberLogin": "Member Login",
+    "coachLogin": "Coach Login",
+    "logout": "Logout",
+    "dashboard": "Dashboard"
+  },
+  "home": {
+    "hero": {
+      "tagline": "Each Gram Matters",
+      "subtitle": "Transform your body. Transform your life.",
+      "cta": "Join Now",
+      "learnMore": "Learn More"
+    },
+    "stats": {
+      "members": "Active Members",
+      "coaches": "Expert Coaches",
+      "years": "Years Experience"
+    },
+    "whyUs": {
+      "title": "Why Grams Gym",
+      "equipment": {
+        "title": "Modern Equipment",
+        "description": "State-of-the-art fitness equipment for all your training needs"
+      },
+      "coaches": {
+        "title": "Expert Coaches",
+        "description": "Professional trainers dedicated to your success"
+      },
+      "results": {
+        "title": "Guaranteed Results",
+        "description": "Proven programs that deliver real transformations"
+      }
+    },
+    "coaches": {
+      "title": "Meet Our Coaches",
+      "viewAll": "View All Coaches"
+    },
+    "hours": {
+      "title": "Opening Hours",
+      "satWed": "Saturday - Wednesday",
+      "thursday": "Thursday",
+      "friday": "Friday"
+    },
+    "location": {
+      "title": "Find Us",
+      "address": "Amman, Jordan"
+    }
+  },
+  "auth": {
+    "coachLogin": {
+      "title": "Coach Login",
+      "description": "Sign in to access your dashboard",
+      "email": "Email",
+      "password": "Password",
+      "signIn": "Sign In",
+      "signingIn": "Signing in...",
+      "backToHome": "Back to home",
+      "accessDenied": "Access denied. Not a coach account."
+    },
+    "memberLogin": {
+      "title": "Member Login",
+      "description": "Sign in to manage your subscriptions and bookings",
+      "email": "Email",
+      "password": "Password",
+      "signIn": "Sign In",
+      "signingIn": "Signing in...",
+      "sendMagicLink": "Send Magic Link",
+      "sendingLink": "Sending link...",
+      "magicLinkSent": "Check your email for the login link!",
+      "magicLinkDescription": "We'll send you a login link to your email. No password needed!",
+      "backToHome": "Back to home",
+      "accessDenied": "Access denied. Not a member account.",
+      "passwordTab": "Password",
+      "emailLinkTab": "Email Link"
+    }
+  },
+  "coach": {
+    "dashboard": {
+      "title": "Dashboard",
+      "welcome": "Welcome back",
+      "todaySchedule": "Today's Schedule",
+      "expiringSoon": "Expiring Soon",
+      "activeMembers": "Active Members",
+      "expiringThisWeek": "Expiring This Week",
+      "todaySessions": "Today's Sessions",
+      "quickActions": "Quick Actions",
+      "addMember": "Add Member",
+      "newSubscription": "New Subscription",
+      "viewReports": "View Reports",
+      "sendReminder": "Send Reminder",
+      "daysRemaining": "days remaining"
+    },
+    "members": {
+      "title": "Members",
+      "addNew": "Add New Member",
+      "searchPlaceholder": "Search members...",
+      "noMembers": "No members found",
+      "memberDetails": "Member Details",
+      "subscriptions": "Subscriptions",
+      "bookings": "Bookings"
+    },
+    "bookings": {
+      "title": "Bookings",
+      "calendar": "Calendar View",
+      "list": "List View",
+      "noBookings": "No bookings found"
+    },
+    "schedule": {
+      "title": "My Schedule",
+      "availability": "Availability",
+      "setAvailability": "Set Availability"
+    },
+    "settings": {
+      "title": "Settings",
+      "gymInfo": "Gym Information",
+      "pricing": "Pricing",
+      "notifications": "Notifications"
+    }
+  },
+  "member": {
+    "dashboard": {
+      "title": "Dashboard",
+      "welcome": "Welcome",
+      "yourMemberships": "Your Memberships",
+      "gymMembership": "Gym Membership",
+      "ptPackage": "PT Package",
+      "expires": "Expires",
+      "daysRemaining": "days remaining",
+      "sessionsRemaining": "sessions remaining",
+      "upcomingSessions": "Upcoming Sessions",
+      "bookSession": "Book Session",
+      "noUpcoming": "No upcoming sessions",
+      "needHelp": "Need help?",
+      "chatWithAI": "Chat with our AI assistant",
+      "openChat": "Open Chat"
+    },
+    "profile": {
+      "title": "Profile",
+      "editProfile": "Edit Profile",
+      "preferences": "Preferences",
+      "language": "Preferred Language",
+      "notifications": "Notification Preference"
+    },
+    "bookings": {
+      "title": "My Bookings",
+      "bookNew": "Book New Session",
+      "selectCoach": "Select Coach",
+      "selectTime": "Select Time",
+      "confirmBooking": "Confirm Booking",
+      "cancelBooking": "Cancel Booking",
+      "cancelConfirm": "Are you sure you want to cancel this booking?",
+      "bookingConfirmed": "Booking confirmed!",
+      "bookingCancelled": "Booking cancelled"
+    }
+  },
+  "chat": {
+    "title": "Grams Gym Assistant",
+    "placeholder": "Type your message...",
+    "send": "Send",
+    "greeting": "Hi! How can I help you today?",
+    "greetingAr": "مرحباً! كيف يمكنني مساعدتك؟"
+  },
+  "notifications": {
+    "membershipExpiring": "Your gym membership expires in {days} days",
+    "membershipExpired": "Your gym membership has expired",
+    "sessionsLow": "You have {sessions} PT sessions remaining",
+    "sessionsEmpty": "You have no PT sessions remaining",
+    "bookingConfirmed": "Your session is confirmed for {date}",
+    "bookingReminder": "Reminder: PT session tomorrow at {time}"
+  }
+}
