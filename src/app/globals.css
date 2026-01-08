@@ -162,21 +162,21 @@ body {
   background: rgba(10, 10, 10, 0.8);
   backdrop-filter: blur(24px) saturate(150%);
   -webkit-backdrop-filter: blur(24px) saturate(150%);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(201, 169, 108, 0.25);
 }
 
 .glass-subtle {
   background: rgba(20, 20, 22, 0.6);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(201, 169, 108, 0.2);
 }
 
 .glass-champagne {
   background: rgba(201, 169, 108, 0.08);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(201, 169, 108, 0.15);
+  border: 1px solid rgba(201, 169, 108, 0.35);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -553,14 +553,51 @@ body {
   background: rgba(20, 20, 22, 0.5);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(201, 169, 108, 0.2);
   border-radius: 1rem;
   transition: all 0.5s var(--ease-luxe);
 }
 
 .card-glass:hover {
-  border-color: rgba(201, 169, 108, 0.2);
+  border-color: rgba(201, 169, 108, 0.35);
   background: rgba(20, 20, 22, 0.7);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DIALOGS & POPUPS - Gold Borders
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Radix Dialog/Sheet content */
+[data-radix-dialog-content],
+[data-radix-alert-dialog-content],
+[data-radix-popover-content],
+[role="dialog"] {
+  border: 1px solid rgba(201, 169, 108, 0.3) !important;
+  box-shadow:
+    0 25px 50px -12px rgba(0, 0, 0, 0.5),
+    0 0 60px rgba(201, 169, 108, 0.1);
+}
+
+/* Table containers */
+.table-container,
+table {
+  border: 1px solid rgba(201, 169, 108, 0.15);
+  border-radius: 0.75rem;
+}
+
+/* Form inputs focus state - gold ring */
+input:focus,
+textarea:focus,
+select:focus,
+[data-radix-select-trigger]:focus {
+  border-color: rgba(201, 169, 108, 0.5) !important;
+  box-shadow: 0 0 0 2px rgba(201, 169, 108, 0.2) !important;
+}
+
+/* Tabs and navigation containers */
+[role="tablist"] {
+  border: 1px solid rgba(201, 169, 108, 0.2);
+  border-radius: 0.75rem;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createClient, isSupabaseConfigured } from '@/lib/supabase/server'
 import { checkRateLimit } from '@/lib/rate-limit'
 import { cookies, headers } from 'next/headers'
 import { demoGymSettings, demoWorkingHours, demoPricing, demoCoach } from '@/lib/demo-data'
@@ -627,29 +627,37 @@ export async function POST(request: NextRequest) {
     let pricing = null
     let coaches = null
 
-    if (demoMode === 'member' || demoMode === 'coach') {
-      // Use demo data
+    if (demoMode === 'member' || demoMode === 'coach' || !isSupabaseConfigured()) {
+      // Use demo data (also fallback if Supabase not configured)
       gymSettings = demoGymSettings
       workingHours = demoWorkingHours
       pricing = demoPricing
       coaches = [{ name_en: demoCoach.name_en, specialization: demoCoach.specialty_en }]
     } else {
       // Fetch gym data for context
-      const supabase = await createClient()
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const client = supabase as any
+      try {
+        const supabase = await createClient()
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const client = supabase as any
 
-      const [settingsResult, hoursResult, pricingResult, coachesResult] = await Promise.all([
-        client.from('gym_settings').select('*').limit(1).single(),
-        client.from('gym_working_hours').select('*').order('day_of_week'),
-        client.from('pricing').select('*').eq('is_active', true),
-        client.from('coaches').select('name_en, specialization'),
-      ])
+        const [settingsResult, hoursResult, pricingResult, coachesResult] = await Promise.all([
+          client.from('gym_settings').select('*').limit(1).single(),
+          client.from('gym_working_hours').select('*').order('day_of_week'),
+          client.from('pricing').select('*').eq('is_active', true),
+          client.from('coaches').select('name_en, specialization'),
+        ])
 
-      gymSettings = settingsResult.data
-      workingHours = hoursResult.data
-      pricing = pricingResult.data
-      coaches = coachesResult.data
+        gymSettings = settingsResult.data
+        workingHours = hoursResult.data
+        pricing = pricingResult.data
+        coaches = coachesResult.data
+      } catch {
+        // Fallback to demo data if Supabase fails
+        gymSettings = demoGymSettings
+        workingHours = demoWorkingHours
+        pricing = demoPricing
+        coaches = [{ name_en: demoCoach.name_en, specialization: demoCoach.specialty_en }]
+      }
     }
 
     const systemPrompt = getSystemPrompt(
