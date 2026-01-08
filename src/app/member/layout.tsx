@@ -32,11 +32,11 @@ export default async function MemberLayout({
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-black">
       <MemberSidebar member={member} />
       <div className="lg:pl-72">
         <MemberHeader member={member} />
-        <main className="p-6">
+        <main className="p-6 pb-24 lg:pb-6">
           {children}
         </main>
       </div>

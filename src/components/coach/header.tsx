@@ -1,9 +1,9 @@
 'use client'
 
 import { usePathname } from 'next/navigation'
+import { motion } from 'framer-motion'
 import type { Coach } from '@/types/database'
-import { Button } from '@/components/ui/button'
-import { Bell } from 'lucide-react'
+import { Bell, Search } from 'lucide-react'
 
 const pageTitles: Record<string, string> = {
   '/coach/dashboard': 'Dashboard',
@@ -35,20 +35,48 @@ export function CoachHeader({ coach }: CoachHeaderProps) {
   }
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border bg-background/95 backdrop-blur px-6">
-      <div className="flex items-center gap-4">
-        <div className="lg:hidden w-10" /> {/* Spacer for mobile menu button */}
-        <h1 className="text-xl font-semibold">{pageTitle}</h1>
-      </div>
+    <header className="sticky top-0 z-30 bg-black/80 backdrop-blur-xl border-b border-zinc-800/50">
+      <div className="flex h-16 items-center justify-between px-6">
+        <div className="flex items-center gap-4">
+          <div className="lg:hidden w-10" /> {/* Spacer for mobile menu button */}
+          <div>
+            <h1 className="text-xl font-display font-semibold">{pageTitle}</h1>
+          </div>
+        </div>
 
-      <div className="flex items-center gap-2">
-        <Button variant="ghost" size="icon" className="relative">
-          <Bell className="h-5 w-5" />
-          {/* Notification badge - can be made dynamic */}
-          <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-primary text-[10px] font-medium text-primary-foreground flex items-center justify-center">
-            3
-          </span>
-        </Button>
+        <div className="flex items-center gap-3">
+          {/* Search */}
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="p-2.5 rounded-xl text-zinc-400 hover:text-white hover:bg-zinc-800/50 transition-all hidden sm:block"
+          >
+            <Search className="w-5 h-5" />
+          </motion.button>
+
+          {/* Notifications */}
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="relative p-2.5 rounded-xl text-zinc-400 hover:text-white hover:bg-zinc-800/50 transition-all"
+          >
+            <Bell className="w-5 h-5" />
+            <span className="absolute top-1 right-1 w-2 h-2 bg-gold-400 rounded-full" />
+          </motion.button>
+
+          {/* User Avatar */}
+          <div className="hidden sm:flex items-center gap-3 pl-3 border-l border-zinc-800">
+            <div className="text-right">
+              <p className="text-sm font-medium">{coach.name_en}</p>
+              <p className="text-xs text-zinc-500">Coach</p>
+            </div>
+            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-gold-400/20 to-gold-600/10 flex items-center justify-center">
+              <span className="text-gold-400 font-semibold text-sm">
+                {coach.name_en.charAt(0)}
+              </span>
+            </div>
+          </div>
+        </div>
       </div>
     </header>
   )

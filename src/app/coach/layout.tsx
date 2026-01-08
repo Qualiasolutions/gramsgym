@@ -30,7 +30,7 @@ export default async function CoachLayout({
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-black">
       <CoachSidebar coach={coach} />
       <div className="lg:pl-72">
         <CoachHeader coach={coach} />

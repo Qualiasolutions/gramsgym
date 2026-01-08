@@ -1,297 +1,349 @@
-import { createClient } from '@/lib/supabase/server'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { CreditCard, Calendar, Clock, Dumbbell, CalendarPlus } from 'lucide-react'
-import { format, differenceInDays, isSameDay } from 'date-fns'
+'use client'
+
+import { motion } from 'framer-motion'
 import Link from 'next/link'
+import {
+  CreditCard,
+  Calendar,
+  Clock,
+  Dumbbell,
+  CalendarPlus,
+  ChevronRight,
+  Sparkles,
+  Trophy,
+} from 'lucide-react'
 
-export default async function MemberDashboardPage() {
-  const supabase = await createClient()
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const client = supabase as any
+// Mock data for demo
+const mockMember = {
+  name: 'Ahmad Khalil',
+  membership: {
+    type: 'Quarterly',
+    daysLeft: 45,
+    endDate: '2026-02-22',
+  },
+  ptSessions: 12,
+  coach: {
+    name: 'Ahmad Grams',
+    specialty: 'Strength Training',
+  },
+}
 
-  const { data: { user } } = await supabase.auth.getUser()
+const mockUpcomingBookings = [
+  { id: '1', coachName: 'Ahmad Grams', date: 'Today', time: '4:30 PM', duration: 60 },
+  { id: '2', coachName: 'Ahmad Grams', date: 'Tomorrow', time: '10:00 AM', duration: 60 },
+  { id: '3', coachName: 'Ahmad Grams', date: 'Jan 12', time: '2:00 PM', duration: 45 },
+]
 
-  // Get member with coach
-  const { data: member } = await client
-    .from('members')
-    .select(`
-      *,
-      coach:coaches(id, name_en, name_ar, profile_photo_url, specialty_en)
-    `)
-    .eq('id', user?.id)
-    .single()
+const mockPTPackages = [
+  { id: '1', coachName: 'Ahmad Grams', remaining: 12, total: 16 },
+]
 
-  // Get active gym membership
-  const { data: gymMembership } = await client
-    .from('gym_memberships')
-    .select('*')
-    .eq('member_id', user?.id)
-    .eq('status', 'active')
-    .order('end_date', { ascending: false })
-    .limit(1)
-    .single()
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.1 },
+  },
+}
 
-  // Get active PT packages
-  const { data: ptPackages } = await client
-    .from('pt_packages')
-    .select(`
-      *,
-      coach:coaches(id, name_en, name_ar, profile_photo_url)
-    `)
-    .eq('member_id', user?.id)
-    .eq('status', 'active')
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0 },
+}
 
-  // Get upcoming bookings
-  const today = new Date()
-  const { data: upcomingBookings } = await client
-    .from('bookings')
-    .select(`
-      *,
-      coach:coaches(id, name_en, name_ar, profile_photo_url)
-    `)
-    .eq('member_id', user?.id)
-    .eq('status', 'scheduled')
-    .gte('scheduled_at', today.toISOString())
-    .order('scheduled_at', { ascending: true })
-    .limit(5)
-
-  const daysUntilExpiry = gymMembership
-    ? differenceInDays(new Date(gymMembership.end_date), today)
-    : null
-
-  const totalRemainingSessions = ptPackages?.reduce(
-    (acc: number, pkg: { remaining_sessions: number }) => acc + pkg.remaining_sessions,
-    0
-  ) || 0
-
+export default function MemberDashboardPage() {
   return (
-    <div className="space-y-6 pb-20 lg:pb-6">
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+      className="space-y-6"
+    >
       {/* Welcome Section */}
-      <div className="bg-gradient-to-r from-primary/10 to-primary/5 rounded-lg p-6">
-        <h1 className="text-2xl font-bold">
-          Welcome back, {member?.name_en?.split(' ')[0]}!
-        </h1>
-        <p className="text-muted-foreground mt-1">
-          Here&apos;s your fitness journey at a glance
-        </p>
-      </div>
+      <motion.div variants={itemVariants}>
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-gold-500/20 via-gold-600/10 to-transparent p-6 md:p-8">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-gold-500/10 rounded-full blur-3xl" />
+          <div className="relative">
+            <div className="flex items-center gap-2 mb-2">
+              <Sparkles className="w-5 h-5 text-gold-400" />
+              <span className="text-sm text-gold-400 font-medium">Welcome back</span>
+            </div>
+            <h1 className="text-2xl md:text-3xl font-display font-semibold mb-2">
+              {mockMember.name.split(' ')[0]}!
+            </h1>
+            <p className="text-zinc-400">
+              Here&apos;s your fitness journey at a glance
+            </p>
+          </div>
+        </div>
+      </motion.div>
 
       {/* Quick Stats */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {/* Gym Membership Status */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Gym Membership</CardTitle>
-            <CreditCard className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            {gymMembership ? (
-              <>
-                <div className="text-2xl font-bold capitalize">{gymMembership.type}</div>
-                <Badge
-                  variant={daysUntilExpiry !== null && daysUntilExpiry <= 7 ? 'destructive' : 'default'}
-                  className="mt-1"
-                >
-                  {daysUntilExpiry} days left
-                </Badge>
-              </>
-            ) : (
-              <>
-                <div className="text-2xl font-bold text-muted-foreground">None</div>
-                <p className="text-xs text-muted-foreground">No active membership</p>
-              </>
-            )}
-          </CardContent>
-        </Card>
+        {/* Gym Membership */}
+        <motion.div variants={itemVariants}>
+          <div className="glass-light rounded-2xl p-6 h-full">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-2.5 rounded-xl bg-gold-500/10">
+                <CreditCard className="w-5 h-5 text-gold-400" />
+              </div>
+            </div>
+            <p className="text-2xl font-display font-semibold capitalize">
+              {mockMember.membership.type}
+            </p>
+            <p className="text-sm text-zinc-500 mt-1">Gym Membership</p>
+            <div className="mt-3">
+              <span className="text-xs font-medium px-2 py-1 rounded-full bg-green-500/10 text-green-400">
+                {mockMember.membership.daysLeft} days left
+              </span>
+            </div>
+          </div>
+        </motion.div>
 
         {/* PT Sessions */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">PT Sessions</CardTitle>
-            <Dumbbell className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{totalRemainingSessions}</div>
-            <p className="text-xs text-muted-foreground">Sessions remaining</p>
-          </CardContent>
-        </Card>
+        <motion.div variants={itemVariants}>
+          <div className="glass-light rounded-2xl p-6 h-full">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-2.5 rounded-xl bg-gold-500/10">
+                <Dumbbell className="w-5 h-5 text-gold-400" />
+              </div>
+            </div>
+            <p className="text-2xl font-display font-semibold">
+              {mockMember.ptSessions}
+            </p>
+            <p className="text-sm text-zinc-500 mt-1">PT Sessions Left</p>
+            <div className="mt-3">
+              <div className="flex items-center gap-2">
+                <div className="flex-1 h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-gold-500 rounded-full"
+                    style={{ width: `${(mockMember.ptSessions / 16) * 100}%` }}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </motion.div>
 
         {/* Next Session */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Next Session</CardTitle>
-            <Calendar className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            {upcomingBookings && upcomingBookings.length > 0 ? (
+        <motion.div variants={itemVariants}>
+          <div className="glass-light rounded-2xl p-6 h-full">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-2.5 rounded-xl bg-gold-500/10">
+                <Calendar className="w-5 h-5 text-gold-400" />
+              </div>
+            </div>
+            {mockUpcomingBookings.length > 0 ? (
               <>
-                <div className="text-2xl font-bold">
-                  {isSameDay(new Date(upcomingBookings[0].scheduled_at), today)
-                    ? 'Today'
-                    : format(new Date(upcomingBookings[0].scheduled_at), 'MMM d')}
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  {format(new Date(upcomingBookings[0].scheduled_at), 'h:mm a')}
+                <p className="text-2xl font-display font-semibold">
+                  {mockUpcomingBookings[0].date}
+                </p>
+                <p className="text-sm text-zinc-500 mt-1">Next Session</p>
+                <p className="text-xs text-gold-400 mt-2">
+                  {mockUpcomingBookings[0].time}
                 </p>
               </>
             ) : (
               <>
-                <div className="text-2xl font-bold text-muted-foreground">-</div>
-                <p className="text-xs text-muted-foreground">No upcoming sessions</p>
+                <p className="text-2xl font-display font-semibold text-zinc-500">-</p>
+                <p className="text-sm text-zinc-500 mt-1">No upcoming sessions</p>
               </>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </motion.div>
 
         {/* Quick Book */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Quick Action</CardTitle>
-            <CalendarPlus className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <Button asChild className="w-full">
-              <Link href="/member/book">Book Session</Link>
-            </Button>
-          </CardContent>
-        </Card>
+        <motion.div variants={itemVariants}>
+          <Link href="/member/book" className="block h-full">
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="glass-light rounded-2xl p-6 h-full flex flex-col justify-between cursor-pointer group"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <div className="p-2.5 rounded-xl bg-gold-500/10 group-hover:bg-gold-500/20 transition-colors">
+                  <CalendarPlus className="w-5 h-5 text-gold-400" />
+                </div>
+                <ChevronRight className="w-4 h-4 text-zinc-600 group-hover:text-gold-400 transition-colors" />
+              </div>
+              <div>
+                <p className="text-lg font-semibold">Book Session</p>
+                <p className="text-sm text-zinc-500 mt-1">Schedule your next PT</p>
+              </div>
+            </motion.div>
+          </Link>
+        </motion.div>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
         {/* My Coach */}
-        {member?.coach && (
-          <Card>
-            <CardHeader>
-              <CardTitle>My Coach</CardTitle>
-              <CardDescription>Your assigned personal trainer</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center gap-4">
-                <Avatar className="h-16 w-16">
-                  <AvatarImage src={member.coach.profile_photo_url || undefined} />
-                  <AvatarFallback className="text-lg">
-                    {member.coach.name_en.charAt(0)}
-                  </AvatarFallback>
-                </Avatar>
+        <motion.div variants={itemVariants}>
+          <div className="glass-light rounded-2xl p-6">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-xl bg-gold-500/10">
+                  <Trophy className="w-5 h-5 text-gold-400" />
+                </div>
                 <div>
-                  <h3 className="text-lg font-semibold">{member.coach.name_en}</h3>
-                  <p className="text-sm text-muted-foreground">
-                    {member.coach.specialty_en || 'Personal Trainer'}
-                  </p>
+                  <h3 className="font-semibold">My Coach</h3>
+                  <p className="text-xs text-zinc-500">Your personal trainer</p>
                 </div>
               </div>
-              <Button asChild variant="outline" className="w-full mt-4">
-                <Link href="/member/book">Book a Session</Link>
-              </Button>
-            </CardContent>
-          </Card>
-        )}
+            </div>
+
+            <div className="flex items-center gap-4 p-4 rounded-xl bg-zinc-900/50">
+              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-gold-400/20 to-gold-600/10 flex items-center justify-center">
+                <span className="text-gold-400 font-semibold text-xl">
+                  {mockMember.coach.name.charAt(0)}
+                </span>
+              </div>
+              <div>
+                <h4 className="text-lg font-semibold">{mockMember.coach.name}</h4>
+                <p className="text-sm text-zinc-500">{mockMember.coach.specialty}</p>
+              </div>
+            </div>
+
+            <Link href="/member/book">
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="w-full mt-4 btn-premium flex items-center justify-center gap-2"
+              >
+                Book a Session
+              </motion.button>
+            </Link>
+          </div>
+        </motion.div>
 
         {/* Upcoming Sessions */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Upcoming Sessions</CardTitle>
-            <CardDescription>Your scheduled PT sessions</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {upcomingBookings && upcomingBookings.length > 0 ? (
+        <motion.div variants={itemVariants}>
+          <div className="glass-light rounded-2xl p-6">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-xl bg-gold-500/10">
+                  <Clock className="w-5 h-5 text-gold-400" />
+                </div>
+                <div>
+                  <h3 className="font-semibold">Upcoming Sessions</h3>
+                  <p className="text-xs text-zinc-500">Your scheduled PT sessions</p>
+                </div>
+              </div>
+              <span className="text-xs text-gold-400 font-medium px-2 py-1 rounded-full bg-gold-500/10">
+                {mockUpcomingBookings.length} booked
+              </span>
+            </div>
+
+            {mockUpcomingBookings.length > 0 ? (
               <div className="space-y-3">
-                {upcomingBookings.map((booking: {
-                  id: string
-                  scheduled_at: string
-                  duration_minutes: number
-                  coach: { name_en: string; profile_photo_url: string | null }
-                }) => (
-                  <div
+                {mockUpcomingBookings.map((booking) => (
+                  <motion.div
                     key={booking.id}
-                    className="flex items-center justify-between p-3 rounded-lg bg-muted/50"
+                    whileHover={{ x: 4 }}
+                    className="flex items-center justify-between p-3 rounded-xl bg-zinc-900/50 hover:bg-zinc-800/50 transition-all cursor-pointer"
                   >
                     <div className="flex items-center gap-3">
-                      <Avatar className="h-10 w-10">
-                        <AvatarImage src={booking.coach.profile_photo_url || undefined} />
-                        <AvatarFallback>{booking.coach.name_en.charAt(0)}</AvatarFallback>
-                      </Avatar>
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gold-400/20 to-gold-600/10 flex items-center justify-center">
+                        <span className="text-gold-400 font-semibold text-sm">
+                          {booking.coachName.charAt(0)}
+                        </span>
+                      </div>
                       <div>
-                        <p className="font-medium">{booking.coach.name_en}</p>
-                        <p className="text-sm text-muted-foreground">
-                          {booking.duration_minutes} min session
-                        </p>
+                        <p className="text-sm font-medium">{booking.coachName}</p>
+                        <p className="text-xs text-zinc-500">{booking.duration} min session</p>
                       </div>
                     </div>
                     <div className="text-right">
-                      <Badge variant={isSameDay(new Date(booking.scheduled_at), today) ? 'default' : 'secondary'}>
-                        {isSameDay(new Date(booking.scheduled_at), today)
-                          ? 'Today'
-                          : format(new Date(booking.scheduled_at), 'MMM d')}
-                      </Badge>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        {format(new Date(booking.scheduled_at), 'h:mm a')}
-                      </p>
+                      <span className={`text-xs font-medium px-2 py-1 rounded-full ${
+                        booking.date === 'Today'
+                          ? 'bg-gold-500/10 text-gold-400'
+                          : 'bg-zinc-800 text-zinc-400'
+                      }`}>
+                        {booking.date}
+                      </span>
+                      <p className="text-xs text-zinc-500 mt-1">{booking.time}</p>
                     </div>
-                  </div>
+                  </motion.div>
                 ))}
               </div>
             ) : (
-              <div className="text-center py-6">
-                <Clock className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
-                <p className="text-muted-foreground">No upcoming sessions</p>
-                <Button asChild variant="outline" className="mt-3">
-                  <Link href="/member/book">Book Now</Link>
-                </Button>
+              <div className="text-center py-8">
+                <Clock className="w-12 h-12 text-zinc-700 mx-auto mb-3" />
+                <p className="text-zinc-500">No upcoming sessions</p>
+                <Link href="/member/book">
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="mt-3 btn-ghost text-sm"
+                  >
+                    Book Now
+                  </motion.button>
+                </Link>
               </div>
             )}
-          </CardContent>
-        </Card>
+
+            <Link href="/member/bookings">
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="w-full mt-4 py-2.5 rounded-xl text-sm font-medium text-zinc-400 hover:text-white hover:bg-zinc-800/50 transition-all flex items-center justify-center gap-2"
+              >
+                View All Bookings
+                <ChevronRight className="w-4 h-4" />
+              </motion.button>
+            </Link>
+          </div>
+        </motion.div>
       </div>
 
       {/* PT Packages */}
-      {ptPackages && ptPackages.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Active PT Packages</CardTitle>
-            <CardDescription>Your personal training session packages</CardDescription>
-          </CardHeader>
-          <CardContent>
+      {mockPTPackages.length > 0 && (
+        <motion.div variants={itemVariants}>
+          <div className="glass-light rounded-2xl p-6">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-xl bg-gold-500/10">
+                  <Dumbbell className="w-5 h-5 text-gold-400" />
+                </div>
+                <div>
+                  <h3 className="font-semibold">Active PT Packages</h3>
+                  <p className="text-xs text-zinc-500">Your personal training session packages</p>
+                </div>
+              </div>
+            </div>
+
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {ptPackages.map((pkg: {
-                id: string
-                total_sessions: number
-                remaining_sessions: number
-                coach: { name_en: string; profile_photo_url: string | null }
-              }) => (
+              {mockPTPackages.map((pkg) => (
                 <div
                   key={pkg.id}
-                  className="flex items-center gap-3 p-4 rounded-lg border bg-card"
+                  className="p-4 rounded-xl bg-zinc-900/50"
                 >
-                  <Avatar>
-                    <AvatarImage src={pkg.coach.profile_photo_url || undefined} />
-                    <AvatarFallback>{pkg.coach.name_en.charAt(0)}</AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1">
-                    <p className="font-medium">{pkg.coach.name_en}</p>
-                    <div className="flex items-center gap-2 mt-1">
-                      <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-primary rounded-full"
-                          style={{
-                            width: `${(pkg.remaining_sessions / pkg.total_sessions) * 100}%`,
-                          }}
-                        />
-                      </div>
-                      <span className="text-sm text-muted-foreground">
-                        {pkg.remaining_sessions}/{pkg.total_sessions}
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gold-400/20 to-gold-600/10 flex items-center justify-center">
+                      <span className="text-gold-400 font-semibold text-sm">
+                        {pkg.coachName.charAt(0)}
                       </span>
                     </div>
+                    <div>
+                      <p className="text-sm font-medium">{pkg.coachName}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="flex-1 h-2 bg-zinc-800 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-gold-500 rounded-full transition-all"
+                        style={{ width: `${(pkg.remaining / pkg.total) * 100}%` }}
+                      />
+                    </div>
+                    <span className="text-sm font-medium text-gold-400">
+                      {pkg.remaining}/{pkg.total}
+                    </span>
                   </div>
                 </div>
               ))}
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </motion.div>
       )}
-    </div>
+    </motion.div>
   )
 }

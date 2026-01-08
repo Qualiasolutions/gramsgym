@@ -1,10 +1,10 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
+import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@/lib/utils'
-import { Button } from '@/components/ui/button'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { createClient, isSupabaseConfigured } from '@/lib/supabase/client'
 import {
   Home,
   User,
@@ -12,10 +12,8 @@ import {
   Calendar,
   CalendarPlus,
   LogOut,
-  Dumbbell,
+  ChevronRight,
 } from 'lucide-react'
-import { createClient } from '@/lib/supabase/client'
-import { useRouter } from 'next/navigation'
 
 interface Member {
   id: string
@@ -38,7 +36,7 @@ interface MemberSidebarProps {
 const navigation = [
   { name: 'Dashboard', href: '/member/dashboard', icon: Home },
   { name: 'My Profile', href: '/member/profile', icon: User },
-  { name: 'My Subscriptions', href: '/member/subscriptions', icon: CreditCard },
+  { name: 'Subscriptions', href: '/member/subscriptions', icon: CreditCard },
   { name: 'Book Session', href: '/member/book', icon: CalendarPlus },
   { name: 'My Bookings', href: '/member/bookings', icon: Calendar },
 ]
@@ -48,8 +46,12 @@ export function MemberSidebar({ member }: MemberSidebarProps) {
   const router = useRouter()
 
   const handleSignOut = async () => {
-    const supabase = createClient()
-    await supabase.auth.signOut()
+    if (isSupabaseConfigured()) {
+      const supabase = createClient()
+      if (supabase) {
+        await supabase.auth.signOut()
+      }
+    }
     router.push('/member/login')
   }
 
@@ -57,101 +59,137 @@ export function MemberSidebar({ member }: MemberSidebarProps) {
     <>
       {/* Desktop Sidebar */}
       <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
-        <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r border-border bg-card px-6 pb-4">
+        <div className="flex h-full flex-col bg-zinc-950">
           {/* Logo */}
-          <div className="flex h-16 shrink-0 items-center gap-2">
-            <Dumbbell className="h-8 w-8 text-primary" />
-            <span className="text-xl font-bold">Grams Gym</span>
+          <div className="flex h-16 items-center px-6 border-b border-zinc-800/50">
+            <Link href="/" className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-gold-400 to-gold-600 flex items-center justify-center">
+                <span className="text-black font-bold text-xl">G</span>
+              </div>
+              <span className="font-semibold tracking-tight">
+                Grams<span className="text-gold-400">Gym</span>
+              </span>
+            </Link>
           </div>
 
           {/* Navigation */}
-          <nav className="flex flex-1 flex-col">
-            <ul role="list" className="flex flex-1 flex-col gap-y-7">
-              <li>
-                <ul role="list" className="-mx-2 space-y-1">
-                  {navigation.map((item) => {
-                    const isActive = pathname === item.href
-                    return (
-                      <li key={item.name}>
-                        <Link
-                          href={item.href}
-                          className={cn(
-                            'group flex gap-x-3 rounded-md p-2 text-sm font-medium leading-6 transition-colors',
-                            isActive
-                              ? 'bg-primary text-primary-foreground'
-                              : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-                          )}
-                        >
-                          <item.icon className="h-5 w-5 shrink-0" />
-                          {item.name}
-                        </Link>
-                      </li>
-                    )
-                  })}
-                </ul>
-              </li>
+          <nav className="flex-1 px-3 py-6 space-y-1 overflow-y-auto">
+            {navigation.map((item) => {
+              const isActive = pathname === item.href
+              return (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className="relative block"
+                >
+                  <motion.div
+                    whileHover={{ x: 4 }}
+                    className={cn(
+                      'flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all',
+                      isActive
+                        ? 'bg-gradient-to-r from-gold-500/20 to-gold-600/10 text-gold-400'
+                        : 'text-zinc-400 hover:bg-zinc-800/50 hover:text-white'
+                    )}
+                  >
+                    <item.icon className={cn('w-5 h-5', isActive && 'text-gold-400')} />
+                    {item.name}
+                    {isActive && (
+                      <motion.div
+                        layoutId="member-sidebar-active"
+                        className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-gold-400 rounded-r-full"
+                      />
+                    )}
+                    <ChevronRight className={cn(
+                      'w-4 h-4 ml-auto transition-opacity',
+                      isActive ? 'opacity-100' : 'opacity-0'
+                    )} />
+                  </motion.div>
+                </Link>
+              )
+            })}
+          </nav>
 
-              {/* Assigned Coach */}
-              {member.coach && (
-                <li>
-                  <div className="text-xs font-semibold leading-6 text-muted-foreground">
-                    My Coach
+          {/* Coach Section */}
+          {member.coach && (
+            <div className="px-4 pb-4">
+              <p className="text-xs font-medium text-zinc-500 uppercase tracking-wider mb-3 px-2">
+                My Coach
+              </p>
+              <div className="glass-light rounded-xl p-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gold-400/20 to-gold-600/10 flex items-center justify-center">
+                    <span className="text-gold-400 font-semibold">
+                      {member.coach.name_en.charAt(0)}
+                    </span>
                   </div>
-                  <div className="mt-2 flex items-center gap-3 rounded-md bg-muted/50 p-3">
-                    <Avatar>
-                      <AvatarImage src={member.coach.profile_photo_url || undefined} />
-                      <AvatarFallback>{member.coach.name_en.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <p className="text-sm font-medium">{member.coach.name_en}</p>
-                      <p className="text-xs text-muted-foreground">Personal Trainer</p>
-                    </div>
-                  </div>
-                </li>
-              )}
-
-              {/* User section */}
-              <li className="mt-auto">
-                <div className="flex items-center gap-x-4 py-3 border-t border-border">
-                  <Avatar>
-                    <AvatarImage src={member.profile_photo_url || undefined} />
-                    <AvatarFallback>{member.name_en.charAt(0)}</AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate">{member.name_en}</p>
-                    <p className="text-xs text-muted-foreground truncate">{member.email}</p>
+                  <div>
+                    <p className="text-sm font-medium">{member.coach.name_en}</p>
+                    <p className="text-xs text-zinc-500">Personal Trainer</p>
                   </div>
                 </div>
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start text-muted-foreground hover:text-foreground"
-                  onClick={handleSignOut}
-                >
-                  <LogOut className="h-4 w-4 mr-2" />
-                  Sign Out
-                </Button>
-              </li>
-            </ul>
-          </nav>
+              </div>
+            </div>
+          )}
+
+          {/* User section */}
+          <div className="border-t border-zinc-800/50 p-4">
+            <div className="glass-light rounded-xl p-4 mb-3">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gold-400/20 to-gold-600/10 flex items-center justify-center">
+                  <span className="text-gold-400 font-semibold">
+                    {member.name_en.charAt(0)}
+                  </span>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium truncate">{member.name_en}</p>
+                  <p className="text-xs text-zinc-500 truncate">{member.email}</p>
+                </div>
+              </div>
+            </div>
+            <motion.button
+              onClick={handleSignOut}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium text-zinc-400 hover:text-white hover:bg-zinc-800 transition-all"
+            >
+              <LogOut className="w-4 h-4" />
+              Sign Out
+            </motion.button>
+          </div>
         </div>
       </div>
 
       {/* Mobile bottom navigation */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 lg:hidden bg-card border-t border-border">
-        <nav className="flex justify-around py-2">
-          {navigation.slice(0, 5).map((item) => {
+      <div className="fixed bottom-0 left-0 right-0 z-50 lg:hidden bg-zinc-950/95 backdrop-blur-xl border-t border-zinc-800/50 safe-area-pb">
+        <nav className="flex justify-around py-2 px-4">
+          {navigation.map((item) => {
             const isActive = pathname === item.href
             return (
               <Link
                 key={item.name}
                 href={item.href}
                 className={cn(
-                  'flex flex-col items-center gap-1 px-3 py-2 text-xs',
-                  isActive ? 'text-primary' : 'text-muted-foreground'
+                  'flex flex-col items-center gap-1 px-3 py-2 rounded-lg transition-all',
+                  isActive
+                    ? 'text-gold-400'
+                    : 'text-zinc-500'
                 )}
               >
-                <item.icon className="h-5 w-5" />
-                <span className="truncate max-w-[60px]">{item.name.split(' ')[0]}</span>
+                <motion.div
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <item.icon className="w-5 h-5" />
+                </motion.div>
+                <span className="text-[10px] font-medium truncate max-w-[60px]">
+                  {item.name.split(' ')[0]}
+                </span>
+                {isActive && (
+                  <motion.div
+                    layoutId="mobile-nav-active"
+                    className="absolute bottom-0 w-12 h-0.5 bg-gold-400 rounded-full"
+                  />
+                )}
               </Link>
             )
           })}
