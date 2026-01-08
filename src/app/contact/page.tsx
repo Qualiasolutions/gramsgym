@@ -1,261 +1,341 @@
-import { Metadata } from 'next'
-import { createClient } from '@/lib/supabase/server'
+'use client'
 
-// Revalidate contact info every hour
-export const revalidate = 3600
-
-export const metadata: Metadata = {
-  title: 'Contact Us',
-  description: 'Get in touch with Grams Gym in Amman, Jordan. Visit us, call, WhatsApp, or send a message. View our location and working hours.',
-  openGraph: {
-    title: 'Contact Grams Gym | Location, Hours & WhatsApp',
-    description: 'Get in touch with Grams Gym in Amman, Jordan. Visit us, call, WhatsApp, or send a message.',
-  },
-}
+import { useState } from 'react'
+import Link from 'next/link'
+import { motion } from 'framer-motion'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
-import { ContactForm } from '@/components/contact/contact-form'
-import { Card, CardContent } from '@/components/ui/card'
+import { Reveal } from '@/components/ui/motion'
 import {
-  MapPin,
   Phone,
   Mail,
+  MapPin,
   Clock,
-  MessageCircle,
+  Send,
   Instagram,
+  ArrowRight,
+  Sparkles,
+  CheckCircle2,
 } from 'lucide-react'
+import { toast } from 'sonner'
 
-export default async function ContactPage() {
-  const supabase = await createClient()
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const client = supabase as any
+export default function ContactPage() {
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isSubmitted, setIsSubmitted] = useState(false)
 
-  // Get gym settings
-  const { data: gymSettings } = await client
-    .from('gym_settings')
-    .select('*')
-    .single()
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setIsSubmitting(true)
 
-  // Get working hours
-  const { data: workingHours } = await client
-    .from('gym_working_hours')
-    .select('*')
-    .order('day_of_week', { ascending: true })
+    // Simulate form submission
+    await new Promise((resolve) => setTimeout(resolve, 1500))
 
-  const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+    setIsSubmitting(false)
+    setIsSubmitted(true)
+    toast.success('Message sent! We\'ll get back to you soon.')
+  }
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen bg-black">
       <Header />
 
-      <main className="flex-1">
-        {/* Hero Section */}
-        <section className="relative py-20 bg-gradient-to-b from-primary/5 to-background">
-          <div className="container text-center">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-6">
-              <MessageCircle className="h-4 w-4 text-primary" />
-              <span className="text-sm font-medium text-primary">Get in Touch</span>
-            </div>
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">
-              Contact <span className="text-primary">Us</span>
-            </h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Have questions? We&apos;d love to hear from you. Send us a message or visit us at the gym.
-            </p>
+      {/* Hero Section */}
+      <section className="relative pt-32 pb-20 overflow-hidden">
+        <div className="absolute inset-0">
+          <div className="absolute inset-0 bg-gradient-to-b from-black via-black to-zinc-950" />
+          <div className="absolute top-1/3 right-1/4 w-[600px] h-[600px] bg-gold-500/5 rounded-full blur-[120px]" />
+        </div>
+
+        <div className="container relative">
+          <div className="max-w-4xl">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-light mb-8"
+            >
+              <Sparkles className="w-4 h-4 text-gold-400" />
+              <span className="text-sm text-zinc-300">Get In Touch</span>
+            </motion.div>
+
+            <motion.h1
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.1 }}
+              className="text-5xl md:text-7xl font-display font-semibold tracking-tight mb-8"
+            >
+              Let&apos;s <span className="text-gradient">Talk</span>
+            </motion.h1>
+
+            <motion.p
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="text-xl text-zinc-400 max-w-2xl"
+            >
+              Ready to start your fitness journey? Have questions?
+              We&apos;d love to hear from you.
+            </motion.p>
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* Contact Info & Form */}
-        <section className="py-20">
-          <div className="container">
-            <div className="grid lg:grid-cols-2 gap-12">
-              {/* Contact Information */}
-              <div className="space-y-8">
-                <div>
-                  <h2 className="text-2xl font-bold mb-6">Get In Touch</h2>
-                  <p className="text-muted-foreground mb-8">
-                    Visit us at our gym, give us a call, or send us a message on WhatsApp.
-                    We&apos;re here to help you start your fitness journey.
-                  </p>
-                </div>
+      {/* Contact Section */}
+      <section className="py-24">
+        <div className="container">
+          <div className="grid lg:grid-cols-2 gap-16">
+            {/* Contact Form */}
+            <Reveal>
+              <div className="glass-light rounded-2xl p-8 md:p-10">
+                <h2 className="text-2xl font-semibold mb-2">Send a Message</h2>
+                <p className="text-zinc-400 mb-8">
+                  Fill out the form and we&apos;ll get back to you within 24 hours.
+                </p>
 
-                <div className="space-y-4">
-                  {/* Location */}
-                  <Card>
-                    <CardContent className="flex items-start gap-4 p-6">
-                      <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                        <MapPin className="h-6 w-6 text-primary" />
-                      </div>
-                      <div>
-                        <h3 className="font-semibold mb-1">Location</h3>
-                        <p className="text-muted-foreground">
-                          {gymSettings?.address_en || 'Amman, Jordan'}
-                        </p>
-                        <p className="text-muted-foreground" dir="rtl">
-                          {gymSettings?.address_ar || 'عمان، الأردن'}
-                        </p>
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  {/* Phone */}
-                  <Card>
-                    <CardContent className="flex items-start gap-4 p-6">
-                      <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                        <Phone className="h-6 w-6 text-primary" />
-                      </div>
-                      <div>
-                        <h3 className="font-semibold mb-1">Phone</h3>
-                        <a
-                          href={`tel:${gymSettings?.phone || '+962'}`}
-                          className="text-muted-foreground hover:text-primary transition-colors"
-                        >
-                          {gymSettings?.phone || '+962 XX XXX XXXX'}
-                        </a>
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  {/* WhatsApp */}
-                  <Card>
-                    <CardContent className="flex items-start gap-4 p-6">
-                      <div className="w-12 h-12 rounded-full bg-green-500/10 flex items-center justify-center shrink-0">
-                        <MessageCircle className="h-6 w-6 text-green-500" />
-                      </div>
-                      <div>
-                        <h3 className="font-semibold mb-1">WhatsApp</h3>
-                        <a
-                          href={`https://wa.me/${gymSettings?.whatsapp?.replace(/[^0-9]/g, '') || ''}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-muted-foreground hover:text-green-500 transition-colors"
-                        >
-                          {gymSettings?.whatsapp || '+962 XX XXX XXXX'}
-                        </a>
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  {/* Email */}
-                  <Card>
-                    <CardContent className="flex items-start gap-4 p-6">
-                      <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                        <Mail className="h-6 w-6 text-primary" />
-                      </div>
-                      <div>
-                        <h3 className="font-semibold mb-1">Email</h3>
-                        <a
-                          href={`mailto:${gymSettings?.email || 'info@gramsgym.com'}`}
-                          className="text-muted-foreground hover:text-primary transition-colors"
-                        >
-                          {gymSettings?.email || 'info@gramsgym.com'}
-                        </a>
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  {/* Instagram */}
-                  {gymSettings?.instagram && (
-                    <Card>
-                      <CardContent className="flex items-start gap-4 p-6">
-                        <div className="w-12 h-12 rounded-full bg-pink-500/10 flex items-center justify-center shrink-0">
-                          <Instagram className="h-6 w-6 text-pink-500" />
-                        </div>
-                        <div>
-                          <h3 className="font-semibold mb-1">Instagram</h3>
-                          <a
-                            href={`https://instagram.com/${gymSettings.instagram.replace('@', '')}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-muted-foreground hover:text-pink-500 transition-colors"
-                          >
-                            {gymSettings.instagram}
-                          </a>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  )}
-                </div>
-              </div>
-
-              {/* Contact Form */}
-              <div>
-                <ContactForm />
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Working Hours */}
-        <section className="py-20 bg-card border-y border-border">
-          <div className="container">
-            <div className="max-w-2xl mx-auto">
-              <div className="flex items-center gap-3 justify-center mb-8">
-                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                  <Clock className="h-6 w-6 text-primary" />
-                </div>
-                <h2 className="text-2xl font-bold">Working Hours</h2>
-              </div>
-
-              <div className="space-y-3">
-                {workingHours && workingHours.length > 0 ? (
-                  workingHours.map((hours: {
-                    id: string
-                    day_of_week: number
-                    open_time: string | null
-                    close_time: string | null
-                    is_closed: boolean
-                  }) => (
-                    <div
-                      key={hours.id}
-                      className="flex justify-between items-center p-4 rounded-lg bg-background border border-border"
+                {isSubmitted ? (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="text-center py-16"
+                  >
+                    <div className="w-16 h-16 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-6">
+                      <CheckCircle2 className="w-8 h-8 text-green-400" />
+                    </div>
+                    <h3 className="text-2xl font-semibold mb-2">Message Sent!</h3>
+                    <p className="text-zinc-400 mb-6">
+                      Thank you for reaching out. We&apos;ll be in touch soon.
+                    </p>
+                    <button
+                      onClick={() => setIsSubmitted(false)}
+                      className="text-gold-400 hover:text-gold-300 font-medium"
                     >
-                      <span className="font-medium">{days[hours.day_of_week]}</span>
-                      <span className={hours.is_closed ? 'text-muted-foreground' : 'text-primary font-semibold'}>
-                        {hours.is_closed ? 'Closed' : `${hours.open_time} - ${hours.close_time}`}
-                      </span>
-                    </div>
-                  ))
+                      Send another message
+                    </button>
+                  </motion.div>
                 ) : (
-                  <>
-                    <div className="flex justify-between items-center p-4 rounded-lg bg-background border border-border">
-                      <span className="font-medium">Saturday - Wednesday</span>
-                      <span className="text-primary font-semibold">6:00 AM - 10:00 PM</span>
+                  <form onSubmit={handleSubmit} className="space-y-6">
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div>
+                        <label className="block text-sm font-medium text-zinc-300 mb-2">
+                          First Name
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          className="w-full px-4 py-3 rounded-lg bg-zinc-900 border border-zinc-800 text-white placeholder-zinc-500 focus:border-gold-500 focus:ring-1 focus:ring-gold-500 transition-colors"
+                          placeholder="John"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-zinc-300 mb-2">
+                          Last Name
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          className="w-full px-4 py-3 rounded-lg bg-zinc-900 border border-zinc-800 text-white placeholder-zinc-500 focus:border-gold-500 focus:ring-1 focus:ring-gold-500 transition-colors"
+                          placeholder="Doe"
+                        />
+                      </div>
                     </div>
-                    <div className="flex justify-between items-center p-4 rounded-lg bg-background border border-border">
-                      <span className="font-medium">Thursday</span>
-                      <span className="text-primary font-semibold">6:00 AM - 9:00 PM</span>
+
+                    <div>
+                      <label className="block text-sm font-medium text-zinc-300 mb-2">
+                        Email
+                      </label>
+                      <input
+                        type="email"
+                        required
+                        className="w-full px-4 py-3 rounded-lg bg-zinc-900 border border-zinc-800 text-white placeholder-zinc-500 focus:border-gold-500 focus:ring-1 focus:ring-gold-500 transition-colors"
+                        placeholder="john@example.com"
+                      />
                     </div>
-                    <div className="flex justify-between items-center p-4 rounded-lg bg-background border border-border">
-                      <span className="font-medium">Friday</span>
-                      <span className="text-muted-foreground">Closed</span>
+
+                    <div>
+                      <label className="block text-sm font-medium text-zinc-300 mb-2">
+                        Phone
+                      </label>
+                      <input
+                        type="tel"
+                        className="w-full px-4 py-3 rounded-lg bg-zinc-900 border border-zinc-800 text-white placeholder-zinc-500 focus:border-gold-500 focus:ring-1 focus:ring-gold-500 transition-colors"
+                        placeholder="+962 79 XXX XXXX"
+                      />
                     </div>
-                  </>
+
+                    <div>
+                      <label className="block text-sm font-medium text-zinc-300 mb-2">
+                        Interest
+                      </label>
+                      <select
+                        className="w-full px-4 py-3 rounded-lg bg-zinc-900 border border-zinc-800 text-white focus:border-gold-500 focus:ring-1 focus:ring-gold-500 transition-colors"
+                      >
+                        <option value="membership">Gym Membership</option>
+                        <option value="pt">Personal Training</option>
+                        <option value="both">Membership + PT</option>
+                        <option value="other">Other</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-zinc-300 mb-2">
+                        Message
+                      </label>
+                      <textarea
+                        rows={4}
+                        className="w-full px-4 py-3 rounded-lg bg-zinc-900 border border-zinc-800 text-white placeholder-zinc-500 focus:border-gold-500 focus:ring-1 focus:ring-gold-500 transition-colors resize-none"
+                        placeholder="Tell us about your fitness goals..."
+                      />
+                    </div>
+
+                    <motion.button
+                      type="submit"
+                      disabled={isSubmitting}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className="w-full btn-premium flex items-center justify-center gap-2 disabled:opacity-50"
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <div className="w-5 h-5 border-2 border-black/30 border-t-black rounded-full animate-spin" />
+                          <span>Sending...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Send className="w-5 h-5" />
+                          <span>Send Message</span>
+                        </>
+                      )}
+                    </motion.button>
+                  </form>
                 )}
               </div>
-            </div>
-          </div>
-        </section>
+            </Reveal>
 
-        {/* Map Section */}
-        <section className="py-20">
-          <div className="container">
-            <div className="aspect-[21/9] rounded-2xl bg-muted border border-border overflow-hidden">
-              <div className="w-full h-full flex items-center justify-center">
-                <div className="text-center">
-                  <MapPin className="h-16 w-16 text-primary mx-auto mb-4" />
-                  <p className="text-lg font-medium">
-                    {gymSettings?.address_en || 'Amman, Jordan'}
-                  </p>
-                  <p className="text-muted-foreground">
-                    Google Maps integration coming soon
-                  </p>
+            {/* Contact Info */}
+            <div className="space-y-8">
+              <Reveal delay={0.1}>
+                <div>
+                  <h2 className="text-2xl font-semibold mb-6">Contact Information</h2>
+                  <div className="space-y-6">
+                    <a
+                      href="tel:+962791234567"
+                      className="flex items-center gap-4 group"
+                    >
+                      <div className="w-12 h-12 rounded-xl bg-zinc-900 flex items-center justify-center group-hover:bg-gold-500/10 transition-colors">
+                        <Phone className="w-5 h-5 text-gold-400" />
+                      </div>
+                      <div>
+                        <p className="text-sm text-zinc-500">Phone</p>
+                        <p className="text-lg text-white group-hover:text-gold-400 transition-colors">
+                          +962 79 123 4567
+                        </p>
+                      </div>
+                    </a>
+
+                    <a
+                      href="mailto:info@gramsgym.com"
+                      className="flex items-center gap-4 group"
+                    >
+                      <div className="w-12 h-12 rounded-xl bg-zinc-900 flex items-center justify-center group-hover:bg-gold-500/10 transition-colors">
+                        <Mail className="w-5 h-5 text-gold-400" />
+                      </div>
+                      <div>
+                        <p className="text-sm text-zinc-500">Email</p>
+                        <p className="text-lg text-white group-hover:text-gold-400 transition-colors">
+                          info@gramsgym.com
+                        </p>
+                      </div>
+                    </a>
+
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-xl bg-zinc-900 flex items-center justify-center">
+                        <MapPin className="w-5 h-5 text-gold-400" />
+                      </div>
+                      <div>
+                        <p className="text-sm text-zinc-500">Location</p>
+                        <p className="text-lg text-white">Abdoun, Amman, Jordan</p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </div>
+              </Reveal>
+
+              <Reveal delay={0.2}>
+                <div className="glass-light rounded-2xl p-8">
+                  <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                    <Clock className="w-5 h-5 text-gold-400" />
+                    Working Hours
+                  </h3>
+                  <div className="space-y-3 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-zinc-400">Saturday - Thursday</span>
+                      <span className="text-white">6:00 AM - 11:00 PM</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-zinc-400">Friday</span>
+                      <span className="text-white">2:00 PM - 10:00 PM</span>
+                    </div>
+                  </div>
+                </div>
+              </Reveal>
+
+              <Reveal delay={0.3}>
+                <div className="glass-light rounded-2xl p-8">
+                  <h3 className="text-lg font-semibold mb-4">Follow Us</h3>
+                  <div className="flex gap-4">
+                    <motion.a
+                      href="https://instagram.com/gramsgym"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      whileHover={{ scale: 1.1, y: -2 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="w-12 h-12 rounded-xl bg-zinc-800 flex items-center justify-center hover:bg-gradient-to-br hover:from-purple-500 hover:to-pink-500 transition-all"
+                    >
+                      <Instagram className="w-5 h-5" />
+                    </motion.a>
+                  </div>
+                </div>
+              </Reveal>
+
+              <Reveal delay={0.4}>
+                <div className="glass-light rounded-2xl p-8 relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-gold-500/10 rounded-full blur-2xl" />
+                  <div className="relative">
+                    <h3 className="text-lg font-semibold mb-2">Visit Us Today</h3>
+                    <p className="text-zinc-400 text-sm mb-4">
+                      Come see our facilities and meet our team. First visit is always free!
+                    </p>
+                    <Link href="/pricing">
+                      <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        className="text-gold-400 hover:text-gold-300 font-medium flex items-center gap-2 transition-colors"
+                      >
+                        View Pricing
+                        <ArrowRight className="w-4 h-4" />
+                      </motion.button>
+                    </Link>
+                  </div>
+                </div>
+              </Reveal>
             </div>
           </div>
-        </section>
-      </main>
+        </div>
+      </section>
+
+      {/* Map Section Placeholder */}
+      <section className="py-24 bg-zinc-950">
+        <div className="container">
+          <div className="rounded-2xl overflow-hidden h-96 bg-zinc-900 flex items-center justify-center relative">
+            <div className="absolute inset-0 bg-gradient-to-br from-gold-500/5 via-transparent to-transparent" />
+            <div className="text-center relative">
+              <MapPin className="w-16 h-16 text-gold-500/20 mx-auto mb-4" />
+              <p className="text-zinc-500 text-lg font-medium">Abdoun, Amman, Jordan</p>
+              <p className="text-zinc-600 text-sm mt-2">Interactive map coming soon</p>
+            </div>
+          </div>
+        </div>
+      </section>
 
       <Footer />
     </div>

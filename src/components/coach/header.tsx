@@ -2,7 +2,6 @@
 
 import { usePathname } from 'next/navigation'
 import type { Coach } from '@/types/database'
-import { LanguageSwitcher } from '@/components/layout/language-switcher'
 import { Button } from '@/components/ui/button'
 import { Bell } from 'lucide-react'
 
@@ -50,7 +49,6 @@ export function CoachHeader({ coach }: CoachHeaderProps) {
             3
           </span>
         </Button>
-        <LanguageSwitcher />
       </div>
     </header>
   )

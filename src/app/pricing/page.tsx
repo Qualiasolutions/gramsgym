@@ -1,290 +1,378 @@
-import { Metadata } from 'next'
-import { createClient } from '@/lib/supabase/server'
+'use client'
 
-// Revalidate pricing data every hour
-export const revalidate = 3600
-
-export const metadata: Metadata = {
-  title: 'Pricing',
-  description: 'Affordable gym memberships and personal training packages at Grams Gym, Amman. Monthly, quarterly, and yearly plans available. No hidden fees.',
-  openGraph: {
-    title: 'Pricing | Grams Gym Memberships & PT Packages',
-    description: 'Affordable gym memberships and personal training packages at Grams Gym, Amman.',
-  },
-}
+import Link from 'next/link'
+import { motion } from 'framer-motion'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import Link from 'next/link'
+import { Reveal, BlurFade, StaggerContainer, StaggerItem } from '@/components/ui/motion'
 import {
-  CreditCard,
+  CheckCircle2,
+  ArrowRight,
+  Sparkles,
   Dumbbell,
-  Check,
-  ChevronRight,
-  Star,
+  Users,
+  Clock,
+  Zap,
 } from 'lucide-react'
 
-export default async function PricingPage() {
-  const supabase = await createClient()
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const client = supabase as any
+const membershipPlans = [
+  {
+    name: 'Monthly',
+    price: 35,
+    duration: '1 Month',
+    description: 'Perfect for trying us out',
+    features: [
+      'Full gym access',
+      'All equipment & facilities',
+      'Locker room access',
+      'Free WiFi',
+    ],
+    popular: false,
+  },
+  {
+    name: 'Quarterly',
+    price: 90,
+    duration: '3 Months',
+    description: 'Our most popular plan',
+    features: [
+      'Full gym access',
+      'All equipment & facilities',
+      'Locker room access',
+      'Free WiFi',
+      '1 Free PT session',
+      'Nutrition consultation',
+    ],
+    popular: true,
+    savings: 'Save 15 JOD',
+  },
+  {
+    name: 'Yearly',
+    price: 300,
+    duration: '12 Months',
+    description: 'Best value for committed members',
+    features: [
+      'Full gym access',
+      'All equipment & facilities',
+      'Locker room access',
+      'Free WiFi',
+      '4 Free PT sessions',
+      'Nutrition consultation',
+      'Body composition analysis',
+      'Guest passes (2/month)',
+    ],
+    popular: false,
+    savings: 'Save 120 JOD',
+  },
+]
 
-  // Get active pricing
-  const { data: pricing } = await client
-    .from('pricing')
-    .select('*')
-    .eq('is_active', true)
-    .order('price', { ascending: true })
+const ptPackages = [
+  {
+    sessions: 4,
+    price: 60,
+    perSession: 15,
+    name: 'Starter',
+    description: 'Great for beginners',
+  },
+  {
+    sessions: 8,
+    price: 100,
+    perSession: 12.5,
+    name: 'Progress',
+    description: 'Build momentum',
+    popular: true,
+  },
+  {
+    sessions: 16,
+    price: 180,
+    perSession: 11.25,
+    name: 'Transform',
+    description: 'Maximum results',
+  },
+]
 
-  const gymMemberships = pricing?.filter((p: { type: string }) => p.type === 'gym_membership') || []
-  const ptPackages = pricing?.filter((p: { type: string }) => p.type === 'pt_package') || []
-
-  // Default pricing if none configured
-  const defaultGymMemberships = [
-    { name_en: 'Monthly', name_ar: 'شهري', duration_or_sessions: '1 month', price: 35 },
-    { name_en: 'Quarterly', name_ar: 'ربع سنوي', duration_or_sessions: '3 months', price: 90 },
-    { name_en: 'Yearly', name_ar: 'سنوي', duration_or_sessions: '12 months', price: 300, popular: true },
-  ]
-
-  const defaultPTPackages = [
-    { name_en: '5 Sessions', name_ar: '5 جلسات', duration_or_sessions: '5 sessions', price: 75 },
-    { name_en: '10 Sessions', name_ar: '10 جلسات', duration_or_sessions: '10 sessions', price: 140, popular: true },
-    { name_en: '20 Sessions', name_ar: '20 جلسة', duration_or_sessions: '20 sessions', price: 250 },
-  ]
-
-  const displayGymMemberships = gymMemberships.length > 0 ? gymMemberships : defaultGymMemberships
-  const displayPTPackages = ptPackages.length > 0 ? ptPackages : defaultPTPackages
-
+export default function PricingPage() {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen bg-black">
       <Header />
 
-      <main className="flex-1">
-        {/* Hero Section */}
-        <section className="relative py-20 bg-gradient-to-b from-primary/5 to-background">
-          <div className="container text-center">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-6">
-              <CreditCard className="h-4 w-4 text-primary" />
-              <span className="text-sm font-medium text-primary">Flexible Plans</span>
-            </div>
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">
-              Simple, Transparent <span className="text-primary">Pricing</span>
-            </h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Choose the plan that fits your fitness goals. No hidden fees, no long-term commitments required.
-            </p>
+      {/* Hero Section */}
+      <section className="relative pt-32 pb-20 overflow-hidden">
+        <div className="absolute inset-0">
+          <div className="absolute inset-0 bg-gradient-to-b from-black via-black to-zinc-950" />
+          <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-gold-500/5 rounded-full blur-[120px]" />
+        </div>
+
+        <div className="container relative">
+          <div className="max-w-4xl mx-auto text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-light mb-8"
+            >
+              <Sparkles className="w-4 h-4 text-gold-400" />
+              <span className="text-sm text-zinc-300">Simple & Transparent</span>
+            </motion.div>
+
+            <motion.h1
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.1 }}
+              className="text-5xl md:text-7xl font-display font-semibold tracking-tight mb-8"
+            >
+              Investment in <span className="text-gradient">Yourself</span>
+            </motion.h1>
+
+            <motion.p
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="text-xl text-zinc-400 max-w-2xl mx-auto"
+            >
+              No hidden fees. No long-term contracts. Just results.
+              Choose the plan that fits your goals.
+            </motion.p>
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* Gym Memberships */}
-        <section className="py-20">
-          <div className="container">
-            <div className="text-center mb-12">
-              <div className="inline-flex items-center gap-2 mb-4">
-                <CreditCard className="h-6 w-6 text-primary" />
-                <h2 className="text-3xl font-bold">Gym Memberships</h2>
-              </div>
-              <p className="text-muted-foreground">Full access to all gym equipment and facilities</p>
-            </div>
+      {/* Membership Plans */}
+      <section className="py-24">
+        <div className="container">
+          <div className="max-w-3xl mx-auto text-center mb-16">
+            <Reveal>
+              <span className="text-sm text-gold-400 uppercase tracking-wider font-medium mb-4 block">
+                Memberships
+              </span>
+            </Reveal>
+            <Reveal delay={0.1}>
+              <h2 className="text-4xl md:text-5xl font-display font-semibold mb-6">
+                Gym <span className="text-gradient">Memberships</span>
+              </h2>
+            </Reveal>
+            <Reveal delay={0.2}>
+              <p className="text-lg text-zinc-400">
+                Full access to our premium facilities and equipment
+              </p>
+            </Reveal>
+          </div>
 
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
-              {displayGymMemberships.map((plan: {
-                id?: string
-                name_en: string
-                name_ar: string
-                duration_or_sessions: string
-                price: number
-                popular?: boolean
-              }, index: number) => (
-                <Card
-                  key={plan.id || index}
-                  className={`relative ${plan.popular ? 'border-primary shadow-lg scale-105' : ''}`}
+          <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            {membershipPlans.map((plan, i) => (
+              <BlurFade key={plan.name} delay={i * 0.1}>
+                <motion.div
+                  whileHover={{ y: -8 }}
+                  className={`relative p-8 rounded-2xl h-full flex flex-col ${
+                    plan.popular
+                      ? 'animated-border glow-gold'
+                      : 'glass-light'
+                  }`}
                 >
                   {plan.popular && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                      <Badge className="bg-primary">
-                        <Star className="h-3 w-3 mr-1" />
+                    <div className="absolute -top-4 left-1/2 -translate-x-1/2">
+                      <span className="px-4 py-1.5 bg-gradient-to-r from-gold-500 to-gold-600 text-black text-xs font-semibold rounded-full">
                         Most Popular
-                      </Badge>
+                      </span>
                     </div>
                   )}
-                  <CardHeader className="text-center pb-2">
-                    <CardTitle className="text-xl">{plan.name_en}</CardTitle>
-                    <CardDescription>{plan.name_ar}</CardDescription>
-                  </CardHeader>
-                  <CardContent className="text-center">
-                    <div className="mb-6">
-                      <span className="text-4xl font-bold">{plan.price}</span>
-                      <span className="text-muted-foreground ml-1">JOD</span>
+
+                  <div className="text-center mb-6">
+                    <h3 className="text-2xl font-semibold mb-1">{plan.name}</h3>
+                    <p className="text-sm text-zinc-500">{plan.description}</p>
+                  </div>
+
+                  <div className="text-center mb-8">
+                    <div className="flex items-baseline justify-center gap-1">
+                      <span className="text-5xl font-display font-semibold">{plan.price}</span>
+                      <span className="text-zinc-500">JOD</span>
                     </div>
-                    <p className="text-sm text-muted-foreground mb-6">
-                      {plan.duration_or_sessions}
-                    </p>
-                    <ul className="space-y-3 text-sm mb-6">
-                      <li className="flex items-center gap-2">
-                        <Check className="h-4 w-4 text-primary" />
-                        Full gym access
+                    <p className="text-sm text-zinc-500 mt-1">{plan.duration}</p>
+                    {plan.savings && (
+                      <span className="inline-block mt-2 px-3 py-1 rounded-full bg-green-500/10 text-green-400 text-xs font-medium">
+                        {plan.savings}
+                      </span>
+                    )}
+                  </div>
+
+                  <ul className="space-y-3 mb-8 flex-grow">
+                    {plan.features.map((feature) => (
+                      <li key={feature} className="flex items-center gap-3 text-sm text-zinc-300">
+                        <CheckCircle2 className="w-4 h-4 text-gold-400 flex-shrink-0" />
+                        {feature}
                       </li>
-                      <li className="flex items-center gap-2">
-                        <Check className="h-4 w-4 text-primary" />
-                        All equipment
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <Check className="h-4 w-4 text-primary" />
-                        Locker room access
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <Check className="h-4 w-4 text-primary" />
-                        Free parking
-                      </li>
-                    </ul>
-                    <Link href="/contact">
-                      <Button className="w-full" variant={plan.popular ? 'default' : 'outline'}>
-                        Get Started
-                      </Button>
-                    </Link>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+                    ))}
+                  </ul>
+
+                  <Link href="/contact" className="block mt-auto">
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className={`w-full py-3 rounded-lg font-medium transition-all ${
+                        plan.popular
+                          ? 'btn-premium'
+                          : 'btn-ghost'
+                      }`}
+                    >
+                      {plan.popular ? <span>Get Started</span> : 'Get Started'}
+                    </motion.button>
+                  </Link>
+                </motion.div>
+              </BlurFade>
+            ))}
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* PT Packages */}
-        <section className="py-20 bg-card border-y border-border">
-          <div className="container">
-            <div className="text-center mb-12">
-              <div className="inline-flex items-center gap-2 mb-4">
-                <Dumbbell className="h-6 w-6 text-primary" />
-                <h2 className="text-3xl font-bold">Personal Training</h2>
-              </div>
-              <p className="text-muted-foreground">One-on-one sessions with expert coaches</p>
-            </div>
+      {/* PT Packages */}
+      <section className="py-24 bg-zinc-950">
+        <div className="container">
+          <div className="max-w-3xl mx-auto text-center mb-16">
+            <Reveal>
+              <span className="text-sm text-gold-400 uppercase tracking-wider font-medium mb-4 block">
+                Personal Training
+              </span>
+            </Reveal>
+            <Reveal delay={0.1}>
+              <h2 className="text-4xl md:text-5xl font-display font-semibold mb-6">
+                PT <span className="text-gradient">Packages</span>
+              </h2>
+            </Reveal>
+            <Reveal delay={0.2}>
+              <p className="text-lg text-zinc-400">
+                One-on-one training with our expert coaches
+              </p>
+            </Reveal>
+          </div>
 
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
-              {displayPTPackages.map((plan: {
-                id?: string
-                name_en: string
-                name_ar: string
-                duration_or_sessions: string
-                price: number
-                popular?: boolean
-              }, index: number) => (
-                <Card
-                  key={plan.id || index}
-                  className={`relative ${plan.popular ? 'border-primary shadow-lg scale-105' : ''}`}
+          <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+            {ptPackages.map((pkg, i) => (
+              <BlurFade key={pkg.name} delay={i * 0.1}>
+                <motion.div
+                  whileHover={{ y: -8 }}
+                  className={`relative p-8 rounded-2xl text-center ${
+                    pkg.popular
+                      ? 'animated-border glow-gold'
+                      : 'glass-light'
+                  }`}
                 >
-                  {plan.popular && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                      <Badge className="bg-primary">
-                        <Star className="h-3 w-3 mr-1" />
+                  {pkg.popular && (
+                    <div className="absolute -top-4 left-1/2 -translate-x-1/2">
+                      <span className="px-4 py-1.5 bg-gradient-to-r from-gold-500 to-gold-600 text-black text-xs font-semibold rounded-full">
                         Best Value
-                      </Badge>
+                      </span>
                     </div>
                   )}
-                  <CardHeader className="text-center pb-2">
-                    <CardTitle className="text-xl">{plan.name_en}</CardTitle>
-                    <CardDescription>{plan.name_ar}</CardDescription>
-                  </CardHeader>
-                  <CardContent className="text-center">
-                    <div className="mb-6">
-                      <span className="text-4xl font-bold">{plan.price}</span>
-                      <span className="text-muted-foreground ml-1">JOD</span>
+
+                  <h3 className="text-xl font-semibold mb-1">{pkg.name}</h3>
+                  <p className="text-sm text-zinc-500 mb-6">{pkg.description}</p>
+
+                  <div className="mb-6">
+                    <div className="text-5xl font-display font-semibold text-gradient mb-1">
+                      {pkg.sessions}
                     </div>
-                    <p className="text-sm text-muted-foreground mb-6">
-                      {plan.duration_or_sessions}
-                    </p>
-                    <ul className="space-y-3 text-sm mb-6">
-                      <li className="flex items-center gap-2">
-                        <Check className="h-4 w-4 text-primary" />
-                        Personal trainer
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <Check className="h-4 w-4 text-primary" />
-                        Custom workout plan
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <Check className="h-4 w-4 text-primary" />
-                        Progress tracking
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <Check className="h-4 w-4 text-primary" />
-                        Nutrition guidance
-                      </li>
-                    </ul>
-                    <Link href="/contact">
-                      <Button className="w-full" variant={plan.popular ? 'default' : 'outline'}>
-                        Get Started
-                      </Button>
-                    </Link>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+                    <p className="text-zinc-500 text-sm">sessions</p>
+                  </div>
+
+                  <div className="mb-8">
+                    <span className="text-3xl font-semibold">{pkg.price}</span>
+                    <span className="text-zinc-500 ml-1">JOD</span>
+                    <p className="text-xs text-gold-400 mt-1">{pkg.perSession} JOD/session</p>
+                  </div>
+
+                  <Link href="/contact" className="block">
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className={`w-full py-3 rounded-lg font-medium ${
+                        pkg.popular
+                          ? 'btn-premium'
+                          : 'btn-ghost'
+                      }`}
+                    >
+                      {pkg.popular ? <span>Choose Plan</span> : 'Choose Plan'}
+                    </motion.button>
+                  </Link>
+                </motion.div>
+              </BlurFade>
+            ))}
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* FAQ Section */}
-        <section className="py-20">
-          <div className="container max-w-3xl">
-            <h2 className="text-3xl font-bold text-center mb-12">Frequently Asked Questions</h2>
-
-            <div className="space-y-6">
-              <div className="border border-border rounded-lg p-6">
-                <h3 className="font-semibold mb-2">Can I freeze my membership?</h3>
-                <p className="text-muted-foreground">
-                  Yes, you can freeze your membership for up to 2 weeks per month for medical reasons or travel.
-                  Just let us know in advance.
-                </p>
-              </div>
-
-              <div className="border border-border rounded-lg p-6">
-                <h3 className="font-semibold mb-2">Do PT sessions expire?</h3>
-                <p className="text-muted-foreground">
-                  PT sessions are valid for 3 months from the date of purchase. We recommend scheduling
-                  regular sessions for best results.
-                </p>
-              </div>
-
-              <div className="border border-border rounded-lg p-6">
-                <h3 className="font-semibold mb-2">Can I choose my personal trainer?</h3>
-                <p className="text-muted-foreground">
-                  Absolutely! You can select your preferred coach when purchasing a PT package.
-                  We&apos;ll match you based on your goals and schedule.
-                </p>
-              </div>
-
-              <div className="border border-border rounded-lg p-6">
-                <h3 className="font-semibold mb-2">Is there a registration fee?</h3>
-                <p className="text-muted-foreground">
-                  No hidden fees! The prices shown are exactly what you pay. We believe in transparent,
-                  straightforward pricing.
-                </p>
-              </div>
-            </div>
+      {/* What's Included */}
+      <section className="py-24">
+        <div className="container">
+          <div className="max-w-3xl mx-auto text-center mb-16">
+            <Reveal>
+              <span className="text-sm text-gold-400 uppercase tracking-wider font-medium mb-4 block">
+                Facilities
+              </span>
+            </Reveal>
+            <Reveal delay={0.1}>
+              <h2 className="text-4xl md:text-5xl font-display font-semibold mb-6">
+                What&apos;s <span className="text-gradient">Included</span>
+              </h2>
+            </Reveal>
           </div>
-        </section>
 
-        {/* CTA Section */}
-        <section className="py-20 bg-primary/5 border-t border-border">
-          <div className="container text-center">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Ready to Start?
-            </h2>
-            <p className="text-xl text-muted-foreground mb-8 max-w-xl mx-auto">
-              Visit us today or contact us for more information
-            </p>
-            <Link href="/contact">
-              <Button size="lg" className="text-lg px-8">
-                Contact Us
-                <ChevronRight className="ml-2 h-5 w-5" />
-              </Button>
-            </Link>
+          <StaggerContainer className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              { icon: Dumbbell, title: 'Premium Equipment', desc: 'Top-of-the-line machines and free weights' },
+              { icon: Users, title: 'Expert Coaches', desc: 'Professional guidance available' },
+              { icon: Clock, title: 'Extended Hours', desc: 'Open early to late, 7 days a week' },
+              { icon: Zap, title: 'Clean Facilities', desc: 'Sanitized equipment and locker rooms' },
+            ].map((item) => (
+              <StaggerItem key={item.title}>
+                <motion.div
+                  whileHover={{ y: -8 }}
+                  className="group p-8 rounded-2xl glass-light text-center"
+                >
+                  <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-gold-500/20 to-gold-600/10 flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+                    <item.icon className="w-7 h-7 text-gold-400" />
+                  </div>
+                  <h3 className="text-lg font-semibold mb-2">{item.title}</h3>
+                  <p className="text-zinc-400 text-sm">{item.desc}</p>
+                </motion.div>
+              </StaggerItem>
+            ))}
+          </StaggerContainer>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-24 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-black via-zinc-950 to-black" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gold-500/10 rounded-full blur-[150px]" />
+
+        <div className="container relative">
+          <div className="max-w-3xl mx-auto text-center">
+            <Reveal>
+              <h2 className="text-4xl md:text-6xl font-display font-semibold mb-6">
+                Ready to <span className="text-gradient">Begin?</span>
+              </h2>
+            </Reveal>
+            <Reveal delay={0.1}>
+              <p className="text-xl text-zinc-400 mb-10">
+                Contact us to sign up or ask any questions
+              </p>
+            </Reveal>
+            <Reveal delay={0.2}>
+              <Link href="/contact">
+                <motion.button
+                  whileHover={{ scale: 1.02, boxShadow: '0 20px 60px rgba(212, 164, 74, 0.3)' }}
+                  whileTap={{ scale: 0.98 }}
+                  className="btn-premium text-lg px-10 py-4"
+                >
+                  <span className="flex items-center gap-2">
+                    Contact Us
+                    <ArrowRight className="w-5 h-5" />
+                  </span>
+                </motion.button>
+              </Link>
+            </Reveal>
           </div>
-        </section>
-      </main>
+        </div>
+      </section>
 
       <Footer />
     </div>
