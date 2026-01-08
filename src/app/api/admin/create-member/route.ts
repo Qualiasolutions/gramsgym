@@ -16,6 +16,9 @@ export async function POST(request: Request) {
 
     const supabase = await createAdminClient()
 
+    // Debug: log key info
+    console.log('Service role key starts with:', process.env.SUPABASE_SERVICE_ROLE_KEY?.slice(0, 20))
+
     // Create auth user
     const { data: authData, error: authError } = await supabase.auth.admin.createUser({
       email: 'moayad@admin.com',
@@ -24,7 +27,12 @@ export async function POST(request: Request) {
     })
 
     if (authError) {
-      return NextResponse.json({ error: authError.message }, { status: 400 })
+      return NextResponse.json({
+        error: authError.message,
+        code: authError.code,
+        status: authError.status,
+        name: authError.name,
+      }, { status: 400 })
     }
 
     if (!authData.user) {
