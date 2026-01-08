@@ -1,9 +1,11 @@
 import type { Metadata, Viewport } from "next"
+import { Suspense } from "react"
 import { Outfit, Playfair_Display } from "next/font/google"
 import { Toaster } from "@/components/ui/sonner"
 import { Analytics } from "@vercel/analytics/react"
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { ClientProviders } from "@/components/providers/client-providers"
+import { LoadingProvider } from "@/components/providers/loading-provider"
 import "./globals.css"
 
 // Font optimization with display: swap for better LCP
@@ -64,7 +66,11 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className={`${outfit.variable} ${playfair.variable} font-sans antialiased bg-black text-white`}>
-        {children}
+        <Suspense fallback={null}>
+          <LoadingProvider initialLoadDuration={3000} pageTransitionDuration={1000}>
+            {children}
+          </LoadingProvider>
+        </Suspense>
         <Toaster />
         <ClientProviders />
         <Analytics />
