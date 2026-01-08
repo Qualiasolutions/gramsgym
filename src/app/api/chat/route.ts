@@ -20,9 +20,12 @@ const getSystemPrompt = (
   gymSettings: Record<string, string> | null,
   workingHours: Array<{ day_of_week: number; open_time: string; close_time: string; is_closed: boolean }> | null,
   pricing: Array<{ name_en: string; type: string; price: number; duration_or_sessions: string }> | null,
-  coaches: Array<{ name_en: string; specialization?: string }> | null
+  coaches: Array<{ name_en: string; specialization?: string }> | null,
+  preferredLanguage: 'en' | 'ar' = 'en'
 ) => {
-  const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+  const days = preferredLanguage === 'ar'
+    ? ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت']
+    : ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
 
   const hoursText = workingHours?.map(h =>
     `${days[h.day_of_week]}: ${h.is_closed ? 'Closed' : `${h.open_time} - ${h.close_time}`}`
@@ -553,7 +556,9 @@ NOT RECOMMENDED:
    - Macro breakdowns
    - Training volume prescriptions
 
-5. LANGUAGE: Respond in the same language the user writes in (English or Arabic)
+5. LANGUAGE: ${preferredLanguage === 'ar'
+    ? 'IMPORTANT: Respond ONLY in Arabic (العربية). All your responses must be in Arabic language. Use clear, professional Arabic for fitness and nutrition terminology.'
+    : 'Respond in English. Use clear, professional language for fitness and nutrition terminology.'}
 
 6. BE ENCOURAGING: Fitness is a journey, celebrate progress, acknowledge challenges
 
@@ -598,6 +603,7 @@ export async function POST(request: NextRequest) {
     let history: Array<{ role: string; content: string }> = []
     let imageData: string | null = null
     let imageMediaType: string | null = null
+    let preferredLanguage: 'en' | 'ar' = 'en'
 
     // Handle both JSON and FormData
     if (contentType.includes('multipart/form-data')) {
@@ -605,6 +611,7 @@ export async function POST(request: NextRequest) {
       message = formData.get('message') as string
       const historyStr = formData.get('history') as string
       history = historyStr ? JSON.parse(historyStr) : []
+      preferredLanguage = (formData.get('language') as 'en' | 'ar') || 'en'
 
       const imageFile = formData.get('image') as File | null
       if (imageFile) {
@@ -618,6 +625,7 @@ export async function POST(request: NextRequest) {
       history = json.history || []
       imageData = json.image || null
       imageMediaType = json.imageType || null
+      preferredLanguage = json.language || 'en'
     }
 
     if (!message && !imageData) {
@@ -672,7 +680,8 @@ export async function POST(request: NextRequest) {
       gymSettings,
       workingHours,
       pricing,
-      coaches
+      coaches,
+      preferredLanguage
     )
 
     // Build user content (text + optional image)

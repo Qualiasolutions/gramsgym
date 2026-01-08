@@ -36,7 +36,7 @@ export default async function CoachLayout({
     return (
       <div className="min-h-screen bg-black">
         <CoachSidebar coach={demoCoach} />
-        <div className="lg:pl-72">
+        <div className="lg:pl-72" data-sidebar-content>
           <CoachHeader coach={demoCoach} />
           <main className="p-4 sm:p-5 md:p-6">{children}</main>
         </div>
@@ -69,7 +69,7 @@ export default async function CoachLayout({
   return (
     <div className="min-h-screen bg-black">
       <CoachSidebar coach={coach} />
-      <div className="lg:pl-72">
+      <div className="lg:pl-72" data-sidebar-content>
         <CoachHeader coach={coach} />
         <main className="p-4 sm:p-5 md:p-6">{children}</main>
       </div>

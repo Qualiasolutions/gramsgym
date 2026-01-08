@@ -4,28 +4,30 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { Instagram, Phone, Mail, MapPin } from 'lucide-react'
-
-const footerLinks = {
-  explore: [
-    { href: '/about', label: 'About Us' },
-    { href: '/coaches', label: 'Our Coaches' },
-    { href: '/pricing', label: 'Pricing' },
-    { href: '/contact', label: 'Contact' },
-  ],
-  members: [
-    { href: '/member/login', label: 'Member Login' },
-    { href: '/coach/login', label: 'Coach Portal' },
-  ],
-}
+import { useTranslation, translations } from '@/lib/i18n'
 
 export function Footer() {
   const currentYear = new Date().getFullYear()
+  const { t, isRTL } = useTranslation()
+
+  const footerLinks = {
+    explore: [
+      { href: '/about', label: t(translations.nav.about) },
+      { href: '/coaches', label: t(translations.nav.coaches) },
+      { href: '/pricing', label: t(translations.nav.pricing) },
+      { href: '/contact', label: t(translations.nav.contact) },
+    ],
+    members: [
+      { href: '/member/login', label: t(translations.nav.signIn) },
+      { href: '/coach/login', label: t(translations.coach.dashboard) },
+    ],
+  }
 
   return (
-    <footer className="relative bg-noir-950 border-t border-noir-800/50">
+    <footer className={`relative bg-noir-950 border-t border-noir-800/50 ${isRTL ? 'text-right' : ''}`}>
       {/* Top section with CTA */}
       <div className="container py-12 sm:py-16 md:py-20 lg:py-24">
-        <div className="grid lg:grid-cols-2 gap-10 sm:gap-12 md:gap-16 lg:gap-20 items-center">
+        <div className={`grid lg:grid-cols-2 gap-10 sm:gap-12 md:gap-16 lg:gap-20 items-center ${isRTL ? 'lg:grid-flow-dense' : ''}`}>
           {/* CTA */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -34,10 +36,10 @@ export function Footer() {
             transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
           >
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-display font-medium mb-4 sm:mb-6 leading-[1.1]">
-              Ready to <span className="text-gradient italic">Transform?</span>
+              {t(translations.home.readyToTransform)} <span className="text-gradient italic">{t(translations.about.joinFamily).split(' ').pop()}?</span>
             </h2>
             <p className="text-base sm:text-lg text-noir-300 mb-6 sm:mb-8 md:mb-10 max-w-md leading-relaxed">
-              Join Grams Gym today and take the first step toward becoming your best self.
+              {t(translations.home.ctaDescription)}
             </p>
             <Link href="/contact">
               <motion.button
@@ -45,7 +47,7 @@ export function Footer() {
                 whileTap={{ scale: 0.98 }}
                 className="btn-premium"
               >
-                <span>Get Started</span>
+                <span>{t(translations.common.getStarted)}</span>
               </motion.button>
             </Link>
           </motion.div>
@@ -59,12 +61,12 @@ export function Footer() {
             className="card-glass rounded-2xl p-6 sm:p-8 md:p-10"
           >
             <h3 className="text-xs font-medium text-champagne-500 uppercase tracking-[0.2em] mb-5 sm:mb-6 md:mb-8">
-              Get in Touch
+              {t(translations.contact.tagline)}
             </h3>
             <div className="space-y-4 sm:space-y-5">
               <a
                 href="tel:+962795556818"
-                className="flex items-center gap-3 sm:gap-4 text-noir-200 hover:text-foreground transition-colors duration-300 group min-h-[44px]"
+                className={`flex items-center gap-3 sm:gap-4 text-noir-200 hover:text-foreground transition-colors duration-300 group min-h-[44px] ${isRTL ? 'flex-row-reverse' : ''}`}
               >
                 <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-noir-800 flex items-center justify-center group-hover:bg-champagne-500/10 transition-colors duration-300 border border-noir-700 group-hover:border-champagne-500/30 flex-shrink-0">
                   <Phone className="w-4 h-4 text-champagne-400" />
@@ -73,14 +75,14 @@ export function Footer() {
               </a>
               <a
                 href="mailto:arashed84@hotmail.com"
-                className="flex items-center gap-3 sm:gap-4 text-noir-200 hover:text-foreground transition-colors duration-300 group min-h-[44px]"
+                className={`flex items-center gap-3 sm:gap-4 text-noir-200 hover:text-foreground transition-colors duration-300 group min-h-[44px] ${isRTL ? 'flex-row-reverse' : ''}`}
               >
                 <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-noir-800 flex items-center justify-center group-hover:bg-champagne-500/10 transition-colors duration-300 border border-noir-700 group-hover:border-champagne-500/30 flex-shrink-0">
                   <Mail className="w-4 h-4 text-champagne-400" />
                 </div>
                 <span className="text-sm sm:text-base break-all">arashed84@hotmail.com</span>
               </a>
-              <div className="flex items-center gap-3 sm:gap-4 text-noir-200 min-h-[44px]">
+              <div className={`flex items-center gap-3 sm:gap-4 text-noir-200 min-h-[44px] ${isRTL ? 'flex-row-reverse' : ''}`}>
                 <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-noir-800 flex items-center justify-center border border-noir-700 flex-shrink-0">
                   <MapPin className="w-4 h-4 text-champagne-400" />
                 </div>
@@ -112,7 +114,7 @@ export function Footer() {
               </div>
             </Link>
             <p className="text-noir-400 max-w-sm mb-5 sm:mb-6 md:mb-8 leading-relaxed text-sm sm:text-base">
-              Each gram matters. Premium fitness training in Amman, Jordan since 2014.
+              {t(translations.footer.tagline)}. {t(translations.footer.description)}
             </p>
             {/* Social */}
             <div className="flex items-center gap-3">
@@ -132,7 +134,7 @@ export function Footer() {
           {/* Explore Links */}
           <div>
             <h4 className="text-xs font-medium text-noir-200 uppercase tracking-[0.2em] mb-4 sm:mb-5 md:mb-6">
-              Explore
+              {t(translations.footer.quickLinks)}
             </h4>
             <ul className="space-y-3 sm:space-y-4">
               {footerLinks.explore.map((link) => (
@@ -148,10 +150,10 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Member Links */}
+          {/* Services Links */}
           <div>
             <h4 className="text-xs font-medium text-noir-200 uppercase tracking-[0.2em] mb-4 sm:mb-5 md:mb-6">
-              Members
+              {t(translations.footer.services)}
             </h4>
             <ul className="space-y-3 sm:space-y-4">
               {footerLinks.members.map((link) => (
@@ -171,10 +173,10 @@ export function Footer() {
 
       {/* Bottom Bar */}
       <div className="container pb-6 sm:pb-8 md:pb-10">
-        <div className="flex flex-col md:flex-row justify-between items-center gap-3 sm:gap-4 text-xs sm:text-sm text-noir-500">
-          <p>&copy; {currentYear} Grams Gym. All rights reserved.</p>
+        <div className={`flex flex-col md:flex-row justify-between items-center gap-3 sm:gap-4 text-xs sm:text-sm text-noir-500 ${isRTL ? 'md:flex-row-reverse' : ''}`}>
+          <p>&copy; {currentYear} Grams Gym. {t(translations.footer.allRights)}</p>
           <p className="text-noir-600 italic font-display">
-            Each Gram Matters
+            {t(translations.footer.tagline)}
           </p>
         </div>
       </div>

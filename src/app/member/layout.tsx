@@ -51,7 +51,7 @@ export default async function MemberLayout({
     return (
       <div className="min-h-screen bg-black">
         <MemberSidebar member={demoMember} />
-        <div className="lg:pl-72">
+        <div className="lg:pl-72" data-sidebar-content>
           <MemberHeader member={demoMember} />
           <main className="p-4 sm:p-5 md:p-6 pb-24 lg:pb-6">
             {children}
@@ -88,7 +88,7 @@ export default async function MemberLayout({
   return (
     <div className="min-h-screen bg-black">
       <MemberSidebar member={member} />
-      <div className="lg:pl-72">
+      <div className="lg:pl-72" data-sidebar-content>
         <MemberHeader member={member} />
         <main className="p-4 sm:p-5 md:p-6 pb-24 lg:pb-6">
           {children}

@@ -6,19 +6,21 @@ import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
+import { useTranslation, translations } from '@/lib/i18n'
+import { LanguageToggle } from '@/components/ui/language-toggle'
 
 const navLinks = [
-  { href: '/', label: 'Home' },
-  { href: '/about', label: 'About' },
-  { href: '/coaches', label: 'Coaches' },
-  { href: '/pricing', label: 'Pricing' },
-  { href: '/contact', label: 'Contact' },
+  { href: '/', labelKey: 'home' as const },
+  { href: '/about', labelKey: 'about' as const },
+  { href: '/coaches', labelKey: 'coaches' as const },
+  { href: '/contact', labelKey: 'contact' as const },
 ]
 
 export function Header() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const pathname = usePathname()
+  const { t, isRTL } = useTranslation()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -78,7 +80,7 @@ export function Header() {
                     whileHover={{ scale: 1.03 }}
                     whileTap={{ scale: 0.97 }}
                   >
-                    {link.label}
+                    {t(translations.nav[link.labelKey])}
                     {pathname === link.href && (
                       <motion.div
                         layoutId="activeNav"
@@ -91,15 +93,20 @@ export function Header() {
               ))}
             </div>
 
-            {/* CTA + Mobile Menu Button */}
-            <div className="flex items-center gap-4">
+            {/* CTA + Language + Mobile Menu Button */}
+            <div className={`flex items-center gap-2 sm:gap-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
+              {/* Language Toggle - Desktop */}
+              <div className="hidden md:block">
+                <LanguageToggle variant="compact" />
+              </div>
+
               <Link href="/member/login" className="hidden md:block">
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   className="px-5 py-2 text-sm font-medium text-noir-300 hover:text-champagne-400 transition-colors duration-300"
                 >
-                  Sign In
+                  {t(translations.nav.signIn)}
                 </motion.button>
               </Link>
               <Link href="/contact" className="hidden sm:block">
@@ -108,7 +115,7 @@ export function Header() {
                   whileTap={{ scale: 0.98 }}
                   className="btn-premium text-sm py-2.5 px-6"
                 >
-                  <span>Start Today</span>
+                  <span>{t(translations.nav.startToday)}</span>
                 </motion.button>
               </Link>
 
@@ -174,12 +181,12 @@ export function Header() {
               transition={{ type: 'spring', damping: 30, stiffness: 200 }}
               className="absolute right-0 top-0 bottom-0 w-full sm:max-w-sm bg-noir-900/98 backdrop-blur-2xl sm:border-l border-noir-800"
             >
-              <div className="flex flex-col h-full pt-20 sm:pt-24 pb-8 sm:pb-10 px-6 sm:px-8">
+              <div className={`flex flex-col h-full pt-20 sm:pt-24 pb-8 sm:pb-10 px-6 sm:px-8 ${isRTL ? 'text-right' : ''}`}>
                 <div className="flex-1 flex flex-col gap-1">
                   {navLinks.map((link, i) => (
                     <motion.div
                       key={link.href}
-                      initial={{ opacity: 0, x: 30 }}
+                      initial={{ opacity: 0, x: isRTL ? -30 : 30 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: 0.1 + i * 0.05, ease: [0.22, 1, 0.36, 1] }}
                     >
@@ -191,7 +198,7 @@ export function Header() {
                             : 'text-noir-300 hover:text-foreground'
                         }`}
                       >
-                        {link.label}
+                        {t(translations.nav[link.labelKey])}
                       </Link>
                     </motion.div>
                   ))}
@@ -204,14 +211,17 @@ export function Header() {
                   transition={{ delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
                   className="space-y-3 sm:space-y-4 pt-6 sm:pt-8 border-t border-noir-800"
                 >
+                  {/* Language Toggle - Mobile */}
+                  <LanguageToggle className="w-full justify-center bg-zinc-800/50 rounded-lg py-3 min-h-[48px]" />
+
                   <Link href="/member/login" className="block">
                     <button className="w-full btn-ghost py-3 min-h-[48px]">
-                      Sign In
+                      {t(translations.nav.signIn)}
                     </button>
                   </Link>
                   <Link href="/contact" className="block">
                     <button className="w-full btn-premium py-3 min-h-[48px]">
-                      <span>Start Today</span>
+                      <span>{t(translations.nav.startToday)}</span>
                     </button>
                   </Link>
                 </motion.div>

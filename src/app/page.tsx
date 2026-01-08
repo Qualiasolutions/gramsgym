@@ -6,7 +6,7 @@ import { motion, useScroll, useTransform } from 'framer-motion'
 import { useRef } from 'react'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
-import { Reveal, BlurFade, StaggerContainer, StaggerItem } from '@/components/ui/motion'
+import { Reveal, StaggerContainer, StaggerItem } from '@/components/ui/motion'
 import {
   Dumbbell,
   Target,
@@ -14,7 +14,6 @@ import {
   Trophy,
   ArrowRight,
   Clock,
-  CheckCircle2,
   Star,
 } from 'lucide-react'
 
@@ -58,19 +57,20 @@ export default function HomePage() {
 
       {/* Hero Section */}
       <section ref={heroRef} className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        {/* Background Image */}
+        {/* Background Video */}
         <div className="absolute inset-0">
-          <Image
-            src="/hero-background-home.png"
-            alt="Grams Gym"
-            fill
-            className="object-cover object-center"
-            priority
-            quality={90}
-          />
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="absolute inset-0 w-full h-full object-cover"
+          >
+            <source src="/videos/gym-training-1.mp4" type="video/mp4" />
+          </video>
           {/* Gradient overlays for text readability */}
-          <div className="absolute inset-0 bg-gradient-to-r from-noir-950/95 via-noir-950/70 to-noir-950/50" />
-          <div className="absolute inset-0 bg-gradient-to-t from-noir-950 via-transparent to-noir-950/60" />
+          <div className="absolute inset-0 bg-gradient-to-r from-noir-950/95 via-noir-950/80 to-noir-950/60" />
+          <div className="absolute inset-0 bg-gradient-to-t from-noir-950 via-transparent to-noir-950/70" />
         </div>
 
         <motion.div
@@ -134,13 +134,13 @@ export default function HomePage() {
                   </span>
                 </motion.button>
               </Link>
-              <Link href="/pricing" className="w-full sm:w-auto">
+              <Link href="/coaches" className="w-full sm:w-auto">
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   className="btn-ghost text-sm sm:text-base px-6 sm:px-8 md:px-10 py-3 sm:py-3.5 md:py-4 w-full sm:w-auto min-h-[48px]"
                 >
-                  View Membership
+                  Meet Our Coaches
                 </motion.button>
               </Link>
             </motion.div>
@@ -221,12 +221,15 @@ export default function HomePage() {
             <Reveal direction="left">
               <div className="relative">
                 <div className="aspect-[4/5] rounded-2xl bg-noir-800/50 overflow-hidden border border-noir-700/50">
-                  <Image
-                    src="/our-legacy.png"
-                    alt="Grams Gym Legacy"
-                    fill
-                    className="object-cover"
-                  />
+                  <video
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    className="absolute inset-0 w-full h-full object-cover"
+                  >
+                    <source src="/videos/gym-training-2.mp4" type="video/mp4" />
+                  </video>
                   <div className="absolute inset-0 bg-gradient-to-t from-noir-950/60 via-transparent to-transparent" />
                 </div>
                 {/* Floating accent card */}
@@ -296,103 +299,6 @@ export default function HomePage() {
               </Reveal>
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* Pricing Preview Section */}
-      <section className="py-16 sm:py-24 md:py-32 lg:py-36 relative overflow-hidden">
-        {/* Background accent */}
-        <div className="absolute bottom-0 right-0 w-[400px] sm:w-[500px] md:w-[600px] h-[400px] sm:h-[500px] md:h-[600px] bg-champagne-500/5 rounded-full blur-[100px] sm:blur-[120px] md:blur-[150px]" />
-
-        <div className="container relative">
-          <div className="max-w-3xl mx-auto text-center mb-10 sm:mb-14 md:mb-16 lg:mb-20">
-            <Reveal>
-              <span className="text-[10px] sm:text-xs text-champagne-500 uppercase tracking-[0.2em] sm:tracking-[0.25em] font-medium mb-4 sm:mb-5 md:mb-6 block">
-                Investment
-              </span>
-            </Reveal>
-            <Reveal delay={0.1}>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-medium mb-4 sm:mb-6 md:mb-8">
-                Transparent <span className="text-gradient italic">Pricing</span>
-              </h2>
-            </Reveal>
-            <Reveal delay={0.2}>
-              <p className="text-base sm:text-lg text-noir-300 px-2 sm:px-0">
-                No hidden fees. No long-term contracts. Just excellence.
-              </p>
-            </Reveal>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-5 md:gap-6 max-w-5xl mx-auto">
-            {[
-              { name: 'Monthly', price: 35, duration: '1 Month', popular: false },
-              { name: 'Quarterly', price: 90, duration: '3 Months', popular: true },
-              { name: 'Yearly', price: 300, duration: '12 Months', popular: false },
-            ].map((plan, i) => (
-              <BlurFade key={plan.name} delay={i * 0.15}>
-                <motion.div
-                  whileHover={{ y: -6 }}
-                  className={`relative p-5 sm:p-6 md:p-8 rounded-xl sm:rounded-2xl h-full ${
-                    plan.popular
-                      ? 'animated-border glow-champagne sm:col-span-2 md:col-span-1'
-                      : 'card-glass'
-                  }`}
-                >
-                  {plan.popular && (
-                    <div className="absolute -top-3 sm:-top-4 left-1/2 -translate-x-1/2">
-                      <span className="px-3 sm:px-5 py-1.5 sm:py-2 bg-gradient-to-r from-champagne-500 to-champagne-600 text-noir-950 text-[10px] sm:text-xs font-semibold tracking-wide rounded-full whitespace-nowrap">
-                        Most Popular
-                      </span>
-                    </div>
-                  )}
-                  <div className="text-center">
-                    <h3 className="text-base sm:text-lg font-semibold mb-1 sm:mb-2 text-foreground/90">{plan.name}</h3>
-                    <p className="text-[10px] sm:text-xs text-noir-400 uppercase tracking-wider mb-4 sm:mb-6 md:mb-8">{plan.duration}</p>
-                    <div className="mb-6 sm:mb-8 md:mb-10">
-                      <span className="text-4xl sm:text-5xl font-display font-medium">{plan.price}</span>
-                      <span className="text-noir-400 ml-1 sm:ml-2 text-sm">JOD</span>
-                    </div>
-                    <ul className="space-y-3 sm:space-y-4 text-sm text-noir-300 mb-6 sm:mb-8 md:mb-10 text-left">
-                      <li className="flex items-center gap-2 sm:gap-3">
-                        <CheckCircle2 className="w-4 h-4 text-champagne-500 shrink-0" />
-                        Full facility access
-                      </li>
-                      <li className="flex items-center gap-2 sm:gap-3">
-                        <CheckCircle2 className="w-4 h-4 text-champagne-500 shrink-0" />
-                        Premium equipment
-                      </li>
-                      <li className="flex items-center gap-2 sm:gap-3">
-                        <CheckCircle2 className="w-4 h-4 text-champagne-500 shrink-0" />
-                        Locker amenities
-                      </li>
-                    </ul>
-                    <Link href="/contact" className="block">
-                      <motion.button
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        className={`w-full py-3 sm:py-3.5 rounded-lg font-medium transition-all min-h-[44px] sm:min-h-[48px] ${
-                          plan.popular
-                            ? 'btn-premium'
-                            : 'btn-ghost'
-                        }`}
-                      >
-                        {plan.popular ? <span>Get Started</span> : 'Get Started'}
-                      </motion.button>
-                    </Link>
-                  </div>
-                </motion.div>
-              </BlurFade>
-            ))}
-          </div>
-
-          <Reveal delay={0.5}>
-            <div className="text-center mt-8 sm:mt-10 md:mt-12 lg:mt-14">
-              <Link href="/pricing" className="btn-link min-h-[44px] inline-flex items-center">
-                View All Options
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-            </div>
-          </Reveal>
         </div>
       </section>
 

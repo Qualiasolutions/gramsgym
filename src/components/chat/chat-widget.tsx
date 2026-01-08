@@ -21,6 +21,7 @@ import {
 import { cn } from '@/lib/utils'
 import { motion, AnimatePresence } from 'framer-motion'
 import Image from 'next/image'
+import { useLanguage } from '@/lib/i18n'
 
 interface Message {
   role: 'user' | 'assistant'
@@ -29,14 +30,20 @@ interface Message {
 }
 
 export function ChatWidget() {
+  const { language, isRTL } = useLanguage()
   const [isOpen, setIsOpen] = useState(false)
   const [isMinimized, setIsMinimized] = useState(false)
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      role: 'assistant',
-      content: "Hey! I'm Grams Coach - your ELITE AI fitness expert powered by advanced AI. I can analyze your InBody test results, create personalized meal plans with exact macros, design training programs, and answer ANY fitness question. Upload your InBody test for a complete body composition analysis! Let's crush your goals together! 💪",
-    },
-  ])
+  const [messages, setMessages] = useState<Message[]>([])
+
+  // Set initial message based on language
+  useEffect(() => {
+    if (messages.length === 0) {
+      const welcomeMessage = language === 'ar'
+        ? "أهلاً! 💪 أنا مدرب جرامز الذكي.\n\nارفع نتائج InBody الخاصة بك واحصل على خطتك. يلا نبدأ!"
+        : "Hey! 💪 I'm Grams Coach.\n\nUpload your InBody, get your plan. Let's go!"
+      setMessages([{ role: 'assistant', content: welcomeMessage }])
+    }
+  }, [language, messages.length])
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [selectedImage, setSelectedImage] = useState<File | null>(null)
@@ -116,12 +123,16 @@ export function ChatWidget() {
       if (imageToSend) {
         // Send with FormData for image upload
         const formData = new FormData()
-        formData.append('message', userMessage || 'Please analyze this InBody test result and provide detailed recommendations.')
+        const imagePrompt = language === 'ar'
+          ? 'الرجاء تحليل نتائج فحص InBody هذه وتقديم توصيات مفصلة.'
+          : 'Please analyze this InBody test result and provide detailed recommendations.'
+        formData.append('message', userMessage || imagePrompt)
         formData.append('history', JSON.stringify(messages.map((m) => ({
           role: m.role,
           content: m.content,
         }))))
         formData.append('image', imageToSend)
+        formData.append('language', language)
 
         response = await fetch('/api/chat', {
           method: 'POST',
@@ -138,6 +149,7 @@ export function ChatWidget() {
               role: m.role,
               content: m.content,
             })),
+            language,
           }),
         })
       }
@@ -149,11 +161,14 @@ export function ChatWidget() {
       const data = await response.json()
       setMessages((prev) => [...prev, { role: 'assistant', content: data.response }])
     } catch {
+      const errorMessage = language === 'ar'
+        ? 'عذراً، أواجه مشكلة في الاتصال الآن. يرجى المحاولة مرة أخرى أو التواصل معنا مباشرة عبر واتساب!'
+        : "I'm sorry, I'm having trouble connecting right now. Please try again or contact us directly via WhatsApp!"
       setMessages((prev) => [
         ...prev,
         {
           role: 'assistant',
-          content: "I'm sorry, I'm having trouble connecting right now. Please try again or contact us directly via WhatsApp!",
+          content: errorMessage,
         },
       ])
     } finally {
@@ -168,8 +183,13 @@ export function ChatWidget() {
     }
   }
 
-  // Quick action buttons - fitness focused
-  const quickActions = [
+  // Quick action buttons - fitness focused (bilingual)
+  const quickActions = language === 'ar' ? [
+    { label: '📊 تحليل InBody', message: 'أريد رفع نتائج فحص InBody للتحليل' },
+    { label: '🏋️ خطة تمارين', message: 'أنشئ لي خطة تمارين لبناء العضلات بناءً على أهدافي' },
+    { label: '🥗 خطة غذائية', message: 'احسب السعرات والماكروز وأنشئ لي خطة غذائية مخصصة' },
+    { label: '💪 ابدأ الآن', message: 'أنا جديد في اللياقة. ساعدني في إنشاء خطة كاملة' },
+  ] : [
     { label: '📊 Analyze InBody', message: 'I want to upload my InBody test for analysis' },
     { label: '🏋️ Workout Plan', message: 'Create a workout plan for muscle building based on my goals' },
     { label: '🥗 Meal Plan', message: 'Calculate my macros and create a personalized meal plan' },
@@ -206,13 +226,19 @@ export function ChatWidget() {
 
             {/* Tooltip */}
             <motion.div
-              initial={{ opacity: 0, x: 10 }}
+              initial={{ opacity: 0, x: isRTL ? -10 : 10 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 1 }}
-              className="absolute right-20 top-1/2 -translate-y-1/2 bg-white text-gray-900 px-3 py-2 rounded-lg shadow-lg text-sm font-medium whitespace-nowrap"
+              className={cn(
+                "absolute top-1/2 -translate-y-1/2 bg-white text-gray-900 px-3 py-2 rounded-lg shadow-lg text-sm font-medium whitespace-nowrap",
+                isRTL ? "left-20" : "right-20"
+              )}
             >
-              Ask Grams Coach! 💪
-              <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1 w-2 h-2 bg-white rotate-45" />
+              {language === 'ar' ? '💪 اسأل مدرب جرامز!' : 'Ask Grams Coach! 💪'}
+              <div className={cn(
+                "absolute top-1/2 -translate-y-1/2 w-2 h-2 bg-white rotate-45",
+                isRTL ? "left-0 -translate-x-1" : "right-0 translate-x-1"
+              )} />
             </motion.div>
           </motion.div>
         )}
@@ -229,11 +255,11 @@ export function ChatWidget() {
           >
             <div className="w-72 rounded-2xl shadow-2xl overflow-hidden border border-amber-500/30 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
               <div className="p-3 flex items-center justify-between bg-gradient-to-r from-amber-500 via-orange-500 to-red-500">
-                <div className="flex items-center gap-2">
+                <div className={cn("flex items-center gap-2", isRTL && "flex-row-reverse")}>
                   <div className="p-1.5 bg-white/20 rounded-full backdrop-blur-sm">
                     <Dumbbell className="h-4 w-4 text-white" />
                   </div>
-                  <span className="font-semibold text-white">Grams Coach</span>
+                  <span className="font-semibold text-white">{language === 'ar' ? 'مدرب جرامز' : 'Grams Coach'}</span>
                 </div>
                 <div className="flex gap-1">
                   <Button
@@ -271,17 +297,17 @@ export function ChatWidget() {
           >
             <div className="rounded-2xl shadow-2xl overflow-hidden border border-amber-500/30 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex flex-col max-h-[600px]">
               {/* Header with gradient */}
-              <div className="p-4 flex items-center justify-between bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 shrink-0">
-                <div className="flex items-center gap-3">
+              <div className={cn("p-4 flex items-center justify-between bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 shrink-0", isRTL && "flex-row-reverse")}>
+                <div className={cn("flex items-center gap-3", isRTL && "flex-row-reverse")}>
                   <div className="p-2 bg-white/20 rounded-xl backdrop-blur-sm">
                     <Dumbbell className="h-5 w-5 text-white" />
                   </div>
-                  <div>
-                    <p className="font-bold text-white flex items-center gap-1">
-                      Grams Coach
+                  <div className={isRTL ? "text-right" : ""}>
+                    <p className={cn("font-bold text-white flex items-center gap-1", isRTL && "flex-row-reverse")}>
+                      {language === 'ar' ? 'مدرب جرامز' : 'Grams Coach'}
                       <Sparkles className="h-3 w-3 text-yellow-200" />
                     </p>
-                    <p className="text-xs text-white/80">Elite AI Fitness Expert</p>
+                    <p className="text-xs text-white/80">{language === 'ar' ? 'خبير لياقة بالذكاء الاصطناعي' : 'Elite AI Fitness Expert'}</p>
                   </div>
                 </div>
                 <div className="flex gap-1">
@@ -419,9 +445,9 @@ export function ChatWidget() {
                         <Trash2 className="h-3 w-3" />
                       </button>
                     </div>
-                    <div className="text-xs text-gray-400">
-                      <FileImage className="h-4 w-4 inline mr-1" />
-                      Image ready to send
+                    <div className={cn("text-xs text-gray-400", isRTL ? "mr-0 ml-1" : "")}>
+                      <FileImage className={cn("h-4 w-4 inline", isRTL ? "ml-1" : "mr-1")} />
+                      {language === 'ar' ? 'الصورة جاهزة للإرسال' : 'Image ready to send'}
                     </div>
                   </div>
                 </div>
@@ -454,11 +480,12 @@ export function ChatWidget() {
 
                   <Input
                     ref={inputRef}
-                    placeholder="Ask about workouts, nutrition, or upload InBody..."
+                    placeholder={language === 'ar' ? 'اسأل عن التمارين، التغذية، أو ارفع InBody...' : 'Ask about workouts, nutrition, or upload InBody...'}
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={handleKeyDown}
                     disabled={isLoading}
+                    dir={isRTL ? 'rtl' : 'ltr'}
                     className="flex-1 bg-gray-800/50 border-gray-700 focus:border-amber-500/50 focus:ring-amber-500/20 text-white placeholder:text-gray-500 rounded-xl"
                   />
                   <Button
@@ -475,7 +502,7 @@ export function ChatWidget() {
                   </Button>
                 </div>
                 <p className="text-[10px] text-gray-500 mt-2 text-center">
-                  Powered by Claude AI • Upload InBody for analysis
+                  {language === 'ar' ? 'مدعوم بـ Claude AI • ارفع InBody للتحليل' : 'Powered by Claude AI • Upload InBody for analysis'}
                 </p>
               </div>
             </div>

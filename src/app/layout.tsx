@@ -1,11 +1,12 @@
 import type { Metadata, Viewport } from "next"
 import { Suspense } from "react"
-import { Outfit, Playfair_Display } from "next/font/google"
+import { Outfit, Playfair_Display, Cairo } from "next/font/google"
 import { Toaster } from "@/components/ui/sonner"
 import { Analytics } from "@vercel/analytics/react"
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { ClientProviders } from "@/components/providers/client-providers"
 import { LoadingProvider } from "@/components/providers/loading-provider"
+import { LanguageProvider } from "@/lib/i18n"
 import "./globals.css"
 
 // Font optimization with display: swap for better LCP
@@ -19,6 +20,14 @@ const outfit = Outfit({
 const playfair = Playfair_Display({
   variable: "--font-playfair",
   subsets: ["latin"],
+  display: "swap",
+  preload: true,
+})
+
+// Arabic font
+const cairo = Cairo({
+  variable: "--font-cairo",
+  subsets: ["arabic", "latin"],
   display: "swap",
   preload: true,
 })
@@ -64,15 +73,17 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className="dark">
-      <body className={`${outfit.variable} ${playfair.variable} font-sans antialiased bg-black text-white`}>
-        <Suspense fallback={null}>
-          <LoadingProvider initialLoadDuration={3000} pageTransitionDuration={1000}>
-            {children}
-          </LoadingProvider>
-        </Suspense>
-        <Toaster />
-        <ClientProviders />
+    <html lang="en" className="dark" suppressHydrationWarning>
+      <body className={`${outfit.variable} ${playfair.variable} ${cairo.variable} font-sans antialiased bg-black text-white`}>
+        <LanguageProvider>
+          <Suspense fallback={null}>
+            <LoadingProvider initialLoadDuration={3000} pageTransitionDuration={1000}>
+              {children}
+            </LoadingProvider>
+          </Suspense>
+          <Toaster />
+          <ClientProviders />
+        </LanguageProvider>
         <Analytics />
         <SpeedInsights />
       </body>
