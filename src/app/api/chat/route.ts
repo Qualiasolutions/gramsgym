@@ -728,7 +728,7 @@ export async function POST(request: NextRequest) {
           'X-Title': 'Grams Gym Elite Coach',
         },
         body: JSON.stringify({
-          model: 'google/gemini-3-flash-preview', // Gemini 3 Flash Preview
+          model: 'google/gemini-2.0-flash-001', // Gemini 2.0 Flash (stable)
           messages,
           temperature: 0.7,
           max_tokens: 4096, // Allow longer, detailed responses

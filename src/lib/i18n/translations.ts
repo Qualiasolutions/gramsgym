@@ -318,6 +318,7 @@ export const translations = {
     groupClasses: { en: 'Group Classes', ar: 'حصص جماعية' },
     contactUs: { en: 'Contact Us', ar: 'اتصل بنا' },
     allRights: { en: 'All rights reserved.', ar: 'جميع الحقوق محفوظة.' },
+    developedBy: { en: 'Developed & Designed by', ar: 'تم تطويره وتصميمه بواسطة' },
   },
 
   // Member Dashboard

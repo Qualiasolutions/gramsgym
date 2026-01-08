@@ -502,7 +502,7 @@ export function ChatWidget() {
                   </Button>
                 </div>
                 <p className="text-[10px] text-gray-500 mt-2 text-center">
-                  {language === 'ar' ? 'مدعوم بـ Claude AI • ارفع InBody للتحليل' : 'Powered by Claude AI • Upload InBody for analysis'}
+                  {language === 'ar' ? '📊 ارفع نتائج InBody للتحليل المتقدم' : '📊 Upload InBody results for advanced analysis'}
                 </p>
               </div>
             </div>

@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
 import { useTranslation, translations } from '@/lib/i18n'
 import { LanguageToggle } from '@/components/ui/language-toggle'
+import { AnnouncementBar } from './announcement-bar'
 
 const navLinks = [
   { href: '/', labelKey: 'home' as const },
@@ -36,11 +37,16 @@ export function Header() {
 
   return (
     <>
+      {/* Announcement Bar */}
+      <div className="fixed top-0 left-0 right-0 z-[60]">
+        <AnnouncementBar />
+      </div>
+
       <motion.header
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-700 ${
+        className={`fixed top-8 left-0 right-0 z-50 transition-all duration-700 ${
           isScrolled
             ? 'py-2 glass'
             : 'py-4 bg-transparent'

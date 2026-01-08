@@ -175,8 +175,16 @@ export function Footer() {
       <div className="container pb-6 sm:pb-8 md:pb-10">
         <div className={`flex flex-col md:flex-row justify-between items-center gap-3 sm:gap-4 text-xs sm:text-sm text-noir-500 ${isRTL ? 'md:flex-row-reverse' : ''}`}>
           <p>&copy; {currentYear} Grams Gym. {t(translations.footer.allRights)}</p>
-          <p className="text-noir-600 italic font-display">
-            {t(translations.footer.tagline)}
+          <p className="text-noir-500">
+            {t(translations.footer.developedBy)}{' '}
+            <a
+              href="https://qualiasolutions.net"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-teal-500 hover:text-teal-400 font-medium transition-colors"
+            >
+              Qualia Solutions
+            </a>
           </p>
         </div>
       </div>
