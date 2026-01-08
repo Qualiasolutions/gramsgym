@@ -75,7 +75,7 @@ export function Header() {
                     className={`relative px-5 py-2.5 text-sm font-medium transition-colors duration-300 ${
                       pathname === link.href
                         ? 'text-champagne-400'
-                        : 'text-noir-300 hover:text-foreground'
+                        : 'text-white hover:text-champagne-400'
                     }`}
                     whileHover={{ scale: 1.03 }}
                     whileTap={{ scale: 0.97 }}
@@ -104,7 +104,7 @@ export function Header() {
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className="px-5 py-2 text-sm font-medium text-noir-300 hover:text-champagne-400 transition-colors duration-300"
+                  className="px-5 py-2 text-sm font-medium text-white hover:text-champagne-400 transition-colors duration-300"
                 >
                   {t(translations.nav.signIn)}
                 </motion.button>
@@ -195,7 +195,7 @@ export function Header() {
                         className={`block py-4 text-xl sm:text-2xl font-medium transition-colors duration-300 min-h-[48px] flex items-center ${
                           pathname === link.href
                             ? 'text-champagne-400'
-                            : 'text-noir-300 hover:text-foreground'
+                            : 'text-white hover:text-champagne-400'
                         }`}
                       >
                         {t(translations.nav[link.labelKey])}
