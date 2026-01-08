@@ -7,9 +7,11 @@ export async function updateSession(request: NextRequest) {
     request,
   })
 
-  // Check for demo mode - bypass auth entirely
+  // Check for demo mode - bypass auth entirely (ONLY in development)
+  // SECURITY: Demo mode is disabled in production to prevent unauthorized access
+  const isProduction = process.env.NODE_ENV === 'production'
   const demoMode = request.cookies.get('demo_mode')?.value
-  if (demoMode === 'member' || demoMode === 'coach') {
+  if (!isProduction && (demoMode === 'member' || demoMode === 'coach')) {
     return supabaseResponse
   }
 

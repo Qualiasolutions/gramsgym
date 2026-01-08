@@ -1,6 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createAdminClient } from '@/lib/supabase/server'
+import { createClient, createAdminClient } from '@/lib/supabase/server'
+import { checkRateLimit } from '@/lib/rate-limit'
+import { headers } from 'next/headers'
 import * as XLSX from 'xlsx'
+
+// Helper to get client IP
+async function getClientIP(): Promise<string> {
+  const headersList = await headers()
+  const forwardedFor = headersList.get('x-forwarded-for')
+  const realIP = headersList.get('x-real-ip')
+  return forwardedFor?.split(',')[0] || realIP || 'unknown'
+}
 
 interface MemberRow {
   name_en: string
@@ -24,6 +34,43 @@ interface ImportResult {
 
 export async function POST(request: NextRequest): Promise<NextResponse<ImportResult>> {
   try {
+    // SECURITY: Verify coach authentication
+    const supabase = await createClient()
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+
+    if (authError || !user) {
+      return NextResponse.json(
+        { success: false, totalRows: 0, imported: 0, failed: 0, errors: [{ row: 0, error: 'Unauthorized. Please log in.' }] },
+        { status: 401 }
+      )
+    }
+
+    // Verify user is a coach
+    const { data: coach } = await supabase
+      .from('coaches')
+      .select('id')
+      .eq('id', user.id)
+      .single()
+
+    if (!coach) {
+      return NextResponse.json(
+        { success: false, totalRows: 0, imported: 0, failed: 0, errors: [{ row: 0, error: 'Forbidden. Only coaches can import members.' }] },
+        { status: 403 }
+      )
+    }
+
+    // Rate limiting: 5 imports per hour per coach
+    const ip = await getClientIP()
+    const rateLimitKey = `api:import:${user.id}:${ip}`
+    const { success: rateLimitSuccess } = await checkRateLimit(rateLimitKey, 5, 3600000)
+
+    if (!rateLimitSuccess) {
+      return NextResponse.json(
+        { success: false, totalRows: 0, imported: 0, failed: 0, errors: [{ row: 0, error: 'Rate limit exceeded. Please try again later.' }] },
+        { status: 429 }
+      )
+    }
+
     const formData = await request.formData()
     const file = formData.get('file') as File | null
     const coachId = formData.get('coach_id') as string | null
@@ -52,7 +99,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<ImportRes
       )
     }
 
-    const supabase = await createAdminClient()
+    const adminClient = await createAdminClient()
     const results: ImportResult = {
       success: true,
       totalRows: jsonData.length,
@@ -103,7 +150,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<ImportRes
 
         // Check if email already exists
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const { data: existingMember } = await (supabase as any)
+        const { data: existingMember } = await (adminClient as any)
           .from('members')
           .select('id')
           .eq('email', memberData.email)
@@ -119,7 +166,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<ImportRes
         const password = generatePassword()
 
         // Create auth user
-        const { data: authData, error: authError } = await supabase.auth.admin.createUser({
+        const { data: authData, error: authError } = await adminClient.auth.admin.createUser({
           email: memberData.email,
           password,
           email_confirm: true,
@@ -133,7 +180,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<ImportRes
 
         // Create member record
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const { error: memberError } = await (supabase as any).from('members').insert({
+        const { error: memberError } = await (adminClient as any).from('members').insert({
           id: authData.user.id,
           email: memberData.email,
           name_en: memberData.name_en,
@@ -147,7 +194,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<ImportRes
 
         if (memberError) {
           // Rollback: delete the auth user
-          await supabase.auth.admin.deleteUser(authData.user.id)
+          await adminClient.auth.admin.deleteUser(authData.user.id)
           results.errors.push({ row: rowNum, error: memberError.message, data: memberData })
           results.failed++
           continue
@@ -158,7 +205,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<ImportRes
           const startDate = memberData.membership_start_date || new Date().toISOString().split('T')[0]
 
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          await (supabase as any).from('gym_memberships').insert({
+          await (adminClient as any).from('gym_memberships').insert({
             member_id: authData.user.id,
             type: memberData.membership_type,
             start_date: startDate,
@@ -171,7 +218,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<ImportRes
         // Create PT package if sessions provided
         if (memberData.pt_sessions && memberData.pt_sessions > 0) {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          await (supabase as any).from('pt_packages').insert({
+          await (adminClient as any).from('pt_packages').insert({
             member_id: authData.user.id,
             coach_id: coachId || null,
             total_sessions: memberData.pt_sessions,

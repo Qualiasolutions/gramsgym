@@ -1,10 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { cookies } from 'next/headers'
+import { checkRateLimit } from '@/lib/rate-limit'
+import { cookies, headers } from 'next/headers'
 import { demoGymSettings, demoWorkingHours, demoPricing, demoCoach } from '@/lib/demo-data'
 
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY
 const AI_TIMEOUT_MS = 60000 // 60 seconds for AI responses (longer for image analysis)
+
+// Helper to get client IP
+async function getClientIP(): Promise<string> {
+  const headersList = await headers()
+  const forwardedFor = headersList.get('x-forwarded-for')
+  const realIP = headersList.get('x-real-ip')
+  return forwardedFor?.split(',')[0] || realIP || 'unknown'
+}
 
 // Elite fitness expert system prompt with InBody analysis capabilities
 const getSystemPrompt = (
@@ -571,6 +580,18 @@ Remember: You are the most knowledgeable fitness AI available. Provide EXPERT-LE
 
 export async function POST(request: NextRequest) {
   try {
+    // SECURITY: Rate limiting - 20 messages per minute per IP (prevent AI API abuse)
+    const ip = await getClientIP()
+    const rateLimitKey = `api:chat:${ip}`
+    const { success: rateLimitSuccess, remaining } = await checkRateLimit(rateLimitKey, 20, 60000)
+
+    if (!rateLimitSuccess) {
+      return NextResponse.json(
+        { error: 'Too many messages. Please wait a moment before sending more.' },
+        { status: 429 }
+      )
+    }
+
     const contentType = request.headers.get('content-type') || ''
 
     let message: string

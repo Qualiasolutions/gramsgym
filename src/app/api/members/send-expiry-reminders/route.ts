@@ -1,6 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { checkRateLimit } from '@/lib/rate-limit'
+import { headers } from 'next/headers'
 import { sendWhatsAppMessage, whatsappTemplates } from '@/lib/notifications/whatsapp'
+
+// Cron secret for scheduled job authentication
+const CRON_SECRET = process.env.CRON_SECRET
+
+// Helper to get client IP
+async function getClientIP(): Promise<string> {
+  const headersList = await headers()
+  const forwardedFor = headersList.get('x-forwarded-for')
+  const realIP = headersList.get('x-real-ip')
+  return forwardedFor?.split(',')[0] || realIP || 'unknown'
+}
 
 interface ExpiringMember {
   id: string
@@ -31,10 +44,62 @@ interface ReminderResult {
 
 export async function POST(request: NextRequest): Promise<NextResponse<ReminderResult>> {
   try {
-    const body = await request.json().catch(() => ({}))
-    const daysThreshold = body.daysThreshold || 7 // Default: members expiring within 7 days
+    // SECURITY: Authentication - allow either cron secret OR authenticated coach
+    const headersList = await headers()
+    const cronSecret = headersList.get('x-cron-secret') || headersList.get('authorization')?.replace('Bearer ', '')
 
     const supabase = await createClient()
+    let isAuthorized = false
+
+    // Check cron secret first (for scheduled jobs)
+    if (CRON_SECRET && cronSecret === CRON_SECRET) {
+      isAuthorized = true
+    } else {
+      // Fall back to coach authentication (for manual triggers)
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        const { data: coach } = await supabase
+          .from('coaches')
+          .select('id')
+          .eq('id', user.id)
+          .single()
+        isAuthorized = !!coach
+      }
+    }
+
+    if (!isAuthorized) {
+      return NextResponse.json(
+        {
+          success: false,
+          totalMembers: 0,
+          sent: 0,
+          failed: 0,
+          results: [{ memberId: '', memberName: '', status: 'failed', error: 'Unauthorized. Valid cron secret or coach authentication required.', daysLeft: 0 }]
+        },
+        { status: 401 }
+      )
+    }
+
+    // Rate limiting: 3 calls per hour
+    const ip = await getClientIP()
+    const rateLimitKey = `api:reminders:${ip}`
+    const { success: rateLimitSuccess } = await checkRateLimit(rateLimitKey, 3, 3600000)
+
+    if (!rateLimitSuccess) {
+      return NextResponse.json(
+        {
+          success: false,
+          totalMembers: 0,
+          sent: 0,
+          failed: 0,
+          results: [{ memberId: '', memberName: '', status: 'failed', error: 'Rate limit exceeded. Please try again later.', daysLeft: 0 }]
+        },
+        { status: 429 }
+      )
+    }
+
+    const body = await request.json().catch(() => ({}))
+    const daysThreshold = body.daysThreshold || 7 // Default: members expiring within 7 days
 
     // Get current date and threshold date
     const today = new Date()
@@ -199,10 +264,26 @@ function getSubscriptionTypeName(type: string): string {
 // GET endpoint to check expiring memberships without sending
 export async function GET(request: NextRequest): Promise<NextResponse> {
   try {
+    // SECURITY: Verify coach authentication
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized. Please log in.' }, { status: 401 })
+    }
+
+    const { data: coach } = await supabase
+      .from('coaches')
+      .select('id')
+      .eq('id', user.id)
+      .single()
+
+    if (!coach) {
+      return NextResponse.json({ error: 'Forbidden. Only coaches can view expiring memberships.' }, { status: 403 })
+    }
+
     const { searchParams } = new URL(request.url)
     const daysThreshold = parseInt(searchParams.get('days') || '7')
-
-    const supabase = await createClient()
 
     const today = new Date()
     const thresholdDate = new Date()
