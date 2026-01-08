@@ -257,11 +257,15 @@ export async function POST(request: NextRequest): Promise<NextResponse<ImportRes
   }
 }
 
+// SECURITY: Use crypto.getRandomValues() for cryptographically secure password generation
+// Math.random() is predictable and unsuitable for security-sensitive operations
 function generatePassword(): string {
-  const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+  const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*'
+  const randomValues = new Uint32Array(12) // 12 characters for stronger passwords
+  crypto.getRandomValues(randomValues)
   let password = ''
-  for (let i = 0; i < 10; i++) {
-    password += chars.charAt(Math.floor(Math.random() * chars.length))
+  for (let i = 0; i < randomValues.length; i++) {
+    password += chars.charAt(randomValues[i] % chars.length)
   }
   return password
 }

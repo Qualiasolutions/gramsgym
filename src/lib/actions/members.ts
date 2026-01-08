@@ -93,6 +93,28 @@ export async function updateMember(id: string, formData: FormData) {
 export async function deleteMember(id: string) {
   const supabase = await createAdminClient()
 
+  // SECURITY FIX: Delete auth user FIRST to prevent orphaned auth users
+  // If member deletion fails afterward, the user simply can't log in (safer than orphaned auth)
+
+  // First verify the member exists
+  const { data: member } = await supabase
+    .from('members')
+    .select('id')
+    .eq('id', id)
+    .single()
+
+  if (!member) {
+    return { error: 'Member not found' }
+  }
+
+  // Delete auth user first
+  const { error: authError } = await supabase.auth.admin.deleteUser(id)
+
+  if (authError) {
+    console.error('Failed to delete auth user:', authError)
+    return { error: `Failed to delete user account: ${authError.message}` }
+  }
+
   // Delete member record (cascade will handle related records)
   const { error: memberError } = await supabase
     .from('members')
@@ -100,14 +122,11 @@ export async function deleteMember(id: string) {
     .eq('id', id)
 
   if (memberError) {
-    return { error: memberError.message }
-  }
-
-  // Delete auth user
-  const { error: authError } = await supabase.auth.admin.deleteUser(id)
-
-  if (authError) {
-    return { error: authError.message }
+    // Auth user is already deleted, but member record remains
+    // This is a safer state - user can't log in but data is preserved
+    // Log this for manual cleanup if needed
+    console.error('Auth deleted but member record deletion failed:', memberError)
+    return { error: `Account deleted but member data cleanup failed. Please contact support.` }
   }
 
   revalidatePath('/coach/members')
