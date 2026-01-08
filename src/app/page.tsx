@@ -221,13 +221,13 @@ export default function HomePage() {
             <Reveal direction="left">
               <div className="relative">
                 <div className="aspect-[4/5] rounded-2xl bg-noir-800/50 overflow-hidden border border-noir-700/50">
-                  <div className="absolute inset-0 bg-gradient-to-br from-champagne-500/10 via-transparent to-transparent" />
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="text-center">
-                      <Dumbbell className="w-28 h-28 text-champagne-500/15 mx-auto mb-4" />
-                      <p className="text-noir-500 text-sm tracking-wide">Premium Facilities</p>
-                    </div>
-                  </div>
+                  <Image
+                    src="/our-legacy.png"
+                    alt="Grams Gym Legacy"
+                    fill
+                    className="object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-noir-950/60 via-transparent to-transparent" />
                 </div>
                 {/* Floating accent card */}
                 <motion.div

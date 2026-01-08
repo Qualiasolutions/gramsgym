@@ -2,6 +2,7 @@
 
 import { Metadata } from 'next'
 import Link from 'next/link'
+import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
@@ -54,9 +55,16 @@ export default function AboutPage() {
 
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 overflow-hidden">
-        {/* Background */}
+        {/* Background Image */}
         <div className="absolute inset-0">
-          <div className="absolute inset-0 bg-gradient-to-b from-black via-black to-zinc-950" />
+          <Image
+            src="/about-and-contactus-backgrounds.jpg"
+            alt="About Grams Gym"
+            fill
+            className="object-cover"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/70 to-zinc-950" />
           <div className="absolute top-1/3 left-1/4 w-[600px] h-[600px] bg-gold-500/5 rounded-full blur-[120px]" />
         </div>
 
