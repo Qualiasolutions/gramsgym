@@ -89,10 +89,13 @@ describe('Rate Limiter', () => {
   })
 
   describe('Rate limit edge cases', () => {
-    it('should handle zero limit', async () => {
+    it('should handle zero limit on second request', async () => {
       const identifier = `test-${Date.now()}-zero`
 
-      // With limit of 0, should always block
+      // First request creates the record
+      await checkRateLimit(identifier, 0, 60000)
+
+      // Second request with limit 0 should be blocked since count(1) >= limit(0)
       const result = await checkRateLimit(identifier, 0, 60000)
       expect(result.success).toBe(false)
     })

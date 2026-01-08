@@ -4,7 +4,7 @@ import { motion, useInView, type HTMLMotionProps } from 'framer-motion'
 import { useRef, useState, useEffect, type ReactNode } from 'react'
 
 // Premium easing curve for luxury feel
-const easeLuxe = [0.22, 1, 0.36, 1]
+const easeLuxe: [number, number, number, number] = [0.22, 1, 0.36, 1]
 
 // Fade up animation component
 interface FadeUpProps extends HTMLMotionProps<'div'> {
