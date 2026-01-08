@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@/lib/utils'
@@ -14,7 +15,6 @@ import {
   Bell,
   Settings,
   BarChart3,
-  Dumbbell,
   Menu,
   LogOut,
   X,
@@ -44,14 +44,16 @@ function SidebarContent({ coach, onClose }: CoachSidebarProps & { onClose?: () =
   return (
     <div className="flex h-full flex-col bg-zinc-950">
       {/* Logo */}
-      <div className="flex h-16 items-center justify-between px-6 border-b border-zinc-800/50">
-        <Link href="/" className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-gold-400 to-gold-600 flex items-center justify-center">
-            <span className="text-black font-bold text-xl">G</span>
+      <div className="flex h-16 items-center justify-between px-4 border-b border-zinc-800/50">
+        <Link href="/" className="flex items-center">
+          <div className="relative w-[100px] h-[36px] bg-zinc-950 rounded-lg">
+            <Image
+              src="/logo.png"
+              alt="Grams Gym"
+              fill
+              className="object-contain"
+            />
           </div>
-          <span className="font-semibold tracking-tight">
-            Grams<span className="text-gold-400">Gym</span>
-          </span>
         </Link>
         {onClose && (
           <button

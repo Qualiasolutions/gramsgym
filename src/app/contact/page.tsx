@@ -218,7 +218,7 @@ export default function ContactPage() {
                   <h2 className="text-2xl font-semibold mb-6">Contact Information</h2>
                   <div className="space-y-6">
                     <a
-                      href="tel:+962791234567"
+                      href="tel:+962795556818"
                       className="flex items-center gap-4 group"
                     >
                       <div className="w-12 h-12 rounded-xl bg-zinc-900 flex items-center justify-center group-hover:bg-gold-500/10 transition-colors">
@@ -227,13 +227,13 @@ export default function ContactPage() {
                       <div>
                         <p className="text-sm text-zinc-500">Phone</p>
                         <p className="text-lg text-white group-hover:text-gold-400 transition-colors">
-                          +962 79 123 4567
+                          +962 7 9555 6818
                         </p>
                       </div>
                     </a>
 
                     <a
-                      href="mailto:info@gramsgym.com"
+                      href="mailto:arashed84@hotmail.com"
                       className="flex items-center gap-4 group"
                     >
                       <div className="w-12 h-12 rounded-xl bg-zinc-900 flex items-center justify-center group-hover:bg-gold-500/10 transition-colors">
@@ -242,7 +242,7 @@ export default function ContactPage() {
                       <div>
                         <p className="text-sm text-zinc-500">Email</p>
                         <p className="text-lg text-white group-hover:text-gold-400 transition-colors">
-                          info@gramsgym.com
+                          arashed84@hotmail.com
                         </p>
                       </div>
                     </a>
@@ -253,7 +253,7 @@ export default function ContactPage() {
                       </div>
                       <div>
                         <p className="text-sm text-zinc-500">Location</p>
-                        <p className="text-lg text-white">Abdoun, Amman, Jordan</p>
+                        <p className="text-lg text-white">Mukhaled Ar Rawashdeh, Amman, Jordan</p>
                       </div>
                     </div>
                   </div>
@@ -330,7 +330,7 @@ export default function ContactPage() {
             <div className="absolute inset-0 bg-gradient-to-br from-gold-500/5 via-transparent to-transparent" />
             <div className="text-center relative">
               <MapPin className="w-16 h-16 text-gold-500/20 mx-auto mb-4" />
-              <p className="text-zinc-500 text-lg font-medium">Abdoun, Amman, Jordan</p>
+              <p className="text-zinc-500 text-lg font-medium">Mukhaled Ar Rawashdeh, Amman, Jordan</p>
               <p className="text-zinc-600 text-sm mt-2">Interactive map coming soon</p>
             </div>
           </div>

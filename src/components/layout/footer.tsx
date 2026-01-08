@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { Instagram, Phone, Mail, MapPin } from 'lucide-react'
 
@@ -62,28 +63,28 @@ export function Footer() {
             </h3>
             <div className="space-y-5">
               <a
-                href="tel:+962"
+                href="tel:+962795556818"
                 className="flex items-center gap-4 text-noir-200 hover:text-foreground transition-colors duration-300 group"
               >
                 <div className="w-11 h-11 rounded-full bg-noir-800 flex items-center justify-center group-hover:bg-champagne-500/10 transition-colors duration-300 border border-noir-700 group-hover:border-champagne-500/30">
                   <Phone className="w-4 h-4 text-champagne-400" />
                 </div>
-                <span>+962 XX XXX XXXX</span>
+                <span>+962 7 9555 6818</span>
               </a>
               <a
-                href="mailto:info@gramsgym.com"
+                href="mailto:arashed84@hotmail.com"
                 className="flex items-center gap-4 text-noir-200 hover:text-foreground transition-colors duration-300 group"
               >
                 <div className="w-11 h-11 rounded-full bg-noir-800 flex items-center justify-center group-hover:bg-champagne-500/10 transition-colors duration-300 border border-noir-700 group-hover:border-champagne-500/30">
                   <Mail className="w-4 h-4 text-champagne-400" />
                 </div>
-                <span>info@gramsgym.com</span>
+                <span>arashed84@hotmail.com</span>
               </a>
               <div className="flex items-center gap-4 text-noir-200">
                 <div className="w-11 h-11 rounded-full bg-noir-800 flex items-center justify-center border border-noir-700">
                   <MapPin className="w-4 h-4 text-champagne-400" />
                 </div>
-                <span>Amman, Jordan</span>
+                <span>Mukhaled Ar Rawashdeh, Amman, Jordan</span>
               </div>
             </div>
           </motion.div>
@@ -101,13 +102,13 @@ export function Footer() {
           {/* Brand */}
           <div className="md:col-span-2">
             <Link href="/" className="inline-block mb-8">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-champagne-400 to-champagne-600 flex items-center justify-center shadow-lg shadow-champagne-500/20">
-                  <span className="text-noir-950 font-bold text-xl">G</span>
-                </div>
-                <span className="text-lg font-semibold tracking-tight">
-                  Grams<span className="text-champagne-400">Gym</span>
-                </span>
+              <div className="relative w-[140px] h-[48px] bg-noir-950 rounded-lg">
+                <Image
+                  src="/logo.png"
+                  alt="Grams Gym"
+                  fill
+                  className="object-contain"
+                />
               </div>
             </Link>
             <p className="text-noir-400 max-w-sm mb-8 leading-relaxed">

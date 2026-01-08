@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { useRef } from 'react'
 import { Header } from '@/components/layout/header'
@@ -12,7 +13,6 @@ import {
   Users,
   Trophy,
   ArrowRight,
-  Sparkles,
   Clock,
   CheckCircle2,
   Star,
@@ -41,13 +41,6 @@ const features = [
   },
 ]
 
-const stats = [
-  { value: '10+', label: 'Years of Excellence' },
-  { value: '500+', label: 'Lives Transformed' },
-  { value: '4', label: 'Elite Coaches' },
-  { value: '98%', label: 'Client Satisfaction' },
-]
-
 export default function HomePage() {
   const heroRef = useRef(null)
   const { scrollYProgress } = useScroll({
@@ -65,26 +58,20 @@ export default function HomePage() {
 
       {/* Hero Section */}
       <section ref={heroRef} className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        {/* Sophisticated background */}
+        {/* Background Image */}
         <div className="absolute inset-0">
-          <div className="absolute inset-0 bg-gradient-to-b from-noir-950 via-noir-900 to-noir-950" />
-          {/* Champagne radial glow */}
-          <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[1000px] h-[1000px] bg-champagne-500/8 rounded-full blur-[150px]" />
-          {/* Subtle secondary glow */}
-          <div className="absolute bottom-1/4 right-1/4 w-[600px] h-[600px] bg-champagne-600/5 rounded-full blur-[120px]" />
-          {/* Bottom fade */}
-          <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-noir-950 to-transparent" />
+          <Image
+            src="/hero-background-home.png"
+            alt="Grams Gym"
+            fill
+            className="object-cover object-center"
+            priority
+            quality={90}
+          />
+          {/* Gradient overlays for text readability */}
+          <div className="absolute inset-0 bg-gradient-to-r from-noir-950/95 via-noir-950/70 to-noir-950/50" />
+          <div className="absolute inset-0 bg-gradient-to-t from-noir-950 via-transparent to-noir-950/60" />
         </div>
-
-        {/* Refined grid pattern */}
-        <div
-          className="absolute inset-0 opacity-[0.02]"
-          style={{
-            backgroundImage: `linear-gradient(rgba(201, 169, 108, 0.3) 1px, transparent 1px),
-                             linear-gradient(90deg, rgba(201, 169, 108, 0.3) 1px, transparent 1px)`,
-            backgroundSize: '80px 80px',
-          }}
-        />
 
         <motion.div
           style={{ opacity: heroOpacity, scale: heroScale, y: heroY }}
@@ -175,26 +162,6 @@ export default function HomePage() {
             </motion.div>
           </motion.div>
         </motion.div>
-      </section>
-
-      {/* Stats Section */}
-      <section className="relative py-28 border-y border-noir-800/50 bg-noir-900/30">
-        <div className="container">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-12 md:gap-6">
-            {stats.map((stat, i) => (
-              <Reveal key={stat.label} delay={i * 0.1}>
-                <div className="text-center">
-                  <div className="text-4xl md:text-6xl font-display font-medium text-gradient mb-3">
-                    {stat.value}
-                  </div>
-                  <div className="text-xs text-noir-400 uppercase tracking-[0.2em] font-medium">
-                    {stat.label}
-                  </div>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
       </section>
 
       {/* Features Section */}

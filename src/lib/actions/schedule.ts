@@ -1,7 +1,8 @@
 'use server'
 
-import { revalidatePath } from 'next/cache'
+import { revalidatePath, revalidateTag } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
+import { CACHE_TAGS } from '@/lib/cache'
 
 export async function updateCoachAvailability(formData: FormData) {
   const supabase = await createClient()
@@ -54,6 +55,7 @@ export async function updateCoachAvailability(formData: FormData) {
     }
   }
 
+  revalidateTag(CACHE_TAGS.COACHES, 'max')
   revalidatePath('/coach/schedule')
   return { success: true }
 }
@@ -67,20 +69,20 @@ export async function createBooking(formData: FormData) {
   const duration_minutes = parseInt(formData.get('duration_minutes') as string) || 60
   const notes = formData.get('notes') as string || null
 
-  // Check for conflicts
+  // Check for conflicts using count (more efficient than fetching rows)
   const bookingTime = new Date(scheduled_at)
   const bookingEnd = new Date(bookingTime.getTime() + duration_minutes * 60000)
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data: conflicts } = await (supabase as any)
+  const { count: conflictCount } = await (supabase as any)
     .from('bookings')
-    .select('id')
+    .select('*', { count: 'exact', head: true })
     .eq('coach_id', coach_id)
     .eq('status', 'scheduled')
     .gte('scheduled_at', bookingTime.toISOString())
     .lt('scheduled_at', bookingEnd.toISOString())
 
-  if (conflicts && conflicts.length > 0) {
+  if (conflictCount && conflictCount > 0) {
     return { error: 'This time slot is already booked' }
   }
 
@@ -98,6 +100,7 @@ export async function createBooking(formData: FormData) {
     return { error: error.message }
   }
 
+  revalidateTag(CACHE_TAGS.BOOKINGS, 'max')
   revalidatePath('/coach/schedule')
   revalidatePath('/coach/bookings')
   return { success: true }
@@ -105,52 +108,61 @@ export async function createBooking(formData: FormData) {
 
 export async function updateBookingStatus(id: string, status: 'completed' | 'cancelled' | 'no_show') {
   const supabase = await createClient()
-
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { error } = await (supabase as any)
-    .from('bookings')
-    .update({ status })
-    .eq('id', id)
+  const client = supabase as any
 
-  if (error) {
-    return { error: error.message }
-  }
-
-  // If completed, decrement PT package sessions
+  // For completed status, fetch booking with PT package in a single query (fixes N+1)
   if (status === 'completed') {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: booking } = await (supabase as any)
+    const { data: booking, error: fetchError } = await client
       .from('bookings')
-      .select('member_id, coach_id')
+      .select(`
+        id,
+        member_id,
+        coach_id,
+        pt_package:pt_packages!bookings_pt_package_id_fkey(id, remaining_sessions, status)
+      `)
       .eq('id', id)
       .single()
 
-    if (booking) {
-      // Find active PT package for this member-coach pair
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data: ptPackage } = await (supabase as any)
-        .from('pt_packages')
-        .select('id, remaining_sessions')
-        .eq('member_id', booking.member_id)
-        .eq('coach_id', booking.coach_id)
-        .eq('status', 'active')
-        .gt('remaining_sessions', 0)
-        .single()
+    if (fetchError) {
+      return { error: fetchError.message }
+    }
 
-      if (ptPackage) {
-        const newRemaining = ptPackage.remaining_sessions - 1
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        await (supabase as any)
-          .from('pt_packages')
-          .update({
-            remaining_sessions: newRemaining,
-            status: newRemaining === 0 ? 'completed' : 'active',
-          })
-          .eq('id', ptPackage.id)
-      }
+    // Update booking status
+    const { error: updateError } = await client
+      .from('bookings')
+      .update({ status })
+      .eq('id', id)
+
+    if (updateError) {
+      return { error: updateError.message }
+    }
+
+    // Decrement PT package sessions if linked
+    if (booking?.pt_package && booking.pt_package.remaining_sessions > 0) {
+      const newRemaining = booking.pt_package.remaining_sessions - 1
+      await client
+        .from('pt_packages')
+        .update({
+          remaining_sessions: newRemaining,
+          status: newRemaining === 0 ? 'completed' : 'active',
+        })
+        .eq('id', booking.pt_package.id)
+    }
+  } else {
+    // For non-completed status, just update the booking
+    const { error } = await client
+      .from('bookings')
+      .update({ status })
+      .eq('id', id)
+
+    if (error) {
+      return { error: error.message }
     }
   }
 
+  revalidateTag(CACHE_TAGS.BOOKINGS, 'max')
+  revalidateTag(CACHE_TAGS.SUBSCRIPTIONS, 'max')
   revalidatePath('/coach/schedule')
   revalidatePath('/coach/bookings')
   revalidatePath('/coach/subscriptions')
@@ -170,6 +182,7 @@ export async function deleteBooking(id: string) {
     return { error: error.message }
   }
 
+  revalidateTag(CACHE_TAGS.BOOKINGS, 'max')
   revalidatePath('/coach/schedule')
   revalidatePath('/coach/bookings')
   return { success: true }

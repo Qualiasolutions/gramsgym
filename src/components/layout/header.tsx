@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
@@ -39,8 +40,8 @@ export function Header() {
         transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-700 ${
           isScrolled
-            ? 'py-3 glass'
-            : 'py-5 bg-transparent'
+            ? 'py-2 glass'
+            : 'py-4 bg-transparent'
         }`}
       >
         <div className="container">
@@ -48,17 +49,18 @@ export function Header() {
             {/* Logo */}
             <Link href="/" className="relative z-10">
               <motion.div
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
-                className="flex items-center gap-3"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="flex items-center"
               >
-                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-champagne-400 to-champagne-600 flex items-center justify-center shadow-lg shadow-champagne-500/20">
-                  <span className="text-noir-950 font-bold text-xl">G</span>
-                </div>
-                <div className="hidden sm:block">
-                  <span className="text-lg font-semibold tracking-tight">
-                    Grams<span className="text-champagne-400">Gym</span>
-                  </span>
+                <div className="relative w-[120px] h-[40px] sm:w-[140px] sm:h-[48px] bg-noir-950 rounded-lg p-1">
+                  <Image
+                    src="/logo.png"
+                    alt="Grams Gym"
+                    fill
+                    className="object-contain"
+                    priority
+                  />
                 </div>
               </motion.div>
             </Link>

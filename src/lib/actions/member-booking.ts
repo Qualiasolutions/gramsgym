@@ -35,19 +35,19 @@ export async function createMemberBooking(formData: FormData) {
     return { error: 'No active PT package found. Please purchase a package first.' }
   }
 
-  // Check for conflicts
+  // Check for conflicts using count (more efficient than fetching rows)
   const bookingTime = new Date(scheduled_at)
   const bookingEnd = new Date(bookingTime.getTime() + duration_minutes * 60000)
 
-  const { data: conflicts } = await client
+  const { count: conflictCount } = await client
     .from('bookings')
-    .select('id')
+    .select('*', { count: 'exact', head: true })
     .eq('coach_id', coach_id)
     .eq('status', 'scheduled')
     .gte('scheduled_at', bookingTime.toISOString())
     .lt('scheduled_at', bookingEnd.toISOString())
 
-  if (conflicts && conflicts.length > 0) {
+  if (conflictCount && conflictCount > 0) {
     return { error: 'This time slot is no longer available. Please choose another time.' }
   }
 

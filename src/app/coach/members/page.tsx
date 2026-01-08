@@ -1,4 +1,3 @@
-import { createClient } from '@/lib/supabase/server'
 import { MembersList } from '@/components/coach/members-list'
 import { MemberImport } from '@/components/coach/member-import'
 import { ExpiryReminderButton } from '@/components/coach/expiry-reminder-button'
@@ -6,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { UserPlus } from 'lucide-react'
 import Link from 'next/link'
 import { isDemoMode, demoMembers, demoCoach } from '@/lib/demo-data'
+import { getCachedMembers, getCachedCoaches } from '@/lib/cache'
 
 export default async function MembersPage() {
   // Check for demo mode
@@ -18,24 +18,13 @@ export default async function MembersPage() {
     members = demoMembers
     coaches = [demoCoach]
   } else {
-    const supabase = await createClient()
-
-    const { data: m } = await supabase
-      .from('members')
-      .select(`
-        *,
-        coach:coaches(id, name_en, name_ar),
-        gym_memberships(id, type, status, end_date),
-        pt_packages(id, remaining_sessions, status, coach:coaches(id, name_en))
-      `)
-      .order('created_at', { ascending: false })
-    members = m
-
-    const { data: c } = await supabase
-      .from('coaches')
-      .select('id, name_en, name_ar')
-      .eq('is_active', true)
-    coaches = c
+    // Use cached queries for better performance
+    const [membersData, coachesData] = await Promise.all([
+      getCachedMembers(),
+      getCachedCoaches(),
+    ])
+    members = membersData
+    coaches = coachesData
   }
 
   return (

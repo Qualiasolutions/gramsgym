@@ -1,4 +1,4 @@
-import type { Metadata } from "next"
+import type { Metadata, Viewport } from "next"
 import { Outfit, Playfair_Display } from "next/font/google"
 import { Toaster } from "@/components/ui/sonner"
 import { Analytics } from "@vercel/analytics/react"
@@ -6,17 +6,27 @@ import { SpeedInsights } from "@vercel/speed-insights/next"
 import { ClientProviders } from "@/components/providers/client-providers"
 import "./globals.css"
 
+// Font optimization with display: swap for better LCP
 const outfit = Outfit({
   variable: "--font-outfit",
   subsets: ["latin"],
   display: "swap",
+  preload: true,
 })
 
 const playfair = Playfair_Display({
   variable: "--font-playfair",
   subsets: ["latin"],
   display: "swap",
+  preload: true,
 })
+
+// Viewport configuration for better mobile experience
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  themeColor: '#030303',
+}
 
 export const metadata: Metadata = {
   title: {

@@ -14,9 +14,19 @@ Grams Gym is a bilingual (Arabic/English) gym management web application for a f
 ## Commands
 
 ```bash
-npm run dev      # Start dev server on localhost:3000
-npm run build    # Production build
-npm run lint     # Run ESLint
+npm run dev          # Start dev server on localhost:3000
+npm run build        # Production build
+npm run lint         # Run ESLint
+npm test             # Run Vitest in watch mode
+npm run test:run     # Run tests once (CI mode)
+npm run test:ui      # Open Vitest UI
+npm run test:coverage  # Run with coverage report
+```
+
+### Running a Single Test
+```bash
+npm test -- src/lib/auth/__tests__/actions.test.ts   # Specific file
+npm test -- -t "test name"                            # By test name
 ```
 
 ## Tech Stack
@@ -73,10 +83,22 @@ src/app/
 **Supabase Clients** (`src/lib/supabase/`):
 - `client.ts`: Browser client (singleton pattern)
 - `server.ts`: Server client + admin client (service role key)
+- `middleware.ts`: Session refresh + route protection logic
 
-**Demo Mode**: Set `demo_mode` cookie to bypass auth for testing. Demo data lives in `src/lib/demo-data.ts`.
+**Server Actions** (`src/lib/actions/`):
+- `members.ts`: CRUD for members (uses admin client for auth user creation)
+- `subscriptions.ts`: Gym memberships and PT packages
+- `schedule.ts`: Coach availability management
+- `member-booking.ts`: PT session booking
+- `member-profile.ts`: Member self-service profile updates
 
-**Database Types**: `src/types/database.ts` contains full Supabase-generated types with helper types for common operations.
+**Rate Limiting** (`src/lib/rate-limit.ts`):
+- Uses Upstash Redis in production, in-memory fallback for dev
+- Applied to `/api/chat` (20 req/min) to prevent AI API abuse
+
+**Demo Mode**: Set `demo_mode` cookie (`'coach'` | `'member'`) to bypass auth. Only works in development (disabled in production for security). Demo data lives in `src/lib/demo-data.ts`.
+
+**Database Types**: `src/types/database.ts` contains full Supabase-generated types with helper types (`MemberWithCoach`, `BookingWithDetails`, etc.).
 
 ## Database Schema
 
@@ -90,11 +112,22 @@ Key relationships:
 ## Environment Variables
 
 ```env
+# Required
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
-OPENROUTER_API_KEY=           # For AI chat
-RESEND_API_KEY=               # For email notifications
+
+# AI Chat (OpenRouter)
+OPENROUTER_API_KEY=           # Currently using free Mistral model
+
+# Rate Limiting (optional - falls back to in-memory)
+UPSTASH_REDIS_REST_URL=
+UPSTASH_REDIS_REST_TOKEN=
+
+# Notifications
+RESEND_API_KEY=               # Email notifications
+
+# Monitoring
 NEXT_PUBLIC_SENTRY_DSN=
 NEXT_PUBLIC_APP_URL=
 ```
@@ -125,3 +158,19 @@ The `/api/chat` endpoint uses OpenRouter with a comprehensive fitness expert sys
 - Content stored in both `_en` and `_ar` columns
 - Member preference stored in `preferred_language` field
 - UI currently defaults to English with dark theme
+
+## Testing
+
+Tests use Vitest with happy-dom. Located in `__tests__/` subdirectories next to source files.
+- `src/lib/auth/__tests__/actions.test.ts` - Auth action tests
+- `src/lib/__tests__/rate-limit.test.ts` - Rate limiting tests
+
+Coverage excludes shadcn components (`src/components/ui/`).
+
+## Security Notes
+
+- Middleware protects `/coach/*` and `/member/*` routes (verifies user type via DB lookup)
+- Demo mode is **disabled in production** (`NODE_ENV === 'production'`)
+- Rate limiting on AI endpoints prevents abuse
+- CSP headers configured in `next.config.ts`
+- Member deletion uses admin client and deletes auth user first (safer order)

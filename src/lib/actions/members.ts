@@ -1,8 +1,9 @@
 'use server'
 
-import { revalidatePath } from 'next/cache'
+import { revalidatePath, revalidateTag } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createAdminClient, createClient } from '@/lib/supabase/server'
+import { CACHE_TAGS } from '@/lib/cache'
 
 export async function createMember(formData: FormData) {
   const supabase = await createAdminClient()
@@ -52,6 +53,7 @@ export async function createMember(formData: FormData) {
     return { error: memberError.message }
   }
 
+  revalidateTag(CACHE_TAGS.MEMBERS, 'max')
   revalidatePath('/coach/members')
   redirect('/coach/members')
 }
@@ -85,6 +87,7 @@ export async function updateMember(id: string, formData: FormData) {
     return { error: error.message }
   }
 
+  revalidateTag(CACHE_TAGS.MEMBERS, 'max')
   revalidatePath('/coach/members')
   revalidatePath(`/coach/members/${id}`)
   return { success: true }
@@ -129,6 +132,7 @@ export async function deleteMember(id: string) {
     return { error: `Account deleted but member data cleanup failed. Please contact support.` }
   }
 
+  revalidateTag(CACHE_TAGS.MEMBERS, 'max')
   revalidatePath('/coach/members')
   redirect('/coach/members')
 }
