@@ -364,6 +364,26 @@ body {
   }
 }
 
+/* Video loop fade animation - creates seamless loop effect */
+@keyframes video-fade-loop {
+  0% {
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+  }
+  95% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.video-fade-loop {
+  animation: video-fade-loop var(--video-duration, 10s) ease-in-out infinite;
+}
+
 @keyframes shimmer {
   0% {
     transform: translateX(-100%);
@@ -637,7 +657,7 @@ body {
 
 .container {
   width: 100%;
-  max-width: 1440px;
+  max-width: none;
   margin-left: auto;
   margin-right: auto;
   padding-left: 1.5rem;
@@ -646,8 +666,8 @@ body {
 
 @media (min-width: 768px) {
   .container {
-    padding-left: 2.5rem;
-    padding-right: 2.5rem;
+    padding-left: 3rem;
+    padding-right: 3rem;
   }
 }
 
@@ -660,8 +680,39 @@ body {
 
 @media (min-width: 1400px) {
   .container {
+    padding-left: 5rem;
+    padding-right: 5rem;
+  }
+}
+
+@media (min-width: 1600px) {
+  .container {
     padding-left: 6rem;
     padding-right: 6rem;
+  }
+}
+
+@media (min-width: 1920px) {
+  .container {
+    padding-left: 8rem;
+    padding-right: 8rem;
+  }
+}
+
+/* Narrower container for content sections (optional use) */
+.container-narrow {
+  width: 100%;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .container-narrow {
+    padding-left: 3rem;
+    padding-right: 3rem;
   }
 }
 

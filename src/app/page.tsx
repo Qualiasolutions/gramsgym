@@ -64,9 +64,10 @@ export default function HomePage() {
             muted
             loop
             playsInline
-            className="absolute inset-0 w-full h-full object-cover"
+            className="absolute inset-0 w-full h-full object-cover video-fade-loop"
+            style={{ '--video-duration': '30s' } as React.CSSProperties}
           >
-            <source src="/videos/gym-training-1.mp4" type="video/mp4" />
+            <source src="/NEW.mp4" type="video/mp4" />
           </video>
           {/* Gradient overlays for text readability */}
           <div className="absolute inset-0 bg-gradient-to-r from-noir-950/95 via-noir-950/80 to-noir-950/60" />
