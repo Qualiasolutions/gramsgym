@@ -23,7 +23,7 @@ export function LoadingScreen({ isVisible }: LoadingScreenProps) {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-              className="relative w-[180px] h-[65px] sm:w-[220px] sm:h-[79px] md:w-[260px] md:h-[93px]"
+              className="relative w-[360px] h-[130px] sm:w-[440px] sm:h-[158px] md:w-[520px] md:h-[186px]"
             >
               <Image
                 src="/logo.png"
