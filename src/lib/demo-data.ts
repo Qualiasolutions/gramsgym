@@ -29,7 +29,7 @@ export const demoMember = {
 // Demo coach data
 export const demoCoach = {
   id: 'demo-coach',
-  email: 'coach@gramsgym.com',
+  email: 'ahmadalrashed@gramsgym.com',
   phone: '+962 79 999 8888',
   whatsapp_number: '+962 79 999 8888',
   name_en: 'Ahmad Grams',
