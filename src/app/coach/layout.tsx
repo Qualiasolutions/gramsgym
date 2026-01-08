@@ -38,7 +38,7 @@ export default async function CoachLayout({
         <CoachSidebar coach={demoCoach} />
         <div className="lg:pl-72">
           <CoachHeader coach={demoCoach} />
-          <main className="p-6">{children}</main>
+          <main className="p-4 sm:p-5 md:p-6">{children}</main>
         </div>
       </div>
     )
@@ -71,7 +71,7 @@ export default async function CoachLayout({
       <CoachSidebar coach={coach} />
       <div className="lg:pl-72">
         <CoachHeader coach={coach} />
-        <main className="p-6">{children}</main>
+        <main className="p-4 sm:p-5 md:p-6">{children}</main>
       </div>
     </div>
   )

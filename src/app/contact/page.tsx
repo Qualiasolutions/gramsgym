@@ -41,7 +41,7 @@ export default function ContactPage() {
       <Header />
 
       {/* Hero Section */}
-      <section className="relative pt-32 pb-20 overflow-hidden">
+      <section className="relative pt-24 sm:pt-28 md:pt-32 pb-12 sm:pb-16 md:pb-20 overflow-hidden">
         {/* Background Image */}
         <div className="absolute inset-0">
           <Image
@@ -52,7 +52,7 @@ export default function ContactPage() {
             priority
           />
           <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/70 to-zinc-950" />
-          <div className="absolute top-1/3 right-1/4 w-[600px] h-[600px] bg-gold-500/5 rounded-full blur-[120px]" />
+          <div className="absolute top-1/3 right-1/4 w-[300px] sm:w-[400px] md:w-[500px] lg:w-[600px] h-[300px] sm:h-[400px] md:h-[500px] lg:h-[600px] bg-gold-500/5 rounded-full blur-[80px] sm:blur-[100px] md:blur-[120px]" />
         </div>
 
         <div className="container relative">
@@ -61,17 +61,17 @@ export default function ContactPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-light mb-8"
+              className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full glass-light mb-4 sm:mb-6 md:mb-8"
             >
-              <Sparkles className="w-4 h-4 text-gold-400" />
-              <span className="text-sm text-zinc-300">Get In Touch</span>
+              <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gold-400" />
+              <span className="text-xs sm:text-sm text-zinc-300">Get In Touch</span>
             </motion.div>
 
             <motion.h1
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.1 }}
-              className="text-5xl md:text-7xl font-display font-semibold tracking-tight mb-8"
+              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-display font-semibold tracking-tight mb-4 sm:mb-6 md:mb-8"
             >
               Let&apos;s <span className="text-gradient">Talk</span>
             </motion.h1>
@@ -80,7 +80,7 @@ export default function ContactPage() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="text-xl text-zinc-400 max-w-2xl"
+              className="text-base sm:text-lg md:text-xl text-zinc-400 max-w-2xl"
             >
               Ready to start your fitness journey? Have questions?
               We&apos;d love to hear from you.
@@ -90,14 +90,14 @@ export default function ContactPage() {
       </section>
 
       {/* Contact Section */}
-      <section className="py-24">
+      <section className="py-12 sm:py-16 md:py-20 lg:py-24">
         <div className="container">
-          <div className="grid lg:grid-cols-2 gap-16">
+          <div className="grid lg:grid-cols-2 gap-8 sm:gap-10 md:gap-12 lg:gap-16">
             {/* Contact Form */}
             <Reveal>
-              <div className="glass-light rounded-2xl p-8 md:p-10">
-                <h2 className="text-2xl font-semibold mb-2">Send a Message</h2>
-                <p className="text-zinc-400 mb-8">
+              <div className="glass-light rounded-xl sm:rounded-2xl p-5 sm:p-6 md:p-8 lg:p-10">
+                <h2 className="text-xl sm:text-2xl font-semibold mb-1 sm:mb-2">Send a Message</h2>
+                <p className="text-zinc-400 mb-5 sm:mb-6 md:mb-8 text-sm sm:text-base">
                   Fill out the form and we&apos;ll get back to you within 24 hours.
                 </p>
 
@@ -105,78 +105,78 @@ export default function ContactPage() {
                   <motion.div
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className="text-center py-16"
+                    className="text-center py-10 sm:py-12 md:py-16"
                   >
-                    <div className="w-16 h-16 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-6">
-                      <CheckCircle2 className="w-8 h-8 text-green-400" />
+                    <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-4 sm:mb-5 md:mb-6">
+                      <CheckCircle2 className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-green-400" />
                     </div>
-                    <h3 className="text-2xl font-semibold mb-2">Message Sent!</h3>
-                    <p className="text-zinc-400 mb-6">
+                    <h3 className="text-xl sm:text-2xl font-semibold mb-2">Message Sent!</h3>
+                    <p className="text-zinc-400 mb-4 sm:mb-5 md:mb-6 text-sm sm:text-base">
                       Thank you for reaching out. We&apos;ll be in touch soon.
                     </p>
                     <button
                       onClick={() => setIsSubmitted(false)}
-                      className="text-gold-400 hover:text-gold-300 font-medium"
+                      className="text-gold-400 hover:text-gold-300 font-medium min-h-[44px]"
                     >
                       Send another message
                     </button>
                   </motion.div>
                 ) : (
-                  <form onSubmit={handleSubmit} className="space-y-6">
-                    <div className="grid md:grid-cols-2 gap-6">
+                  <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5 md:space-y-6">
+                    <div className="grid sm:grid-cols-2 gap-4 sm:gap-5 md:gap-6">
                       <div>
-                        <label className="block text-sm font-medium text-zinc-300 mb-2">
+                        <label className="block text-xs sm:text-sm font-medium text-zinc-300 mb-1.5 sm:mb-2">
                           First Name
                         </label>
                         <input
                           type="text"
                           required
-                          className="w-full px-4 py-3 rounded-lg bg-zinc-900 border border-zinc-800 text-white placeholder-zinc-500 focus:border-gold-500 focus:ring-1 focus:ring-gold-500 transition-colors"
+                          className="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg bg-zinc-900 border border-zinc-800 text-white placeholder-zinc-500 focus:border-gold-500 focus:ring-1 focus:ring-gold-500 transition-colors text-sm sm:text-base min-h-[44px]"
                           placeholder="John"
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-zinc-300 mb-2">
+                        <label className="block text-xs sm:text-sm font-medium text-zinc-300 mb-1.5 sm:mb-2">
                           Last Name
                         </label>
                         <input
                           type="text"
                           required
-                          className="w-full px-4 py-3 rounded-lg bg-zinc-900 border border-zinc-800 text-white placeholder-zinc-500 focus:border-gold-500 focus:ring-1 focus:ring-gold-500 transition-colors"
+                          className="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg bg-zinc-900 border border-zinc-800 text-white placeholder-zinc-500 focus:border-gold-500 focus:ring-1 focus:ring-gold-500 transition-colors text-sm sm:text-base min-h-[44px]"
                           placeholder="Doe"
                         />
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-zinc-300 mb-2">
+                      <label className="block text-xs sm:text-sm font-medium text-zinc-300 mb-1.5 sm:mb-2">
                         Email
                       </label>
                       <input
                         type="email"
                         required
-                        className="w-full px-4 py-3 rounded-lg bg-zinc-900 border border-zinc-800 text-white placeholder-zinc-500 focus:border-gold-500 focus:ring-1 focus:ring-gold-500 transition-colors"
+                        className="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg bg-zinc-900 border border-zinc-800 text-white placeholder-zinc-500 focus:border-gold-500 focus:ring-1 focus:ring-gold-500 transition-colors text-sm sm:text-base min-h-[44px]"
                         placeholder="john@example.com"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-zinc-300 mb-2">
+                      <label className="block text-xs sm:text-sm font-medium text-zinc-300 mb-1.5 sm:mb-2">
                         Phone
                       </label>
                       <input
                         type="tel"
-                        className="w-full px-4 py-3 rounded-lg bg-zinc-900 border border-zinc-800 text-white placeholder-zinc-500 focus:border-gold-500 focus:ring-1 focus:ring-gold-500 transition-colors"
+                        className="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg bg-zinc-900 border border-zinc-800 text-white placeholder-zinc-500 focus:border-gold-500 focus:ring-1 focus:ring-gold-500 transition-colors text-sm sm:text-base min-h-[44px]"
                         placeholder="+962 79 XXX XXXX"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-zinc-300 mb-2">
+                      <label className="block text-xs sm:text-sm font-medium text-zinc-300 mb-1.5 sm:mb-2">
                         Interest
                       </label>
                       <select
-                        className="w-full px-4 py-3 rounded-lg bg-zinc-900 border border-zinc-800 text-white focus:border-gold-500 focus:ring-1 focus:ring-gold-500 transition-colors"
+                        className="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg bg-zinc-900 border border-zinc-800 text-white focus:border-gold-500 focus:ring-1 focus:ring-gold-500 transition-colors text-sm sm:text-base min-h-[44px]"
                       >
                         <option value="membership">Gym Membership</option>
                         <option value="pt">Personal Training</option>
@@ -186,12 +186,12 @@ export default function ContactPage() {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-zinc-300 mb-2">
+                      <label className="block text-xs sm:text-sm font-medium text-zinc-300 mb-1.5 sm:mb-2">
                         Message
                       </label>
                       <textarea
                         rows={4}
-                        className="w-full px-4 py-3 rounded-lg bg-zinc-900 border border-zinc-800 text-white placeholder-zinc-500 focus:border-gold-500 focus:ring-1 focus:ring-gold-500 transition-colors resize-none"
+                        className="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg bg-zinc-900 border border-zinc-800 text-white placeholder-zinc-500 focus:border-gold-500 focus:ring-1 focus:ring-gold-500 transition-colors resize-none text-sm sm:text-base"
                         placeholder="Tell us about your fitness goals..."
                       />
                     </div>
@@ -201,16 +201,16 @@ export default function ContactPage() {
                       disabled={isSubmitting}
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
-                      className="w-full btn-premium flex items-center justify-center gap-2 disabled:opacity-50"
+                      className="w-full btn-premium flex items-center justify-center gap-2 disabled:opacity-50 min-h-[48px]"
                     >
                       {isSubmitting ? (
                         <>
-                          <div className="w-5 h-5 border-2 border-black/30 border-t-black rounded-full animate-spin" />
+                          <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-black/30 border-t-black rounded-full animate-spin" />
                           <span>Sending...</span>
                         </>
                       ) : (
                         <>
-                          <Send className="w-5 h-5" />
+                          <Send className="w-4 h-4 sm:w-5 sm:h-5" />
                           <span>Send Message</span>
                         </>
                       )}

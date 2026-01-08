@@ -53,7 +53,7 @@ export function Header() {
                 whileTap={{ scale: 0.98 }}
                 className="flex items-center"
               >
-                <div className="relative w-[120px] h-[40px] sm:w-[140px] sm:h-[48px] bg-noir-950 rounded-lg p-1">
+                <div className="relative w-[100px] h-[36px] sm:w-[120px] sm:h-[40px] md:w-[140px] md:h-[48px] bg-noir-950 rounded-lg p-1">
                   <Image
                     src="/logo.png"
                     alt="Grams Gym"
@@ -172,9 +172,9 @@ export function Header() {
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'spring', damping: 30, stiffness: 200 }}
-              className="absolute right-0 top-0 bottom-0 w-full max-w-sm bg-noir-900/98 backdrop-blur-2xl border-l border-noir-800"
+              className="absolute right-0 top-0 bottom-0 w-full sm:max-w-sm bg-noir-900/98 backdrop-blur-2xl sm:border-l border-noir-800"
             >
-              <div className="flex flex-col h-full pt-24 pb-10 px-8">
+              <div className="flex flex-col h-full pt-20 sm:pt-24 pb-8 sm:pb-10 px-6 sm:px-8">
                 <div className="flex-1 flex flex-col gap-1">
                   {navLinks.map((link, i) => (
                     <motion.div
@@ -185,7 +185,7 @@ export function Header() {
                     >
                       <Link
                         href={link.href}
-                        className={`block py-4 text-2xl font-medium transition-colors duration-300 ${
+                        className={`block py-4 text-xl sm:text-2xl font-medium transition-colors duration-300 min-h-[48px] flex items-center ${
                           pathname === link.href
                             ? 'text-champagne-400'
                             : 'text-noir-300 hover:text-foreground'
@@ -202,15 +202,15 @@ export function Header() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                  className="space-y-4 pt-8 border-t border-noir-800"
+                  className="space-y-3 sm:space-y-4 pt-6 sm:pt-8 border-t border-noir-800"
                 >
                   <Link href="/member/login" className="block">
-                    <button className="w-full btn-ghost py-3">
+                    <button className="w-full btn-ghost py-3 min-h-[48px]">
                       Sign In
                     </button>
                   </Link>
                   <Link href="/contact" className="block">
-                    <button className="w-full btn-premium py-3">
+                    <button className="w-full btn-premium py-3 min-h-[48px]">
                       <span>Start Today</span>
                     </button>
                   </Link>

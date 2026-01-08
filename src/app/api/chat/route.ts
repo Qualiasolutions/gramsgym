@@ -20,7 +20,7 @@ const getSystemPrompt = (
   gymSettings: Record<string, string> | null,
   workingHours: Array<{ day_of_week: number; open_time: string; close_time: string; is_closed: boolean }> | null,
   pricing: Array<{ name_en: string; type: string; price: number; duration_or_sessions: string }> | null,
-  coaches: Array<{ name_en: string; specialization_en: string }> | null
+  coaches: Array<{ name_en: string; specialization?: string }> | null
 ) => {
   const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
 
@@ -41,7 +41,7 @@ Personal Training:
 - 20 Sessions: 250 JOD`
 
   const coachesText = coaches?.map(c =>
-    `- ${c.name_en}: ${c.specialization_en || 'Personal Training'}`
+    `- ${c.name_en}: ${c.specialization || 'Personal Training'}`
   ).join('\n') || `- Ahmad Grams: Strength & Conditioning
 - Mohammad Grams: Weight Loss & Nutrition
 - Khaled Grams: Functional Training
@@ -648,7 +648,7 @@ export async function POST(request: NextRequest) {
       gymSettings = demoGymSettings
       workingHours = demoWorkingHours
       pricing = demoPricing
-      coaches = [{ name_en: demoCoach.name_en, specialization_en: demoCoach.specialty_en }]
+      coaches = [{ name_en: demoCoach.name_en, specialization: demoCoach.specialty_en }]
     } else {
       // Fetch gym data for context
       const supabase = await createClient()
@@ -656,10 +656,10 @@ export async function POST(request: NextRequest) {
       const client = supabase as any
 
       const [settingsResult, hoursResult, pricingResult, coachesResult] = await Promise.all([
-        client.from('gym_settings').select('*').single(),
+        client.from('gym_settings').select('*').limit(1).single(),
         client.from('gym_working_hours').select('*').order('day_of_week'),
         client.from('pricing').select('*').eq('is_active', true),
-        client.from('coaches').select('name_en, specialization_en'),
+        client.from('coaches').select('name_en, specialization'),
       ])
 
       gymSettings = settingsResult.data

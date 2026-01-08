@@ -127,7 +127,7 @@ export default function PricingPage() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.1 }}
-              className="text-5xl md:text-7xl font-display font-semibold tracking-tight mb-8"
+              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-display font-semibold tracking-tight mb-4 sm:mb-6 md:mb-8"
             >
               Investment in <span className="text-gradient">Yourself</span>
             </motion.h1>
@@ -136,7 +136,7 @@ export default function PricingPage() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="text-xl text-zinc-400 max-w-2xl mx-auto"
+              className="text-base sm:text-lg md:text-xl text-zinc-400 max-w-2xl mx-auto px-2 sm:px-0"
             >
               No hidden fees. No long-term contracts. Just results.
               Choose the plan that fits your goals.
@@ -146,67 +146,67 @@ export default function PricingPage() {
       </section>
 
       {/* Membership Plans */}
-      <section className="py-24">
+      <section className="py-12 sm:py-16 md:py-20 lg:py-24">
         <div className="container">
-          <div className="max-w-3xl mx-auto text-center mb-16">
+          <div className="max-w-3xl mx-auto text-center mb-10 sm:mb-12 md:mb-14 lg:mb-16">
             <Reveal>
-              <span className="text-sm text-gold-400 uppercase tracking-wider font-medium mb-4 block">
+              <span className="text-xs sm:text-sm text-gold-400 uppercase tracking-wider font-medium mb-3 sm:mb-4 block">
                 Memberships
               </span>
             </Reveal>
             <Reveal delay={0.1}>
-              <h2 className="text-4xl md:text-5xl font-display font-semibold mb-6">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-display font-semibold mb-4 sm:mb-5 md:mb-6">
                 Gym <span className="text-gradient">Memberships</span>
               </h2>
             </Reveal>
             <Reveal delay={0.2}>
-              <p className="text-lg text-zinc-400">
+              <p className="text-base sm:text-lg text-zinc-400 px-2 sm:px-0">
                 Full access to our premium facilities and equipment
               </p>
             </Reveal>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-5 md:gap-6 max-w-5xl mx-auto">
             {membershipPlans.map((plan, i) => (
               <BlurFade key={plan.name} delay={i * 0.1}>
                 <motion.div
                   whileHover={{ y: -8 }}
-                  className={`relative p-8 rounded-2xl h-full flex flex-col ${
+                  className={`relative p-5 sm:p-6 md:p-8 rounded-xl sm:rounded-2xl h-full flex flex-col ${
                     plan.popular
-                      ? 'animated-border glow-gold'
+                      ? 'animated-border glow-gold sm:col-span-2 md:col-span-1'
                       : 'glass-light'
                   }`}
                 >
                   {plan.popular && (
-                    <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                      <span className="px-4 py-1.5 bg-gradient-to-r from-gold-500 to-gold-600 text-black text-xs font-semibold rounded-full">
+                    <div className="absolute -top-3 sm:-top-4 left-1/2 -translate-x-1/2">
+                      <span className="px-3 sm:px-4 py-1 sm:py-1.5 bg-gradient-to-r from-gold-500 to-gold-600 text-black text-[10px] sm:text-xs font-semibold rounded-full whitespace-nowrap">
                         Most Popular
                       </span>
                     </div>
                   )}
 
-                  <div className="text-center mb-6">
-                    <h3 className="text-2xl font-semibold mb-1">{plan.name}</h3>
-                    <p className="text-sm text-zinc-500">{plan.description}</p>
+                  <div className="text-center mb-4 sm:mb-5 md:mb-6">
+                    <h3 className="text-xl sm:text-2xl font-semibold mb-1">{plan.name}</h3>
+                    <p className="text-xs sm:text-sm text-zinc-500">{plan.description}</p>
                   </div>
 
-                  <div className="text-center mb-8">
+                  <div className="text-center mb-5 sm:mb-6 md:mb-8">
                     <div className="flex items-baseline justify-center gap-1">
-                      <span className="text-5xl font-display font-semibold">{plan.price}</span>
-                      <span className="text-zinc-500">JOD</span>
+                      <span className="text-4xl sm:text-5xl font-display font-semibold">{plan.price}</span>
+                      <span className="text-zinc-500 text-sm">JOD</span>
                     </div>
-                    <p className="text-sm text-zinc-500 mt-1">{plan.duration}</p>
+                    <p className="text-xs sm:text-sm text-zinc-500 mt-1">{plan.duration}</p>
                     {plan.savings && (
-                      <span className="inline-block mt-2 px-3 py-1 rounded-full bg-green-500/10 text-green-400 text-xs font-medium">
+                      <span className="inline-block mt-2 px-2.5 sm:px-3 py-1 rounded-full bg-green-500/10 text-green-400 text-[10px] sm:text-xs font-medium">
                         {plan.savings}
                       </span>
                     )}
                   </div>
 
-                  <ul className="space-y-3 mb-8 flex-grow">
+                  <ul className="space-y-2 sm:space-y-3 mb-5 sm:mb-6 md:mb-8 flex-grow">
                     {plan.features.map((feature) => (
-                      <li key={feature} className="flex items-center gap-3 text-sm text-zinc-300">
-                        <CheckCircle2 className="w-4 h-4 text-gold-400 flex-shrink-0" />
+                      <li key={feature} className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm text-zinc-300">
+                        <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gold-400 flex-shrink-0" />
                         {feature}
                       </li>
                     ))}
@@ -216,7 +216,7 @@ export default function PricingPage() {
                     <motion.button
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
-                      className={`w-full py-3 rounded-lg font-medium transition-all ${
+                      className={`w-full py-2.5 sm:py-3 rounded-lg font-medium transition-all min-h-[44px] sm:min-h-[48px] ${
                         plan.popular
                           ? 'btn-premium'
                           : 'btn-ghost'
@@ -233,27 +233,27 @@ export default function PricingPage() {
       </section>
 
       {/* PT Packages */}
-      <section className="py-24 bg-zinc-950">
+      <section className="py-12 sm:py-16 md:py-20 lg:py-24 bg-zinc-950">
         <div className="container">
-          <div className="max-w-3xl mx-auto text-center mb-16">
+          <div className="max-w-3xl mx-auto text-center mb-10 sm:mb-12 md:mb-14 lg:mb-16">
             <Reveal>
-              <span className="text-sm text-gold-400 uppercase tracking-wider font-medium mb-4 block">
+              <span className="text-xs sm:text-sm text-gold-400 uppercase tracking-wider font-medium mb-3 sm:mb-4 block">
                 Personal Training
               </span>
             </Reveal>
             <Reveal delay={0.1}>
-              <h2 className="text-4xl md:text-5xl font-display font-semibold mb-6">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-display font-semibold mb-4 sm:mb-5 md:mb-6">
                 PT <span className="text-gradient">Packages</span>
               </h2>
             </Reveal>
             <Reveal delay={0.2}>
-              <p className="text-lg text-zinc-400">
+              <p className="text-base sm:text-lg text-zinc-400 px-2 sm:px-0">
                 One-on-one training with our expert coaches
               </p>
             </Reveal>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-5 md:gap-6 max-w-4xl mx-auto">
             {ptPackages.map((pkg, i) => (
               <BlurFade key={pkg.name} delay={i * 0.1}>
                 <motion.div
@@ -309,22 +309,22 @@ export default function PricingPage() {
       </section>
 
       {/* What's Included */}
-      <section className="py-24">
+      <section className="py-12 sm:py-16 md:py-20 lg:py-24">
         <div className="container">
-          <div className="max-w-3xl mx-auto text-center mb-16">
+          <div className="max-w-3xl mx-auto text-center mb-10 sm:mb-12 md:mb-14 lg:mb-16">
             <Reveal>
-              <span className="text-sm text-gold-400 uppercase tracking-wider font-medium mb-4 block">
+              <span className="text-xs sm:text-sm text-gold-400 uppercase tracking-wider font-medium mb-3 sm:mb-4 block">
                 Facilities
               </span>
             </Reveal>
             <Reveal delay={0.1}>
-              <h2 className="text-4xl md:text-5xl font-display font-semibold mb-6">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-display font-semibold mb-4 sm:mb-5 md:mb-6">
                 What&apos;s <span className="text-gradient">Included</span>
               </h2>
             </Reveal>
           </div>
 
-          <StaggerContainer className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 md:gap-6">
             {[
               { icon: Dumbbell, title: 'Premium Equipment', desc: 'Top-of-the-line machines and free weights' },
               { icon: Users, title: 'Expert Coaches', desc: 'Professional guidance available' },

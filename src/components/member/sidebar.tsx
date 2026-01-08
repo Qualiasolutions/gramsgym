@@ -163,8 +163,8 @@ export function MemberSidebar({ member }: MemberSidebarProps) {
       </div>
 
       {/* Mobile bottom navigation */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 lg:hidden bg-zinc-950/95 backdrop-blur-xl border-t border-zinc-800/50 safe-area-pb">
-        <nav className="flex justify-around py-2 px-4">
+      <div className="fixed bottom-0 left-0 right-0 z-50 lg:hidden bg-zinc-950/95 backdrop-blur-xl border-t border-zinc-800/50 pb-[env(safe-area-inset-bottom)]">
+        <nav className="flex justify-around py-2 sm:py-2.5 px-2 sm:px-4">
           {navigation.map((item) => {
             const isActive = pathname === item.href
             return (
@@ -172,7 +172,7 @@ export function MemberSidebar({ member }: MemberSidebarProps) {
                 key={item.name}
                 href={item.href}
                 className={cn(
-                  'flex flex-col items-center gap-1 px-3 py-2 rounded-lg transition-all',
+                  'flex flex-col items-center gap-0.5 sm:gap-1 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg transition-all min-w-[44px] min-h-[44px] justify-center',
                   isActive
                     ? 'text-gold-400'
                     : 'text-zinc-500'
@@ -182,15 +182,15 @@ export function MemberSidebar({ member }: MemberSidebarProps) {
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  <item.icon className="w-5 h-5" />
+                  <item.icon className="w-5 h-5 sm:w-5 sm:h-5" />
                 </motion.div>
-                <span className="text-[10px] font-medium truncate max-w-[60px]">
+                <span className="text-[9px] sm:text-[10px] font-medium truncate max-w-[50px] sm:max-w-[60px]">
                   {item.name.split(' ')[0]}
                 </span>
                 {isActive && (
                   <motion.div
                     layoutId="mobile-nav-active"
-                    className="absolute bottom-0 w-12 h-0.5 bg-gold-400 rounded-full"
+                    className="absolute bottom-0 w-10 sm:w-12 h-0.5 bg-gold-400 rounded-full"
                   />
                 )}
               </Link>

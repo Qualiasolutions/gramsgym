@@ -84,7 +84,7 @@ export default function AboutPage() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.1 }}
-              className="text-5xl md:text-7xl font-display font-semibold tracking-tight mb-8"
+              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-display font-semibold tracking-tight mb-4 sm:mb-6 md:mb-8"
             >
               Our <span className="text-gradient">Story</span>
             </motion.h1>
@@ -93,7 +93,7 @@ export default function AboutPage() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="text-xl text-zinc-400 max-w-2xl"
+              className="text-base sm:text-lg md:text-xl text-zinc-400 max-w-2xl"
             >
               Where every gram of effort counts towards your transformation.
               A decade of excellence in fitness.
@@ -103,9 +103,9 @@ export default function AboutPage() {
       </section>
 
       {/* Story Section */}
-      <section className="py-24 relative">
+      <section className="py-12 sm:py-16 md:py-20 lg:py-24 relative">
         <div className="container">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
+          <div className="grid lg:grid-cols-2 gap-8 sm:gap-10 md:gap-12 lg:gap-16 items-center">
             {/* Image */}
             <Reveal direction="left">
               <div className="relative">
@@ -126,28 +126,28 @@ export default function AboutPage() {
             </Reveal>
 
             {/* Content */}
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-5 md:space-y-6">
               <Reveal>
-                <h2 className="text-3xl md:text-4xl font-display font-semibold">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-display font-semibold">
                   A Family Built on <span className="text-gradient">Passion</span>
                 </h2>
               </Reveal>
               <Reveal delay={0.1}>
-                <p className="text-lg text-zinc-400">
+                <p className="text-base sm:text-lg text-zinc-400">
                   Founded in 2014 in the heart of Amman, Jordan, Grams Gym started with a
                   simple mission: to create a fitness community where every member feels
                   supported in their journey.
                 </p>
               </Reveal>
               <Reveal delay={0.2}>
-                <p className="text-zinc-500">
+                <p className="text-sm sm:text-base text-zinc-500">
                   What began as a small family-owned gym has grown into one of Amman&apos;s
                   most trusted fitness destinations, serving hundreds of members who share
                   our passion for health and wellness.
                 </p>
               </Reveal>
               <Reveal delay={0.3}>
-                <p className="text-zinc-500">
+                <p className="text-sm sm:text-base text-zinc-500">
                   Our name &quot;Grams&quot; reflects our philosophy: every gram matters.
                   Whether you&apos;re tracking your nutrition, measuring your progress, or
                   pushing through that last rep, we believe the small details add up to
@@ -160,16 +160,16 @@ export default function AboutPage() {
       </section>
 
       {/* Timeline Section */}
-      <section className="py-24 bg-zinc-950 border-y border-zinc-800/50">
+      <section className="py-12 sm:py-16 md:py-20 lg:py-24 bg-zinc-950 border-y border-zinc-800/50">
         <div className="container">
-          <div className="max-w-3xl mx-auto text-center mb-16">
+          <div className="max-w-3xl mx-auto text-center mb-10 sm:mb-12 md:mb-14 lg:mb-16">
             <Reveal>
-              <span className="text-sm text-gold-400 uppercase tracking-wider font-medium mb-4 block">
+              <span className="text-xs sm:text-sm text-gold-400 uppercase tracking-wider font-medium mb-3 sm:mb-4 block">
                 Our Journey
               </span>
             </Reveal>
             <Reveal delay={0.1}>
-              <h2 className="text-4xl md:text-5xl font-display font-semibold">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-display font-semibold">
                 A Decade of <span className="text-gradient">Growth</span>
               </h2>
             </Reveal>
@@ -207,37 +207,37 @@ export default function AboutPage() {
       </section>
 
       {/* Values Section */}
-      <section className="py-24">
+      <section className="py-12 sm:py-16 md:py-20 lg:py-24">
         <div className="container">
-          <div className="max-w-3xl mx-auto text-center mb-16">
+          <div className="max-w-3xl mx-auto text-center mb-10 sm:mb-12 md:mb-14 lg:mb-16">
             <Reveal>
-              <span className="text-sm text-gold-400 uppercase tracking-wider font-medium mb-4 block">
+              <span className="text-xs sm:text-sm text-gold-400 uppercase tracking-wider font-medium mb-3 sm:mb-4 block">
                 What We Stand For
               </span>
             </Reveal>
             <Reveal delay={0.1}>
-              <h2 className="text-4xl md:text-5xl font-display font-semibold mb-6">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-display font-semibold mb-4 sm:mb-5 md:mb-6">
                 Our <span className="text-gradient">Values</span>
               </h2>
             </Reveal>
             <Reveal delay={0.2}>
-              <p className="text-lg text-zinc-400">
+              <p className="text-base sm:text-lg text-zinc-400 px-2 sm:px-0">
                 The principles that guide everything we do at Grams Gym
               </p>
             </Reveal>
           </div>
 
-          <StaggerContainer className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 md:gap-6">
             {values.map((value) => (
               <StaggerItem key={value.title}>
                 <motion.div
                   whileHover={{ y: -8 }}
-                  className="group p-8 rounded-2xl glass-light text-center h-full"
+                  className="group p-5 sm:p-6 md:p-8 rounded-xl sm:rounded-2xl glass-light text-center h-full"
                 >
-                  <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-gold-500/20 to-gold-600/10 flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
-                    <value.icon className="w-8 h-8 text-gold-400" />
+                  <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-lg sm:rounded-xl bg-gradient-to-br from-gold-500/20 to-gold-600/10 flex items-center justify-center mx-auto mb-4 sm:mb-5 md:mb-6 group-hover:scale-110 transition-transform">
+                    <value.icon className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-gold-400" />
                   </div>
-                  <h3 className="text-xl font-semibold mb-3">{value.title}</h3>
+                  <h3 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-3">{value.title}</h3>
                   <p className="text-zinc-400 text-sm">{value.description}</p>
                 </motion.div>
               </StaggerItem>
@@ -247,17 +247,17 @@ export default function AboutPage() {
       </section>
 
       {/* Quote Section */}
-      <section className="py-24 relative overflow-hidden">
+      <section className="py-12 sm:py-16 md:py-20 lg:py-24 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-black via-zinc-950 to-black" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-gold-500/5 rounded-full blur-[100px]" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] sm:w-[400px] md:w-[500px] h-[300px] sm:h-[400px] md:h-[500px] bg-gold-500/5 rounded-full blur-[80px] sm:blur-[100px]" />
 
         <div className="container relative">
-          <div className="max-w-4xl mx-auto text-center">
+          <div className="max-w-4xl mx-auto text-center px-2 sm:px-0">
             <Reveal>
-              <Quote className="w-16 h-16 text-gold-500/20 mx-auto mb-8" />
+              <Quote className="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 text-gold-500/20 mx-auto mb-4 sm:mb-6 md:mb-8" />
             </Reveal>
             <Reveal delay={0.1}>
-              <blockquote className="text-3xl md:text-4xl font-display font-medium leading-relaxed mb-8">
+              <blockquote className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-display font-medium leading-relaxed mb-4 sm:mb-6 md:mb-8">
                 &quot;Grams Gym changed my life. The coaches truly care about every member,
                 and the community keeps me motivated every single day.&quot;
               </blockquote>
@@ -340,38 +340,38 @@ export default function AboutPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-24 relative overflow-hidden">
+      <section className="py-12 sm:py-16 md:py-20 lg:py-24 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-zinc-950 to-black" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gold-500/10 rounded-full blur-[150px]" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] sm:w-[500px] md:w-[600px] h-[400px] sm:h-[500px] md:h-[600px] bg-gold-500/10 rounded-full blur-[100px] sm:blur-[120px] md:blur-[150px]" />
 
         <div className="container relative">
-          <div className="max-w-3xl mx-auto text-center">
+          <div className="max-w-3xl mx-auto text-center px-2 sm:px-0">
             <Reveal>
-              <h2 className="text-4xl md:text-6xl font-display font-semibold mb-6">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-semibold mb-4 sm:mb-5 md:mb-6">
                 Ready to Join <span className="text-gradient">the Family?</span>
               </h2>
             </Reveal>
             <Reveal delay={0.1}>
-              <p className="text-xl text-zinc-400 mb-10">
+              <p className="text-base sm:text-lg md:text-xl text-zinc-400 mb-6 sm:mb-8 md:mb-10">
                 Start your fitness journey with us today
               </p>
             </Reveal>
             <Reveal delay={0.2}>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link href="/contact">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
+                <Link href="/contact" className="w-full sm:w-auto">
                   <motion.button
                     whileHover={{ scale: 1.02, boxShadow: '0 20px 60px rgba(212, 164, 74, 0.3)' }}
                     whileTap={{ scale: 0.98 }}
-                    className="btn-premium text-lg px-10 py-4"
+                    className="btn-premium text-sm sm:text-base md:text-lg px-8 sm:px-10 py-3 sm:py-3.5 md:py-4 w-full sm:w-auto min-h-[48px]"
                   >
                     <span>Get Started</span>
                   </motion.button>
                 </Link>
-                <Link href="/pricing">
+                <Link href="/pricing" className="w-full sm:w-auto">
                   <motion.button
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className="btn-ghost text-lg px-10 py-4"
+                    className="btn-ghost text-sm sm:text-base md:text-lg px-8 sm:px-10 py-3 sm:py-3.5 md:py-4 w-full sm:w-auto min-h-[48px]"
                   >
                     View Pricing
                   </motion.button>
