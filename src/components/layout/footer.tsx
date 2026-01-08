@@ -104,7 +104,7 @@ export function Footer() {
           {/* Brand */}
           <div className="col-span-2">
             <Link href="/" className="inline-block mb-5 sm:mb-6 md:mb-8">
-              <div className="relative w-[120px] h-[40px] sm:w-[140px] sm:h-[48px] bg-noir-950 rounded-lg">
+              <div className="relative w-[240px] h-[80px] sm:w-[280px] sm:h-[96px] bg-noir-950 rounded-lg">
                 <Image
                   src="/logo.png"
                   alt="Grams Gym"

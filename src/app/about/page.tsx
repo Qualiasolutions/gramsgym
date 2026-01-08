@@ -1,6 +1,5 @@
 'use client'
 
-import { Metadata } from 'next'
 import Link from 'next/link'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
@@ -8,7 +7,6 @@ import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
 import { Reveal, BlurFade, StaggerContainer, StaggerItem } from '@/components/ui/motion'
 import {
-  Dumbbell,
   Target,
   Users,
   Heart,
