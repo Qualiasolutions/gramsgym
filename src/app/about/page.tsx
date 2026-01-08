@@ -110,15 +110,16 @@ export default function AboutPage() {
             <Reveal direction="left">
               <div className="relative">
                 <div className="aspect-square rounded-2xl bg-zinc-900 overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-br from-gold-500/10 via-transparent to-transparent" />
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="text-center">
-                      <div className="text-8xl font-display font-bold text-gold-500/10 mb-4">
-                        10+
-                      </div>
-                      <p className="text-zinc-500">Years of Excellence</p>
-                    </div>
-                  </div>
+                  <video
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="w-full h-full object-cover"
+                  >
+                    <source src="/videos/gym-training-1.mp4" type="video/mp4" />
+                  </video>
+                  <div className="absolute inset-0 bg-gradient-to-br from-gold-500/10 via-transparent to-transparent pointer-events-none" />
                 </div>
                 {/* Decorative element */}
                 <div className="absolute -bottom-6 -right-6 w-32 h-32 rounded-2xl bg-gradient-to-br from-gold-500 to-gold-600 opacity-20 blur-2xl" />
