@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation'
 import { cookies } from 'next/headers'
-import { createClient } from '@/lib/supabase/server'
+import { createClient, isSupabaseConfigured } from '@/lib/supabase/server'
 import { MemberSidebar } from '@/components/member/sidebar'
 import { MemberHeader } from '@/components/member/header'
 
@@ -46,8 +46,8 @@ export default async function MemberLayout({
   const cookieStore = await cookies()
   const demoMode = cookieStore.get('demo_mode')?.value === 'member'
 
-  if (demoMode) {
-    // Render with demo data
+  if (demoMode || !isSupabaseConfigured()) {
+    // Render with demo data (or fallback if Supabase not configured)
     return (
       <div className="min-h-screen bg-black">
         <MemberSidebar member={demoMember} />
@@ -62,7 +62,23 @@ export default async function MemberLayout({
   }
 
   // Normal auth flow
-  const supabase = await createClient()
+  let supabase
+  try {
+    supabase = await createClient()
+  } catch {
+    // Fallback to demo if Supabase fails
+    return (
+      <div className="min-h-screen bg-black">
+        <MemberSidebar member={demoMember} />
+        <div className="lg:pl-72" data-sidebar-content>
+          <MemberHeader member={demoMember} />
+          <main className="p-4 sm:p-5 md:p-6 pb-24 lg:pb-6">
+            {children}
+          </main>
+        </div>
+      </div>
+    )
+  }
 
   const { data: { user } } = await supabase.auth.getUser()
 

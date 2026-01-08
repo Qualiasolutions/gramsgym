@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation'
 import { cookies } from 'next/headers'
-import { createClient } from '@/lib/supabase/server'
+import { createClient, isSupabaseConfigured } from '@/lib/supabase/server'
 import { CoachSidebar } from '@/components/coach/sidebar'
 import { CoachHeader } from '@/components/coach/header'
 
@@ -31,8 +31,8 @@ export default async function CoachLayout({
   const cookieStore = await cookies()
   const demoMode = cookieStore.get('demo_mode')?.value === 'coach'
 
-  if (demoMode) {
-    // Render with demo data
+  if (demoMode || !isSupabaseConfigured()) {
+    // Render with demo data (or fallback if Supabase not configured)
     return (
       <div className="min-h-screen bg-black">
         <CoachSidebar coach={demoCoach} />
@@ -45,7 +45,21 @@ export default async function CoachLayout({
   }
 
   // Normal auth flow
-  const supabase = await createClient()
+  let supabase
+  try {
+    supabase = await createClient()
+  } catch {
+    // Fallback to demo if Supabase fails
+    return (
+      <div className="min-h-screen bg-black">
+        <CoachSidebar coach={demoCoach} />
+        <div className="lg:pl-72" data-sidebar-content>
+          <CoachHeader coach={demoCoach} />
+          <main className="p-4 sm:p-5 md:p-6">{children}</main>
+        </div>
+      </div>
+    )
+  }
 
   const {
     data: { user },
