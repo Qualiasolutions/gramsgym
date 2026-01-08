@@ -32,7 +32,8 @@ export async function POST(request: Request) {
     }
 
     // Create member record
-    const { error: memberError } = await supabase.from('members').insert({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { error: memberError } = await (supabase as any).from('members').insert({
       id: authData.user.id,
       email: 'moayad@admin.com',
       name_en: 'Moayad Admin',
@@ -54,7 +55,8 @@ export async function POST(request: Request) {
     const endDate = new Date()
     endDate.setFullYear(endDate.getFullYear() + 1)
 
-    await supabase.from('gym_memberships').insert({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await (supabase as any).from('gym_memberships').insert({
       member_id: authData.user.id,
       membership_type: 'yearly',
       start_date: startDate.toISOString().split('T')[0],
