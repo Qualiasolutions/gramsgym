@@ -278,11 +278,20 @@ export function ChatWidget() {
             <div className="rounded-2xl shadow-2xl overflow-hidden border border-neutral-800 bg-neutral-950 flex flex-col h-[min(600px,calc(100vh-6rem))] sm:h-[580px]">
               {/* Header - Minimal */}
               <div className={cn(
-                "px-5 py-4 flex items-center justify-between border-b border-neutral-800/50 shrink-0",
+                "px-4 py-3 flex items-center justify-between border-b border-neutral-800/50 shrink-0",
                 isRTL && "flex-row-reverse"
               )}>
-                <div className={cn("flex items-center gap-3", isRTL && "flex-row-reverse")}>
-                  <div className="w-2 h-2 rounded-full bg-emerald-500" />
+                <div className={cn("flex items-center gap-2.5", isRTL && "flex-row-reverse")}>
+                  <div className="relative">
+                    <Image
+                      src="/logo.png"
+                      alt="Grams"
+                      width={28}
+                      height={28}
+                      className="rounded-md"
+                    />
+                    <div className="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-500 border border-neutral-950" />
+                  </div>
                   <span className={cn(
                     "text-sm font-medium text-neutral-200 tracking-wide",
                     isRTL && "font-arabic"
