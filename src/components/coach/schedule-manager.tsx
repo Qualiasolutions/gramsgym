@@ -1,13 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Label } from '@/components/ui/label'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Switch } from '@/components/ui/switch'
-import { Label } from '@/components/ui/label'
-import { Input } from '@/components/ui/input'
 import {
   Dialog,
   DialogContent,
@@ -23,8 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Calendar, Clock, Plus, Loader2, Users } from 'lucide-react'
+import { Calendar, Clock, Loader2, Users, Sparkles, Edit2 } from 'lucide-react'
 import { format, isSameDay } from 'date-fns'
 import { updateCoachAvailability } from '@/lib/actions/schedule'
 
@@ -86,6 +82,23 @@ const TIME_SLOTS = Array.from({ length: 32 }, (_, i) => {
   return `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`
 })
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.08, delayChildren: 0.1 }
+  }
+}
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] as const }
+  }
+}
+
 export function ScheduleManager({
   currentCoach,
   coaches,
@@ -97,10 +110,7 @@ export function ScheduleManager({
   const [editingDay, setEditingDay] = useState<number | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-
-  const filteredAvailability = availability.filter(
-    (a) => selectedCoach === 'all' || a.coach_id === selectedCoach
-  )
+  const [activeTab, setActiveTab] = useState<'availability' | 'upcoming' | 'coaches'>('availability')
 
   const filteredBookings = bookings.filter(
     (b) => selectedCoach === 'all' || b.coach.id === selectedCoach
@@ -137,75 +147,133 @@ export function ScheduleManager({
   }, {} as Record<string, Booking[]>)
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-2xl font-bold">Schedule Management</h1>
-          <p className="text-muted-foreground">Manage coach availability and view upcoming sessions</p>
+    <motion.div
+      className="space-y-6 md:space-y-8"
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+    >
+      {/* Premium Header */}
+      <motion.div variants={itemVariants} className="relative overflow-hidden rounded-2xl glass-champagne glow-champagne p-6 md:p-8">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-champagne-500/10 rounded-full blur-[100px] pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-48 h-48 bg-champagne-500/5 rounded-full blur-[80px] pointer-events-none" />
+
+        <div className="relative flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-3 mb-2">
+              <div className="p-2 rounded-xl bg-champagne-500/20">
+                <Clock className="w-5 h-5 text-champagne-400" />
+              </div>
+              <h1 className="text-2xl md:text-3xl font-display font-medium">
+                <span className="text-gradient italic">Schedule</span>
+              </h1>
+            </div>
+            <p className="text-noir-400 text-sm md:text-base flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-champagne-500" />
+              Manage coach availability and view upcoming sessions
+            </p>
+          </div>
+
+          <Select value={selectedCoach} onValueChange={setSelectedCoach}>
+            <SelectTrigger className="w-[180px] bg-noir-900/50 border-noir-700 focus:border-champagne-500/50">
+              <SelectValue placeholder="Select coach" />
+            </SelectTrigger>
+            <SelectContent className="bg-noir-900 border-noir-700">
+              <SelectItem value="all">All Coaches</SelectItem>
+              {coaches.map((coach) => (
+                <SelectItem key={coach.id} value={coach.id}>
+                  {coach.name_en}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </motion.div>
+
+      {/* Premium Tabs */}
+      <motion.div variants={itemVariants}>
+        <div className="glass-subtle rounded-2xl p-1.5 inline-flex gap-1 mb-6">
+          <button
+            onClick={() => setActiveTab('availability')}
+            className={`px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 flex items-center gap-2 ${
+              activeTab === 'availability'
+                ? 'bg-champagne-500/20 text-champagne-400 shadow-lg shadow-champagne-500/10'
+                : 'text-noir-400 hover:text-noir-200'
+            }`}
+          >
+            <Clock className="w-4 h-4" />
+            Weekly Availability
+          </button>
+          <button
+            onClick={() => setActiveTab('upcoming')}
+            className={`px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 flex items-center gap-2 ${
+              activeTab === 'upcoming'
+                ? 'bg-champagne-500/20 text-champagne-400 shadow-lg shadow-champagne-500/10'
+                : 'text-noir-400 hover:text-noir-200'
+            }`}
+          >
+            <Calendar className="w-4 h-4" />
+            Upcoming Sessions
+          </button>
+          <button
+            onClick={() => setActiveTab('coaches')}
+            className={`px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 flex items-center gap-2 ${
+              activeTab === 'coaches'
+                ? 'bg-champagne-500/20 text-champagne-400 shadow-lg shadow-champagne-500/10'
+                : 'text-noir-400 hover:text-noir-200'
+            }`}
+          >
+            <Users className="w-4 h-4" />
+            Coach Overview
+          </button>
         </div>
 
-        <Select value={selectedCoach} onValueChange={setSelectedCoach}>
-          <SelectTrigger className="w-[200px]">
-            <SelectValue placeholder="Select coach" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Coaches</SelectItem>
-            {coaches.map((coach) => (
-              <SelectItem key={coach.id} value={coach.id}>
-                {coach.name_en}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-
-      <Tabs defaultValue="availability">
-        <TabsList>
-          <TabsTrigger value="availability">
-            <Clock className="h-4 w-4 mr-2" />
-            Weekly Availability
-          </TabsTrigger>
-          <TabsTrigger value="upcoming">
-            <Calendar className="h-4 w-4 mr-2" />
-            Upcoming Sessions
-          </TabsTrigger>
-          <TabsTrigger value="coaches">
-            <Users className="h-4 w-4 mr-2" />
-            Coach Overview
-          </TabsTrigger>
-        </TabsList>
-
-        {/* Weekly Availability Tab */}
-        <TabsContent value="availability" className="mt-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Weekly Schedule</CardTitle>
-              <CardDescription>
-                Set regular working hours for each day of the week
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {DAYS.map((day) => {
+        <AnimatePresence mode="wait">
+          {/* Weekly Availability Tab */}
+          {activeTab === 'availability' && (
+            <motion.div
+              key="availability"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="glass rounded-2xl overflow-hidden"
+            >
+              <div className="p-5 border-b border-champagne-500/10">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-lg bg-blue-500/10">
+                    <Clock className="w-5 h-5 text-blue-400" />
+                  </div>
+                  <div>
+                    <h2 className="font-semibold text-foreground/90">Weekly Schedule</h2>
+                    <p className="text-xs text-noir-400">Set regular working hours for each day of the week</p>
+                  </div>
+                </div>
+              </div>
+              <div className="p-5 space-y-4">
+                {DAYS.map((day, i) => {
                   const coachAvailability = selectedCoach !== 'all'
                     ? getAvailabilityForDay(selectedCoach, day.value)
                     : null
 
                   return (
-                    <div
+                    <motion.div
                       key={day.value}
-                      className="flex items-center justify-between p-4 rounded-lg border bg-card"
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: i * 0.05 }}
+                      className="glass-subtle rounded-xl p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
                     >
                       <div className="flex items-center gap-4">
-                        <div className="w-24 font-medium">{day.label}</div>
+                        <div className="w-24 font-medium text-foreground/90">{day.label}</div>
                         {selectedCoach !== 'all' ? (
                           coachAvailability?.is_available ? (
-                            <Badge variant="default">
+                            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border bg-emerald-500/20 text-emerald-400 border-emerald-500/30">
                               {coachAvailability.start_time} - {coachAvailability.end_time}
-                            </Badge>
+                            </span>
                           ) : (
-                            <Badge variant="secondary">Not Available</Badge>
+                            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border bg-noir-700 text-noir-400 border-noir-600">
+                              Not Available
+                            </span>
                           )
                         ) : (
                           <div className="flex flex-wrap gap-2">
@@ -213,9 +281,9 @@ export function ScheduleManager({
                               const avail = getAvailabilityForDay(coach.id, day.value)
                               if (!avail?.is_available) return null
                               return (
-                                <Badge key={coach.id} variant="outline">
+                                <span key={coach.id} className="inline-flex items-center px-2 py-0.5 rounded-lg text-xs font-medium bg-noir-800 text-noir-300 border border-noir-700">
                                   {coach.name_en}: {avail.start_time}-{avail.end_time}
-                                </Badge>
+                                </span>
                               )
                             })}
                           </div>
@@ -231,22 +299,23 @@ export function ScheduleManager({
                           }}
                         >
                           <DialogTrigger asChild>
-                            <Button
-                              variant="outline"
-                              size="sm"
+                            <motion.button
+                              whileHover={{ scale: 1.05 }}
+                              whileTap={{ scale: 0.95 }}
                               onClick={() => setEditingDay(day.value)}
+                              className="p-2 rounded-lg bg-noir-800 hover:bg-noir-700 border border-noir-700 transition-colors"
                             >
-                              Edit
-                            </Button>
+                              <Edit2 className="w-4 h-4 text-noir-400" />
+                            </motion.button>
                           </DialogTrigger>
-                          <DialogContent>
+                          <DialogContent className="glass border-noir-700 sm:max-w-[425px]">
                             <DialogHeader>
-                              <DialogTitle>Edit {day.label} Availability</DialogTitle>
-                              <DialogDescription>
+                              <DialogTitle className="text-gradient">Edit {day.label} Availability</DialogTitle>
+                              <DialogDescription className="text-noir-400">
                                 Set working hours for {day.label}
                               </DialogDescription>
                             </DialogHeader>
-                            <form onSubmit={handleSaveAvailability} className="space-y-4">
+                            <form onSubmit={handleSaveAvailability} className="space-y-4 mt-4">
                               <input type="hidden" name="coach_id" value={selectedCoach} />
                               <input type="hidden" name="day_of_week" value={day.value} />
 
@@ -256,20 +325,20 @@ export function ScheduleManager({
                                   name="is_available"
                                   defaultChecked={coachAvailability?.is_available ?? true}
                                 />
-                                <Label htmlFor="is_available">Available this day</Label>
+                                <Label htmlFor="is_available" className="text-noir-300">Available this day</Label>
                               </div>
 
                               <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                  <Label>Start Time</Label>
+                                  <Label className="text-noir-300">Start Time</Label>
                                   <Select
                                     name="start_time"
                                     defaultValue={coachAvailability?.start_time || '09:00'}
                                   >
-                                    <SelectTrigger>
+                                    <SelectTrigger className="bg-noir-900/50 border-noir-700 focus:border-champagne-500/50">
                                       <SelectValue />
                                     </SelectTrigger>
-                                    <SelectContent>
+                                    <SelectContent className="bg-noir-900 border-noir-700 max-h-[200px]">
                                       {TIME_SLOTS.map((time) => (
                                         <SelectItem key={time} value={time}>
                                           {time}
@@ -279,15 +348,15 @@ export function ScheduleManager({
                                   </Select>
                                 </div>
                                 <div className="space-y-2">
-                                  <Label>End Time</Label>
+                                  <Label className="text-noir-300">End Time</Label>
                                   <Select
                                     name="end_time"
                                     defaultValue={coachAvailability?.end_time || '17:00'}
                                   >
-                                    <SelectTrigger>
+                                    <SelectTrigger className="bg-noir-900/50 border-noir-700 focus:border-champagne-500/50">
                                       <SelectValue />
                                     </SelectTrigger>
-                                    <SelectContent>
+                                    <SelectContent className="bg-noir-900 border-noir-700 max-h-[200px]">
                                       {TIME_SLOTS.map((time) => (
                                         <SelectItem key={time} value={time}>
                                           {time}
@@ -299,158 +368,206 @@ export function ScheduleManager({
                               </div>
 
                               {error && (
-                                <p className="text-sm text-red-500">{error}</p>
+                                <p className="text-sm text-red-400">{error}</p>
                               )}
 
-                              <Button type="submit" className="w-full" disabled={loading}>
+                              <motion.button
+                                type="submit"
+                                disabled={loading}
+                                whileHover={{ y: -2 }}
+                                whileTap={{ scale: 0.98 }}
+                                className="btn-premium w-full py-3 rounded-xl font-medium flex items-center justify-center gap-2"
+                              >
                                 {loading ? (
                                   <Loader2 className="h-4 w-4 animate-spin" />
                                 ) : (
                                   'Save Changes'
                                 )}
-                              </Button>
+                              </motion.button>
                             </form>
                           </DialogContent>
                         </Dialog>
                       )}
-                    </div>
+                    </motion.div>
                   )
                 })}
               </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
+            </motion.div>
+          )}
 
-        {/* Upcoming Sessions Tab */}
-        <TabsContent value="upcoming" className="mt-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Upcoming Sessions</CardTitle>
-              <CardDescription>
-                Sessions scheduled for the next 2 weeks
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {Object.keys(groupedBookingsByDate).length === 0 ? (
-                <div className="text-center py-8 text-muted-foreground">
-                  No upcoming sessions scheduled
+          {/* Upcoming Sessions Tab */}
+          {activeTab === 'upcoming' && (
+            <motion.div
+              key="upcoming"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="glass rounded-2xl overflow-hidden"
+            >
+              <div className="p-5 border-b border-champagne-500/10">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-lg bg-emerald-500/10">
+                    <Calendar className="w-5 h-5 text-emerald-400" />
+                  </div>
+                  <div>
+                    <h2 className="font-semibold text-foreground/90">Upcoming Sessions</h2>
+                    <p className="text-xs text-noir-400">Sessions scheduled for the next 2 weeks</p>
+                  </div>
                 </div>
-              ) : (
-                <div className="space-y-6">
-                  {Object.entries(groupedBookingsByDate).map(([date, dateBookings]) => (
-                    <div key={date}>
-                      <h3 className="font-semibold mb-3 flex items-center gap-2">
-                        <Calendar className="h-4 w-4" />
-                        {format(new Date(date), 'EEEE, MMMM d, yyyy')}
-                        {isSameDay(new Date(date), new Date()) && (
-                          <Badge variant="default">Today</Badge>
-                        )}
-                      </h3>
-                      <div className="space-y-2 ml-6">
-                        {dateBookings.map((booking) => (
-                          <div
-                            key={booking.id}
-                            className="flex items-center justify-between p-3 rounded-lg bg-muted/50"
-                          >
-                            <div className="flex items-center gap-3">
-                              <Avatar>
-                                <AvatarImage src={booking.member.profile_photo_url || undefined} />
-                                <AvatarFallback>
-                                  {booking.member.name_en.charAt(0)}
-                                </AvatarFallback>
-                              </Avatar>
-                              <div>
-                                <p className="font-medium">{booking.member.name_en}</p>
-                                <p className="text-sm text-muted-foreground">
-                                  with {booking.coach.name_en}
+              </div>
+              <div className="p-5">
+                {Object.keys(groupedBookingsByDate).length === 0 ? (
+                  <div className="text-center py-12">
+                    <div className="w-16 h-16 rounded-2xl bg-noir-800/50 flex items-center justify-center mx-auto mb-4">
+                      <Calendar className="h-8 w-8 text-noir-500" />
+                    </div>
+                    <h3 className="font-medium text-foreground/80">No Upcoming Sessions</h3>
+                    <p className="text-sm text-noir-500 mt-1">
+                      No sessions scheduled for the next 2 weeks
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-6">
+                    {Object.entries(groupedBookingsByDate).map(([date, dateBookings], dateIndex) => (
+                      <motion.div
+                        key={date}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: dateIndex * 0.05 }}
+                      >
+                        <h3 className="font-semibold mb-3 flex items-center gap-2 text-foreground/90">
+                          <Calendar className="h-4 w-4 text-champagne-400" />
+                          {format(new Date(date), 'EEEE, MMMM d, yyyy')}
+                          {isSameDay(new Date(date), new Date()) && (
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-champagne-500/20 text-champagne-400 border border-champagne-500/30">
+                              Today
+                            </span>
+                          )}
+                        </h3>
+                        <div className="space-y-2 ml-6">
+                          {dateBookings.map((booking, i) => (
+                            <motion.div
+                              key={booking.id}
+                              initial={{ opacity: 0, x: -10 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: i * 0.03 }}
+                              whileHover={{ scale: 1.01, x: 4 }}
+                              className="glass-subtle rounded-xl p-4 flex items-center justify-between"
+                            >
+                              <div className="flex items-center gap-3">
+                                <Avatar className="h-10 w-10 ring-2 ring-noir-700">
+                                  <AvatarImage src={booking.member.profile_photo_url || undefined} />
+                                  <AvatarFallback className="bg-noir-700 text-noir-300">
+                                    {booking.member.name_en.charAt(0)}
+                                  </AvatarFallback>
+                                </Avatar>
+                                <div>
+                                  <p className="font-medium text-foreground/90">{booking.member.name_en}</p>
+                                  <p className="text-sm text-noir-400">with {booking.coach.name_en}</p>
+                                </div>
+                              </div>
+                              <div className="text-right">
+                                <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ${
+                                  booking.status === 'scheduled'
+                                    ? 'bg-champagne-500/20 text-champagne-400 border-champagne-500/30'
+                                    : booking.status === 'completed'
+                                    ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30'
+                                    : 'bg-red-500/20 text-red-400 border-red-500/30'
+                                }`}>
+                                  {format(new Date(booking.scheduled_at), 'h:mm a')}
+                                </span>
+                                <p className="text-xs text-noir-500 mt-1">
+                                  {booking.duration_minutes} min
                                 </p>
                               </div>
-                            </div>
-                            <div className="text-right">
-                              <Badge
-                                variant={
-                                  booking.status === 'scheduled'
-                                    ? 'default'
-                                    : booking.status === 'completed'
-                                    ? 'secondary'
-                                    : 'destructive'
-                                }
-                              >
-                                {format(new Date(booking.scheduled_at), 'h:mm a')}
-                              </Badge>
-                              <p className="text-xs text-muted-foreground mt-1">
-                                {booking.duration_minutes} min
-                              </p>
-                            </div>
-                          </div>
-                        ))}
+                            </motion.div>
+                          ))}
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          )}
+
+          {/* Coach Overview Tab */}
+          {activeTab === 'coaches' && (
+            <motion.div
+              key="coaches"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="grid gap-4 md:grid-cols-2"
+            >
+              {coaches.map((coach, i) => {
+                const coachBookings = bookings.filter((b) => b.coach.id === coach.id)
+                const todayBookings = coachBookings.filter((b) =>
+                  isSameDay(new Date(b.scheduled_at), new Date())
+                )
+
+                return (
+                  <motion.div
+                    key={coach.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.1 }}
+                    whileHover={{ y: -4 }}
+                    className="glass rounded-2xl overflow-hidden"
+                  >
+                    <div className="p-5 border-b border-champagne-500/10">
+                      <div className="flex items-center gap-4">
+                        <Avatar className="h-12 w-12 ring-2 ring-champagne-500/30">
+                          <AvatarImage src={coach.profile_photo_url || undefined} />
+                          <AvatarFallback className="bg-champagne-500/10 text-champagne-400">
+                            {coach.name_en.charAt(0)}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <h3 className="text-lg font-medium text-foreground/90">{coach.name_en}</h3>
+                          <p className="text-sm text-noir-400">{coach.specialization || 'Personal Trainer'}</p>
+                        </div>
                       </div>
                     </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* Coach Overview Tab */}
-        <TabsContent value="coaches" className="mt-4">
-          <div className="grid gap-4 md:grid-cols-2">
-            {coaches.map((coach) => {
-              const coachBookings = bookings.filter((b) => b.coach.id === coach.id)
-              const todayBookings = coachBookings.filter((b) =>
-                isSameDay(new Date(b.scheduled_at), new Date())
-              )
-
-              return (
-                <Card key={coach.id}>
-                  <CardHeader>
-                    <div className="flex items-center gap-4">
-                      <Avatar className="h-12 w-12">
-                        <AvatarImage src={coach.profile_photo_url || undefined} />
-                        <AvatarFallback>{coach.name_en.charAt(0)}</AvatarFallback>
-                      </Avatar>
+                    <div className="p-5">
+                      <div className="grid grid-cols-2 gap-4 mb-4">
+                        <div className="glass-subtle rounded-xl p-3 text-center">
+                          <p className="text-2xl font-bold text-champagne-400">{todayBookings.length}</p>
+                          <p className="text-xs text-noir-500">Today&apos;s Sessions</p>
+                        </div>
+                        <div className="glass-subtle rounded-xl p-3 text-center">
+                          <p className="text-2xl font-bold text-foreground/90">{coachBookings.length}</p>
+                          <p className="text-xs text-noir-500">Next 2 Weeks</p>
+                        </div>
+                      </div>
                       <div>
-                        <CardTitle className="text-lg">{coach.name_en}</CardTitle>
-                        <CardDescription>{coach.specialization || 'Personal Trainer'}</CardDescription>
+                        <p className="text-sm font-medium text-noir-300 mb-2">Weekly Availability</p>
+                        <div className="flex flex-wrap gap-1">
+                          {DAYS.map((day) => {
+                            const avail = getAvailabilityForDay(coach.id, day.value)
+                            return (
+                              <span
+                                key={day.value}
+                                className={`px-2 py-1 rounded-lg text-xs font-medium ${
+                                  avail?.is_available
+                                    ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                                    : 'bg-noir-800 text-noir-500 border border-noir-700'
+                                }`}
+                              >
+                                {day.label.slice(0, 3)}
+                              </span>
+                            )
+                          })}
+                        </div>
                       </div>
                     </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="text-center p-3 bg-muted rounded-lg">
-                        <p className="text-2xl font-bold">{todayBookings.length}</p>
-                        <p className="text-xs text-muted-foreground">Today&apos;s Sessions</p>
-                      </div>
-                      <div className="text-center p-3 bg-muted rounded-lg">
-                        <p className="text-2xl font-bold">{coachBookings.length}</p>
-                        <p className="text-xs text-muted-foreground">Next 2 Weeks</p>
-                      </div>
-                    </div>
-                    <div className="mt-4">
-                      <p className="text-sm font-medium mb-2">Weekly Availability</p>
-                      <div className="flex flex-wrap gap-1">
-                        {DAYS.map((day) => {
-                          const avail = getAvailabilityForDay(coach.id, day.value)
-                          return (
-                            <Badge
-                              key={day.value}
-                              variant={avail?.is_available ? 'default' : 'secondary'}
-                              className="text-xs"
-                            >
-                              {day.label.slice(0, 3)}
-                            </Badge>
-                          )
-                        })}
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              )
-            })}
-          </div>
-        </TabsContent>
-      </Tabs>
-    </div>
+                  </motion.div>
+                )
+              })}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
+    </motion.div>
   )
 }

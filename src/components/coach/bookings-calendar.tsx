@@ -1,9 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
+import { motion } from 'framer-motion'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
   Select,
@@ -12,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { ChevronLeft, ChevronRight, Calendar, Clock } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Calendar, Clock, Sparkles, CalendarDays } from 'lucide-react'
 import {
   format,
   startOfWeek,
@@ -61,7 +59,24 @@ interface BookingsCalendarProps {
 
 const HOURS = Array.from({ length: 16 }, (_, i) => i + 7) // 7 AM to 10 PM
 
-export function BookingsCalendar({ bookings, coaches, members }: BookingsCalendarProps) {
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.08, delayChildren: 0.1 }
+  }
+}
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] as const }
+  }
+}
+
+export function BookingsCalendar({ bookings, coaches }: BookingsCalendarProps) {
   const [currentWeek, setCurrentWeek] = useState(new Date())
   const [selectedCoach, setSelectedCoach] = useState<string>('all')
 
@@ -79,74 +94,110 @@ export function BookingsCalendar({ bookings, coaches, members }: BookingsCalenda
     })
   }
 
+  const todayBookings = filteredBookings.filter((b) => isSameDay(new Date(b.scheduled_at), new Date()))
+
   return (
-    <div className="space-y-4">
+    <motion.div
+      className="space-y-6 md:space-y-8"
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+    >
+      {/* Premium Header */}
+      <motion.div variants={itemVariants} className="relative overflow-hidden rounded-2xl glass-champagne glow-champagne p-6 md:p-8">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-champagne-500/10 rounded-full blur-[100px] pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-48 h-48 bg-champagne-500/5 rounded-full blur-[80px] pointer-events-none" />
+
+        <div className="relative flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-3 mb-2">
+              <div className="p-2 rounded-xl bg-champagne-500/20">
+                <CalendarDays className="w-5 h-5 text-champagne-400" />
+              </div>
+              <h1 className="text-2xl md:text-3xl font-display font-medium">
+                <span className="text-gradient italic">Bookings</span>
+              </h1>
+            </div>
+            <p className="text-noir-400 text-sm md:text-base flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-champagne-500" />
+              View and manage PT session bookings
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3">
+            <Select value={selectedCoach} onValueChange={setSelectedCoach}>
+              <SelectTrigger className="w-[180px] bg-noir-900/50 border-noir-700 focus:border-champagne-500/50">
+                <SelectValue placeholder="Filter by coach" />
+              </SelectTrigger>
+              <SelectContent className="bg-noir-900 border-noir-700">
+                <SelectItem value="all">All Coaches</SelectItem>
+                {coaches.map((coach) => (
+                  <SelectItem key={coach.id} value={coach.id}>
+                    {coach.name_en}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+      </motion.div>
+
       {/* Controls */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <motion.div variants={itemVariants} className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
         <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="icon"
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             onClick={() => setCurrentWeek(subWeeks(currentWeek, 1))}
+            className="p-2 rounded-lg bg-noir-800/50 hover:bg-noir-700/50 border border-noir-700 transition-colors"
           >
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="outline"
+            <ChevronLeft className="h-4 w-4 text-noir-400" />
+          </motion.button>
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             onClick={() => setCurrentWeek(new Date())}
+            className="px-4 py-2 rounded-lg bg-noir-800/50 hover:bg-noir-700/50 border border-noir-700 text-sm font-medium transition-colors"
           >
             Today
-          </Button>
-          <Button
-            variant="outline"
-            size="icon"
+          </motion.button>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             onClick={() => setCurrentWeek(addWeeks(currentWeek, 1))}
+            className="p-2 rounded-lg bg-noir-800/50 hover:bg-noir-700/50 border border-noir-700 transition-colors"
           >
-            <ChevronRight className="h-4 w-4" />
-          </Button>
-          <span className="text-sm font-medium ml-2">
-            {format(weekStart, 'MMM d')} - {format(addDays(weekStart, 6), 'MMM d, yyyy')}
-          </span>
+            <ChevronRight className="h-4 w-4 text-noir-400" />
+          </motion.button>
         </div>
-
-        <Select value={selectedCoach} onValueChange={setSelectedCoach}>
-          <SelectTrigger className="w-[200px]">
-            <SelectValue placeholder="Filter by coach" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Coaches</SelectItem>
-            {coaches.map((coach) => (
-              <SelectItem key={coach.id} value={coach.id}>
-                {coach.name_en}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+        <span className="text-sm font-medium text-noir-300">
+          {format(weekStart, 'MMM d')} - {format(addDays(weekStart, 6), 'MMM d, yyyy')}
+        </span>
+      </motion.div>
 
       {/* Calendar Grid */}
-      <Card>
-        <CardContent className="p-0 overflow-auto">
+      <motion.div variants={itemVariants} className="glass rounded-2xl overflow-hidden">
+        <div className="overflow-x-auto">
           <div className="min-w-[800px]">
             {/* Header */}
-            <div className="grid grid-cols-8 border-b border-border">
-              <div className="p-3 text-center text-sm font-medium text-muted-foreground">
+            <div className="grid grid-cols-8 border-b border-noir-800">
+              <div className="p-3 text-center text-sm font-medium text-noir-500">
                 <Clock className="h-4 w-4 mx-auto" />
               </div>
               {days.map((day) => (
                 <div
                   key={day.toISOString()}
-                  className={`p-3 text-center border-l border-border ${
+                  className={`p-3 text-center border-l border-noir-800 ${
                     isSameDay(day, new Date())
-                      ? 'bg-primary/10'
+                      ? 'bg-champagne-500/10'
                       : ''
                   }`}
                 >
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs text-noir-500 uppercase tracking-wider">
                     {format(day, 'EEE')}
                   </p>
-                  <p className={`text-lg font-semibold ${
-                    isSameDay(day, new Date()) ? 'text-primary' : ''
+                  <p className={`text-lg font-semibold mt-1 ${
+                    isSameDay(day, new Date()) ? 'text-champagne-400' : 'text-foreground/80'
                   }`}>
                     {format(day, 'd')}
                   </p>
@@ -156,8 +207,8 @@ export function BookingsCalendar({ bookings, coaches, members }: BookingsCalenda
 
             {/* Time slots */}
             {HOURS.map((hour) => (
-              <div key={hour} className="grid grid-cols-8 border-b border-border last:border-b-0">
-                <div className="p-2 text-center text-xs text-muted-foreground border-r border-border">
+              <div key={hour} className="grid grid-cols-8 border-b border-noir-800/50 last:border-b-0">
+                <div className="p-2 text-center text-xs text-noir-500 border-r border-noir-800/50">
                   {format(new Date().setHours(hour, 0), 'h a')}
                 </div>
                 {days.map((day) => {
@@ -165,36 +216,39 @@ export function BookingsCalendar({ bookings, coaches, members }: BookingsCalenda
                   return (
                     <div
                       key={`${day.toISOString()}-${hour}`}
-                      className={`min-h-[60px] p-1 border-l border-border ${
-                        isSameDay(day, new Date()) ? 'bg-primary/5' : ''
+                      className={`min-h-[60px] p-1 border-l border-noir-800/50 ${
+                        isSameDay(day, new Date()) ? 'bg-champagne-500/5' : ''
                       }`}
                     >
                       {dayBookings.map((booking) => (
-                        <div
+                        <motion.div
                           key={booking.id}
-                          className={`p-1.5 rounded text-xs mb-1 ${
+                          initial={{ opacity: 0, scale: 0.9 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          whileHover={{ scale: 1.02 }}
+                          className={`p-1.5 rounded-lg text-xs mb-1 cursor-pointer transition-colors ${
                             booking.status === 'scheduled'
-                              ? 'bg-primary/20 border border-primary/30'
+                              ? 'bg-champagne-500/20 border border-champagne-500/30 hover:bg-champagne-500/30'
                               : booking.status === 'completed'
-                              ? 'bg-green-500/20 border border-green-500/30'
-                              : 'bg-red-500/20 border border-red-500/30'
+                              ? 'bg-emerald-500/20 border border-emerald-500/30 hover:bg-emerald-500/30'
+                              : 'bg-red-500/20 border border-red-500/30 hover:bg-red-500/30'
                           }`}
                         >
                           <div className="flex items-center gap-1">
                             <Avatar className="h-4 w-4">
                               <AvatarImage src={booking.member.profile_photo_url || undefined} />
-                              <AvatarFallback className="text-[8px]">
+                              <AvatarFallback className="text-[8px] bg-noir-700">
                                 {booking.member.name_en.charAt(0)}
                               </AvatarFallback>
                             </Avatar>
-                            <span className="truncate font-medium">
+                            <span className="truncate font-medium text-foreground/90">
                               {booking.member.name_en}
                             </span>
                           </div>
-                          <p className="text-[10px] text-muted-foreground truncate">
+                          <p className="text-[10px] text-noir-400 truncate mt-0.5">
                             {booking.coach.name_en}
                           </p>
-                        </div>
+                        </motion.div>
                       ))}
                     </div>
                   )
@@ -202,65 +256,76 @@ export function BookingsCalendar({ bookings, coaches, members }: BookingsCalenda
               </div>
             ))}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </motion.div>
 
       {/* Today's Summary */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg flex items-center gap-2">
-            <Calendar className="h-5 w-5" />
-            Today&apos;s Bookings
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {filteredBookings.filter((b) => isSameDay(new Date(b.scheduled_at), new Date())).length === 0 ? (
-            <p className="text-sm text-muted-foreground text-center py-4">
-              No bookings scheduled for today
-            </p>
+      <motion.div variants={itemVariants} className="glass rounded-2xl overflow-hidden">
+        <div className="p-5 border-b border-champagne-500/10">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-blue-500/10">
+              <Calendar className="w-5 h-5 text-blue-400" />
+            </div>
+            <div>
+              <h2 className="font-semibold text-foreground/90">Today&apos;s Bookings</h2>
+              <p className="text-xs text-noir-400">{todayBookings.length} sessions scheduled for today</p>
+            </div>
+          </div>
+        </div>
+        <div className="p-5">
+          {todayBookings.length === 0 ? (
+            <div className="text-center py-8">
+              <div className="w-16 h-16 rounded-2xl bg-noir-800/50 flex items-center justify-center mx-auto mb-4">
+                <Calendar className="h-8 w-8 text-noir-500" />
+              </div>
+              <h3 className="font-medium text-foreground/80">No Sessions Today</h3>
+              <p className="text-sm text-noir-500 mt-1">
+                No bookings scheduled for today
+              </p>
+            </div>
           ) : (
-            <div className="space-y-2">
-              {filteredBookings
-                .filter((b) => isSameDay(new Date(b.scheduled_at), new Date()))
-                .map((booking) => (
-                  <div
-                    key={booking.id}
-                    className="flex items-center justify-between p-3 rounded-lg bg-muted/50"
-                  >
-                    <div className="flex items-center gap-3">
-                      <Avatar>
-                        <AvatarImage src={booking.member.profile_photo_url || undefined} />
-                        <AvatarFallback>{booking.member.name_en.charAt(0)}</AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <p className="font-medium">{booking.member.name_en}</p>
-                        <p className="text-sm text-muted-foreground">
-                          with {booking.coach.name_en}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <Badge
-                        variant={
-                          booking.status === 'scheduled'
-                            ? 'default'
-                            : booking.status === 'completed'
-                            ? 'secondary'
-                            : 'destructive'
-                        }
-                      >
-                        {format(new Date(booking.scheduled_at), 'h:mm a')}
-                      </Badge>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        {booking.duration_minutes} min
-                      </p>
+            <div className="space-y-3">
+              {todayBookings.map((booking, i) => (
+                <motion.div
+                  key={booking.id}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.05 }}
+                  whileHover={{ scale: 1.01, x: 4 }}
+                  className="glass-subtle rounded-xl p-4 flex items-center justify-between"
+                >
+                  <div className="flex items-center gap-3">
+                    <Avatar className="h-10 w-10 ring-2 ring-noir-700">
+                      <AvatarImage src={booking.member.profile_photo_url || undefined} />
+                      <AvatarFallback className="bg-noir-700 text-noir-300">
+                        {booking.member.name_en.charAt(0)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <p className="font-medium text-foreground/90">{booking.member.name_en}</p>
+                      <p className="text-sm text-noir-400">with {booking.coach.name_en}</p>
                     </div>
                   </div>
-                ))}
+                  <div className="text-right">
+                    <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ${
+                      booking.status === 'scheduled'
+                        ? 'bg-champagne-500/20 text-champagne-400 border-champagne-500/30'
+                        : booking.status === 'completed'
+                        ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30'
+                        : 'bg-red-500/20 text-red-400 border-red-500/30'
+                    }`}>
+                      {format(new Date(booking.scheduled_at), 'h:mm a')}
+                    </span>
+                    <p className="text-xs text-noir-500 mt-1">
+                      {booking.duration_minutes} min
+                    </p>
+                  </div>
+                </motion.div>
+              ))}
             </div>
           )}
-        </CardContent>
-      </Card>
-    </div>
+        </div>
+      </motion.div>
+    </motion.div>
   )
 }
