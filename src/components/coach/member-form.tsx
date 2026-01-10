@@ -157,14 +157,14 @@ export function MemberForm({ coaches, member, isEdit = false }: MemberFormProps)
             <Label htmlFor="assigned_coach_id">Assigned Coach</Label>
             <Select
               name="assigned_coach_id"
-              defaultValue={member?.assigned_coach_id || ''}
+              defaultValue={member?.assigned_coach_id || 'none'}
               disabled={loading}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select a coach (optional)" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">No assigned coach</SelectItem>
+                <SelectItem value="none">No assigned coach</SelectItem>
                 {coaches.map((coach) => (
                   <SelectItem key={coach.id} value={coach.id}>
                     {coach.name_en} ({coach.name_ar})

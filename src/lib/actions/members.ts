@@ -44,7 +44,8 @@ export async function createMember(formData: FormData) {
   const name_ar = formData.get('name_ar') as string
   const phone = formData.get('phone') as string
   const whatsapp_number = formData.get('whatsapp_number') as string
-  const assigned_coach_id = formData.get('assigned_coach_id') as string
+  const assigned_coach_id_raw = formData.get('assigned_coach_id') as string
+  const assigned_coach_id = assigned_coach_id_raw === 'none' ? null : assigned_coach_id_raw || null
   const preferred_language = formData.get('preferred_language') as 'ar' | 'en'
   const notification_preference = formData.get('notification_preference') as 'whatsapp' | 'email' | 'both'
 
@@ -72,7 +73,7 @@ export async function createMember(formData: FormData) {
     name_ar,
     phone: phone || null,
     whatsapp_number: whatsapp_number || null,
-    assigned_coach_id: assigned_coach_id || null,
+    assigned_coach_id,
     preferred_language: preferred_language || 'ar',
     notification_preference: notification_preference || 'whatsapp',
   })
@@ -101,7 +102,8 @@ export async function updateMember(id: string, formData: FormData) {
   const name_ar = formData.get('name_ar') as string
   const phone = formData.get('phone') as string
   const whatsapp_number = formData.get('whatsapp_number') as string
-  const assigned_coach_id = formData.get('assigned_coach_id') as string
+  const assigned_coach_id_raw = formData.get('assigned_coach_id') as string
+  const assigned_coach_id = assigned_coach_id_raw === 'none' ? null : assigned_coach_id_raw || null
   const preferred_language = formData.get('preferred_language') as 'ar' | 'en'
   const notification_preference = formData.get('notification_preference') as 'whatsapp' | 'email' | 'both'
 
@@ -113,7 +115,7 @@ export async function updateMember(id: string, formData: FormData) {
       name_ar,
       phone: phone || null,
       whatsapp_number: whatsapp_number || null,
-      assigned_coach_id: assigned_coach_id || null,
+      assigned_coach_id,
       preferred_language: preferred_language || 'ar',
       notification_preference: notification_preference || 'whatsapp',
     })
