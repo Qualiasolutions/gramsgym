@@ -118,10 +118,17 @@ export default function MemberLoginPage() {
 
   return (
     <div className="min-h-screen bg-black flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Simple gradient background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-black via-zinc-950 to-black" />
-      <div className="absolute top-1/4 right-1/4 w-[500px] h-[500px] bg-champagne-500/5 rounded-full blur-[150px]" />
-      <div className="absolute bottom-1/4 left-1/4 w-[400px] h-[400px] bg-champagne-500/5 rounded-full blur-[120px]" />
+      {/* Background Image */}
+      <Image
+        src="/about-and-contactus-backgrounds.jpg"
+        alt=""
+        fill
+        className="object-cover"
+        priority
+      />
+      {/* Dark Overlay */}
+      <div className="absolute inset-0 bg-black/75" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
