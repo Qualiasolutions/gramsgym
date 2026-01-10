@@ -11,7 +11,6 @@ import {
   ArrowLeft,
   Mail,
   KeyRound,
-  Play,
 } from 'lucide-react'
 
 export default function MemberLoginPage() {
@@ -117,16 +116,6 @@ export default function MemberLoginPage() {
     }
   }
 
-  const handleCoachDemo = () => {
-    document.cookie = 'demo_mode=coach; path=/; max-age=3600'
-    router.push('/coach/dashboard?demo=true')
-  }
-
-  const handleMemberDemo = () => {
-    document.cookie = 'demo_mode=member; path=/; max-age=3600'
-    router.push('/member/dashboard?demo=true')
-  }
-
   return (
     <div className="min-h-screen bg-black flex items-center justify-center p-4 relative overflow-hidden">
       {/* Simple gradient background */}
@@ -153,43 +142,11 @@ export default function MemberLoginPage() {
               />
             </div>
             <h1 className="text-2xl font-display font-semibold mb-1">
-              Welcome to Grams Gym
+              Member Login
             </h1>
             <p className="text-zinc-500 text-sm">
-              Choose your portal
+              Sign in to your portal
             </p>
-          </div>
-
-          {/* Demo Mode Buttons */}
-          <div className="space-y-3 mb-6">
-            <motion.button
-              onClick={handleMemberDemo}
-              className="w-full py-3.5 rounded-xl font-semibold text-black bg-gradient-to-r from-champagne-400 to-champagne-500 flex items-center justify-center gap-2"
-              whileHover={{ scale: 1.01 }}
-              whileTap={{ scale: 0.99 }}
-            >
-              <Play className="w-5 h-5" />
-              Demo: Member Portal
-            </motion.button>
-            <motion.button
-              onClick={handleCoachDemo}
-              className="w-full py-3.5 rounded-xl font-semibold text-white bg-zinc-800 border border-zinc-700 hover:bg-zinc-700 flex items-center justify-center gap-2"
-              whileHover={{ scale: 1.01 }}
-              whileTap={{ scale: 0.99 }}
-            >
-              <Play className="w-5 h-5" />
-              Demo: Coach Dashboard
-            </motion.button>
-          </div>
-
-          {/* Divider */}
-          <div className="relative my-6">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-zinc-800"></div>
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-zinc-900 px-3 text-zinc-500">or sign in</span>
-            </div>
           </div>
 
           {isConfigured ? (
