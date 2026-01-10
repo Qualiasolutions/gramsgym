@@ -1,5 +1,9 @@
 import { unstable_cache } from 'next/cache'
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/server'
+
+// SECURITY: Cached queries use admin client to prevent cache poisoning
+// All cached data is coach-accessible, so using admin client is safe
+// This ensures cache is not affected by individual user sessions
 
 // Cache tags for revalidation (not in 'use server' since they're just constants)
 export const CACHE_TAGS = {
@@ -21,7 +25,7 @@ const CACHE_DURATIONS = {
 // Cached query: Get all members with relations
 export const getCachedMembers = unstable_cache(
   async () => {
-    const supabase = await createClient()
+    const supabase = await createAdminClient()
     const { data, error } = await supabase
       .from('members')
       .select(`
@@ -50,7 +54,7 @@ export const getCachedMembers = unstable_cache(
 // Cached query: Get active coaches
 export const getCachedCoaches = unstable_cache(
   async () => {
-    const supabase = await createClient()
+    const supabase = await createAdminClient()
     const { data, error } = await supabase
       .from('coaches')
       .select('id, name_en, name_ar, email, phone, specialty_en, specialty_ar, is_active')
@@ -66,7 +70,7 @@ export const getCachedCoaches = unstable_cache(
 // Cached query: Get gym settings (rarely changes)
 export const getCachedGymSettings = unstable_cache(
   async () => {
-    const supabase = await createClient()
+    const supabase = await createAdminClient()
     const { data, error } = await supabase
       .from('gym_settings')
       .select('*')
@@ -83,7 +87,7 @@ export const getCachedGymSettings = unstable_cache(
 // Cached query: Get gym working hours (rarely changes)
 export const getCachedWorkingHours = unstable_cache(
   async () => {
-    const supabase = await createClient()
+    const supabase = await createAdminClient()
     const { data, error } = await supabase
       .from('gym_working_hours')
       .select('*')
@@ -99,7 +103,7 @@ export const getCachedWorkingHours = unstable_cache(
 // Cached query: Get pricing (rarely changes)
 export const getCachedPricing = unstable_cache(
   async () => {
-    const supabase = await createClient()
+    const supabase = await createAdminClient()
     const { data, error } = await supabase
       .from('pricing')
       .select('*')
@@ -116,7 +120,7 @@ export const getCachedPricing = unstable_cache(
 // Cached query: Get bookings for a date range (shorter cache due to time-sensitivity)
 export const getCachedBookingsForRange = unstable_cache(
   async (startDate: string, endDate: string) => {
-    const supabase = await createClient()
+    const supabase = await createAdminClient()
     const { data, error } = await supabase
       .from('bookings')
       .select(`

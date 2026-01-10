@@ -15,10 +15,15 @@ export function createClient() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
-  // If env vars are missing, return null
-  // Components should check isSupabaseConfigured() before using the client
+  // SECURITY: Throw error if Supabase is not configured instead of returning null
+  // This prevents runtime null pointer exceptions
+  // Components should check isSupabaseConfigured() before calling createClient()
   if (!supabaseUrl || !supabaseAnonKey) {
-    return null as unknown as ReturnType<typeof createBrowserClient<Database>>
+    throw new Error(
+      'Supabase environment variables are not configured. ' +
+      'Check isSupabaseConfigured() before calling createClient() or ' +
+      'ensure NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY are set.'
+    )
   }
 
   client = createBrowserClient<Database>(supabaseUrl, supabaseAnonKey)

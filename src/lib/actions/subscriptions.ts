@@ -4,7 +4,35 @@ import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 import { addMonths } from 'date-fns'
 
+// SECURITY: Helper to verify the user is an authenticated coach
+async function verifyCoachAuth() {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user) {
+    return { error: 'Unauthorized: Not authenticated', isCoach: false }
+  }
+
+  const { data: coach } = await supabase
+    .from('coaches')
+    .select('id')
+    .eq('id', user.id)
+    .single()
+
+  if (!coach) {
+    return { error: 'Unauthorized: Coach access required', isCoach: false }
+  }
+
+  return { error: null, isCoach: true }
+}
+
 export async function createGymMembership(formData: FormData) {
+  // SECURITY: Verify caller is a coach
+  const auth = await verifyCoachAuth()
+  if (!auth.isCoach) {
+    return { error: auth.error }
+  }
+
   const supabase = await createClient()
 
   const member_id = formData.get('member_id') as string
@@ -51,6 +79,12 @@ export async function createGymMembership(formData: FormData) {
 }
 
 export async function createPTPackage(formData: FormData) {
+  // SECURITY: Verify caller is a coach
+  const auth = await verifyCoachAuth()
+  if (!auth.isCoach) {
+    return { error: auth.error }
+  }
+
   const supabase = await createClient()
 
   const member_id = formData.get('member_id') as string
@@ -79,6 +113,12 @@ export async function createPTPackage(formData: FormData) {
 }
 
 export async function cancelGymMembership(id: string) {
+  // SECURITY: Verify caller is a coach
+  const auth = await verifyCoachAuth()
+  if (!auth.isCoach) {
+    return { error: auth.error }
+  }
+
   const supabase = await createClient()
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -97,6 +137,12 @@ export async function cancelGymMembership(id: string) {
 }
 
 export async function cancelPTPackage(id: string) {
+  // SECURITY: Verify caller is a coach
+  const auth = await verifyCoachAuth()
+  if (!auth.isCoach) {
+    return { error: auth.error }
+  }
+
   const supabase = await createClient()
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

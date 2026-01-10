@@ -27,8 +27,8 @@ interface LoadingProviderProps {
 
 export function LoadingProvider({
   children,
-  initialLoadDuration = 3000, // 3 seconds for initial load
-  pageTransitionDuration = 1000, // 1 second for page transitions
+  initialLoadDuration = 800, // 800ms for initial load (reduced from 3s for performance)
+  pageTransitionDuration = 400, // 400ms for page transitions (reduced from 1s)
 }: LoadingProviderProps) {
   const [isLoading, setIsLoading] = useState(true)
   const [isInitialLoad, setIsInitialLoad] = useState(true)

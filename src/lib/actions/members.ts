@@ -5,7 +5,37 @@ import { redirect } from 'next/navigation'
 import { createAdminClient, createClient } from '@/lib/supabase/server'
 import { CACHE_TAGS } from '@/lib/cache'
 
+// SECURITY: Helper to verify the user is an authenticated coach
+async function verifyCoachAuth() {
+  const supabase = await createClient()
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const client = supabase as any
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user) {
+    return { error: 'Unauthorized: Not authenticated', isCoach: false, coachId: null }
+  }
+
+  const { data: coach } = await client
+    .from('coaches')
+    .select('id')
+    .eq('id', user.id)
+    .single()
+
+  if (!coach) {
+    return { error: 'Unauthorized: Coach access required', isCoach: false, coachId: null }
+  }
+
+  return { error: null, isCoach: true, coachId: coach.id as string }
+}
+
 export async function createMember(formData: FormData) {
+  // SECURITY: Verify caller is a coach
+  const auth = await verifyCoachAuth()
+  if (!auth.isCoach) {
+    return { error: auth.error }
+  }
+
   const supabase = await createAdminClient()
 
   const email = formData.get('email') as string
@@ -59,6 +89,12 @@ export async function createMember(formData: FormData) {
 }
 
 export async function updateMember(id: string, formData: FormData) {
+  // SECURITY: Verify caller is a coach
+  const auth = await verifyCoachAuth()
+  if (!auth.isCoach) {
+    return { error: auth.error }
+  }
+
   const supabase = await createClient()
 
   const name_en = formData.get('name_en') as string
@@ -94,6 +130,12 @@ export async function updateMember(id: string, formData: FormData) {
 }
 
 export async function deleteMember(id: string) {
+  // SECURITY: Verify caller is a coach
+  const auth = await verifyCoachAuth()
+  if (!auth.isCoach) {
+    return { error: auth.error }
+  }
+
   const supabase = await createAdminClient()
 
   // SECURITY FIX: Delete auth user FIRST to prevent orphaned auth users

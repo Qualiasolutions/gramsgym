@@ -7,6 +7,13 @@ import { demoGymSettings, demoWorkingHours, demoPricing, demoCoach } from '@/lib
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY
 const AI_TIMEOUT_MS = 60000 // 60 seconds for AI responses (longer for image analysis)
 
+// SECURITY: Input validation limits to prevent abuse
+const INPUT_LIMITS = {
+  MAX_MESSAGE_LENGTH: 4000,     // Maximum characters per message
+  MAX_IMAGE_SIZE: 10 * 1024 * 1024, // 10MB max image size
+  MAX_HISTORY_LENGTH: 20,       // Maximum messages in history
+} as const
+
 // Helper to get client IP
 async function getClientIP(): Promise<string> {
   const headersList = await headers()
@@ -591,6 +598,13 @@ export async function POST(request: NextRequest) {
 
       const imageFile = formData.get('image') as File | null
       if (imageFile) {
+        // SECURITY: Validate image size before processing
+        if (imageFile.size > INPUT_LIMITS.MAX_IMAGE_SIZE) {
+          return NextResponse.json(
+            { error: 'Image too large. Maximum 10MB allowed.' },
+            { status: 400 }
+          )
+        }
         const bytes = await imageFile.arrayBuffer()
         imageData = Buffer.from(bytes).toString('base64')
         imageMediaType = imageFile.type
@@ -609,6 +623,19 @@ export async function POST(request: NextRequest) {
         { error: 'Message or image is required' },
         { status: 400 }
       )
+    }
+
+    // SECURITY: Validate input sizes to prevent abuse
+    if (message && message.length > INPUT_LIMITS.MAX_MESSAGE_LENGTH) {
+      return NextResponse.json(
+        { error: `Message too long. Maximum ${INPUT_LIMITS.MAX_MESSAGE_LENGTH} characters allowed.` },
+        { status: 400 }
+      )
+    }
+
+    // Truncate history if too long (keep most recent)
+    if (history && history.length > INPUT_LIMITS.MAX_HISTORY_LENGTH) {
+      history = history.slice(-INPUT_LIMITS.MAX_HISTORY_LENGTH)
     }
 
     if (!OPENROUTER_API_KEY) {

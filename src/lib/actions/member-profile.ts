@@ -8,6 +8,15 @@ export async function updateMemberProfile(id: string, formData: FormData) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const client = supabase as any
 
+  // SECURITY: Verify the authenticated user is updating their own profile
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) {
+    return { error: 'Unauthorized: Not authenticated' }
+  }
+  if (user.id !== id) {
+    return { error: 'Unauthorized: Cannot update another member\'s profile' }
+  }
+
   const name_en = formData.get('name_en') as string
   const name_ar = formData.get('name_ar') as string
   const phone = formData.get('phone') as string

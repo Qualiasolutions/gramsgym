@@ -2,12 +2,10 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { motion, AnimatePresence } from 'framer-motion'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Badge } from '@/components/ui/badge'
 import { Calendar } from '@/components/ui/calendar'
-import { Loader2, Clock, Check } from 'lucide-react'
+import { Loader2, Clock, Check, User, Dumbbell, CalendarDays, AlertCircle, Sparkles } from 'lucide-react'
 import { format, addDays, isSameDay, isAfter, isBefore, setHours, setMinutes } from 'date-fns'
 import { createMemberBooking } from '@/lib/actions/member-booking'
 
@@ -54,6 +52,23 @@ const TIME_SLOTS = [
   '18:00', '19:00', '20:00', '21:00'
 ]
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.08, delayChildren: 0.1 },
+  },
+}
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] as const }
+  },
+}
+
 export function BookingForm({
   member,
   coach,
@@ -83,12 +98,10 @@ export function BookingForm({
     return TIME_SLOTS.filter((time) => {
       const hour = parseInt(time.split(':')[0])
 
-      // Check if within coach's available hours
       if (hour < startHour || hour >= endHour) {
         return false
       }
 
-      // Check if slot is already booked
       const slotDateTime = setMinutes(setHours(date, hour), 0)
       const isBooked = existingBookings.some((booking) => {
         const bookingStart = new Date(booking.scheduled_at)
@@ -100,7 +113,6 @@ export function BookingForm({
         )
       })
 
-      // Check if it's in the past
       const now = new Date()
       if (isSameDay(date, now) && hour <= now.getHours()) {
         return false
@@ -114,24 +126,20 @@ export function BookingForm({
     const today = new Date()
     today.setHours(0, 0, 0, 0)
 
-    // Disable past dates
     if (isBefore(date, today)) {
       return true
     }
 
-    // Disable dates more than 2 weeks in the future
     if (isAfter(date, addDays(today, 14))) {
       return true
     }
 
-    // Disable days when coach is not available
     const dayOfWeek = date.getDay()
     const availability = coachAvailability.find((a) => a.day_of_week === dayOfWeek)
     if (!availability || !availability.is_available) {
       return true
     }
 
-    // Disable if no available times
     const availableTimes = getAvailableTimesForDate(date)
     return availableTimes.length === 0
   }
@@ -165,146 +173,250 @@ export function BookingForm({
   const availableTimes = selectedDate ? getAvailableTimesForDate(selectedDate) : []
 
   return (
-    <div className="grid gap-6 lg:grid-cols-3">
-      {/* Coach Info */}
-      <Card className="lg:col-span-1">
-        <CardHeader>
-          <CardTitle>Your Coach</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col items-center text-center">
-            <Avatar className="h-20 w-20 mb-3">
-              <AvatarImage src={coach.profile_photo_url || undefined} />
-              <AvatarFallback className="text-xl">{coach.name_en.charAt(0)}</AvatarFallback>
-            </Avatar>
-            <h3 className="font-semibold text-lg">{coach.name_en}</h3>
-            <p className="text-sm text-muted-foreground">{coach.specialty_en || 'Personal Trainer'}</p>
-          </div>
-
-          <div className="mt-6 pt-6 border-t">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm text-muted-foreground">Available Sessions</span>
-              <Badge variant={totalRemainingSessions <= 3 ? 'destructive' : 'default'}>
-                {totalRemainingSessions} left
-              </Badge>
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Sessions from your active PT packages
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+      className="space-y-6"
+    >
+      {/* Premium Header */}
+      <motion.div variants={itemVariants}>
+        <div className="relative overflow-hidden rounded-2xl glass-champagne glow-champagne p-6 md:p-8">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-champagne-500/10 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2" />
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-champagne-500/5 rounded-full blur-[80px] translate-y-1/2 -translate-x-1/2" />
+          <div className="relative">
+            <span className="text-xs text-champagne-400 uppercase tracking-[0.25em] font-medium mb-3 block">
+              Book Session
+            </span>
+            <h1 className="text-2xl md:text-3xl font-display font-medium text-foreground/95 mb-1">
+              Schedule Your <span className="text-gradient italic">Training</span>
+            </h1>
+            <p className="text-noir-300 text-sm flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-champagne-500" />
+              Pick a date and time that works for you
             </p>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </motion.div>
 
-      {/* Booking Form */}
-      <Card className="lg:col-span-2">
-        <CardHeader>
-          <CardTitle>Select Date & Time</CardTitle>
-          <CardDescription>Choose when you&apos;d like to have your session</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-6 md:grid-cols-2">
-            {/* Calendar */}
-            <div>
-              <h4 className="font-medium mb-3">Select Date</h4>
-              <Calendar
-                mode="single"
-                selected={selectedDate}
-                onSelect={(date) => {
-                  setSelectedDate(date)
-                  setSelectedTime(null)
-                }}
-                disabled={isDateDisabled}
-                className="rounded-md border"
-              />
-            </div>
-
-            {/* Time Slots */}
-            <div>
-              <h4 className="font-medium mb-3">
-                {selectedDate ? (
-                  <>Available Times for {format(selectedDate, 'MMM d')}</>
-                ) : (
-                  'Select a date first'
-                )}
-              </h4>
-              {selectedDate ? (
-                availableTimes.length > 0 ? (
-                  <div className="grid grid-cols-2 gap-2">
-                    {availableTimes.map((time) => (
-                      <Button
-                        key={time}
-                        variant={selectedTime === time ? 'default' : 'outline'}
-                        className="w-full"
-                        onClick={() => setSelectedTime(time)}
-                      >
-                        <Clock className="h-4 w-4 mr-2" />
-                        {format(setHours(setMinutes(new Date(), 0), parseInt(time)), 'h:mm a')}
-                      </Button>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-8 text-muted-foreground">
-                    No available times for this date
-                  </div>
-                )
-              ) : (
-                <div className="text-center py-8 text-muted-foreground">
-                  Please select a date to see available times
+      <div className="grid gap-6 lg:grid-cols-3">
+        {/* Coach Info */}
+        <motion.div variants={itemVariants} className="lg:col-span-1">
+          <div className="glass rounded-2xl overflow-hidden h-full">
+            <div className="p-5 border-b border-champagne-500/10">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-champagne-500/10">
+                  <User className="w-5 h-5 text-champagne-400" />
                 </div>
-              )}
+                <h2 className="font-semibold text-foreground/90">Your Coach</h2>
+              </div>
+            </div>
+            <div className="p-5">
+              <div className="flex flex-col items-center text-center">
+                <div className="relative mb-4">
+                  <Avatar className="h-20 w-20 ring-2 ring-champagne-500/30">
+                    <AvatarImage src={coach.profile_photo_url || undefined} />
+                    <AvatarFallback className="bg-champagne-500/10 text-champagne-400 text-xl">
+                      {coach.name_en.charAt(0)}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-emerald-500 border-2 border-noir-900 flex items-center justify-center">
+                    <Check className="w-3.5 h-3.5 text-white" />
+                  </div>
+                </div>
+                <h3 className="font-display text-lg font-medium text-foreground/95">{coach.name_en}</h3>
+                <p className="text-sm text-noir-400">{coach.specialty_en || 'Personal Trainer'}</p>
+              </div>
+
+              <div className="mt-6 pt-5 border-t border-champagne-500/10">
+                <div className="glass-subtle rounded-xl p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs text-noir-400 uppercase tracking-wider flex items-center gap-2">
+                      <Dumbbell className="w-3.5 h-3.5" />
+                      Sessions
+                    </span>
+                    <span className={`text-[10px] font-medium px-2.5 py-1 rounded-full ${
+                      totalRemainingSessions <= 3
+                        ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
+                        : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                    }`}>
+                      {totalRemainingSessions} left
+                    </span>
+                  </div>
+                  <p className="text-xs text-noir-500">
+                    Sessions from your active PT packages
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
+        </motion.div>
 
-          {/* Summary & Submit */}
-          {selectedDate && selectedTime && (
-            <div className="mt-6 pt-6 border-t">
-              <div className="bg-muted/50 rounded-lg p-4 mb-4">
-                <h4 className="font-medium mb-2">Booking Summary</h4>
-                <div className="grid grid-cols-2 gap-2 text-sm">
-                  <div>
-                    <p className="text-muted-foreground">Date</p>
-                    <p className="font-medium">{format(selectedDate, 'EEEE, MMMM d, yyyy')}</p>
+        {/* Booking Form */}
+        <motion.div variants={itemVariants} className="lg:col-span-2">
+          <div className="glass rounded-2xl overflow-hidden">
+            <div className="p-5 border-b border-champagne-500/10">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-blue-500/10">
+                  <CalendarDays className="w-5 h-5 text-blue-400" />
+                </div>
+                <div>
+                  <h2 className="font-semibold text-foreground/90">Select Date & Time</h2>
+                  <p className="text-xs text-noir-400">Choose when you&apos;d like to have your session</p>
+                </div>
+              </div>
+            </div>
+            <div className="p-5">
+              <div className="grid gap-6 md:grid-cols-2">
+                {/* Calendar */}
+                <div>
+                  <h4 className="text-xs text-noir-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+                    <CalendarDays className="w-3.5 h-3.5" />
+                    Select Date
+                  </h4>
+                  <div className="glass-subtle rounded-xl p-3">
+                    <Calendar
+                      mode="single"
+                      selected={selectedDate}
+                      onSelect={(date) => {
+                        setSelectedDate(date)
+                        setSelectedTime(null)
+                      }}
+                      disabled={isDateDisabled}
+                      className="rounded-lg [&_.rdp-day_button]:text-foreground [&_.rdp-day_button:hover]:bg-champagne-500/20 [&_.rdp-day_button.rdp-day_selected]:bg-champagne-500 [&_.rdp-day_button.rdp-day_selected]:text-noir-950"
+                    />
                   </div>
-                  <div>
-                    <p className="text-muted-foreground">Time</p>
-                    <p className="font-medium">
-                      {format(setHours(setMinutes(new Date(), 0), parseInt(selectedTime)), 'h:mm a')}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-muted-foreground">Duration</p>
-                    <p className="font-medium">60 minutes</p>
-                  </div>
-                  <div>
-                    <p className="text-muted-foreground">Coach</p>
-                    <p className="font-medium">{coach.name_en}</p>
-                  </div>
+                </div>
+
+                {/* Time Slots */}
+                <div>
+                  <h4 className="text-xs text-noir-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+                    <Clock className="w-3.5 h-3.5" />
+                    {selectedDate ? (
+                      <>Available Times for {format(selectedDate, 'MMM d')}</>
+                    ) : (
+                      'Select a date first'
+                    )}
+                  </h4>
+                  {selectedDate ? (
+                    availableTimes.length > 0 ? (
+                      <div className="grid grid-cols-2 gap-2">
+                        {availableTimes.map((time, index) => (
+                          <motion.button
+                            key={time}
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ delay: index * 0.03 }}
+                            whileHover={{ scale: 1.02, y: -1 }}
+                            whileTap={{ scale: 0.98 }}
+                            onClick={() => setSelectedTime(time)}
+                            className={`px-4 py-3 rounded-xl text-sm font-medium transition-all flex items-center justify-center gap-2 ${
+                              selectedTime === time
+                                ? 'bg-champagne-500 text-noir-950 glow-champagne'
+                                : 'glass-subtle hover:bg-champagne-500/10 text-foreground/80'
+                            }`}
+                          >
+                            <Clock className="h-3.5 w-3.5" />
+                            {format(setHours(setMinutes(new Date(), 0), parseInt(time)), 'h:mm a')}
+                          </motion.button>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-10 glass-subtle rounded-xl">
+                        <div className="w-12 h-12 rounded-xl bg-noir-800/50 flex items-center justify-center mx-auto mb-3">
+                          <Clock className="h-6 w-6 text-noir-500" />
+                        </div>
+                        <p className="text-sm text-noir-500">No available times for this date</p>
+                      </div>
+                    )
+                  ) : (
+                    <div className="text-center py-10 glass-subtle rounded-xl">
+                      <div className="w-12 h-12 rounded-xl bg-noir-800/50 flex items-center justify-center mx-auto mb-3">
+                        <CalendarDays className="h-6 w-6 text-noir-500" />
+                      </div>
+                      <p className="text-sm text-noir-500">Please select a date to see available times</p>
+                    </div>
+                  )}
                 </div>
               </div>
 
-              {error && (
-                <div className="bg-red-500/10 text-red-500 px-4 py-3 rounded-lg text-sm mb-4">
-                  {error}
-                </div>
-              )}
+              {/* Summary & Submit */}
+              <AnimatePresence>
+                {selectedDate && selectedTime && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 20 }}
+                    className="mt-6 pt-6 border-t border-champagne-500/10"
+                  >
+                    <div className="glass-champagne rounded-xl p-5 mb-5 glow-champagne">
+                      <h4 className="font-medium text-foreground/90 mb-4 flex items-center gap-2">
+                        <Check className="w-4 h-4 text-champagne-400" />
+                        Booking Summary
+                      </h4>
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                          <p className="text-xs text-noir-500 uppercase tracking-wider mb-1">Date</p>
+                          <p className="font-medium text-foreground/90">{format(selectedDate, 'EEEE, MMMM d, yyyy')}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-noir-500 uppercase tracking-wider mb-1">Time</p>
+                          <p className="font-medium text-foreground/90">
+                            {format(setHours(setMinutes(new Date(), 0), parseInt(selectedTime)), 'h:mm a')}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-noir-500 uppercase tracking-wider mb-1">Duration</p>
+                          <p className="font-medium text-foreground/90">60 minutes</p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-noir-500 uppercase tracking-wider mb-1">Coach</p>
+                          <p className="font-medium text-foreground/90">{coach.name_en}</p>
+                        </div>
+                      </div>
+                    </div>
 
-              <Button
-                className="w-full"
-                size="lg"
-                onClick={handleSubmit}
-                disabled={loading}
-              >
-                {loading ? (
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                ) : (
-                  <Check className="h-4 w-4 mr-2" />
+                    {error && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="mb-4"
+                      >
+                        <div className="glass-subtle rounded-xl p-4 flex items-center gap-3 border border-red-500/20">
+                          <div className="p-1.5 rounded-lg bg-red-500/10">
+                            <AlertCircle className="w-4 h-4 text-red-400" />
+                          </div>
+                          <p className="text-sm text-red-400">{error}</p>
+                        </div>
+                      </motion.div>
+                    )}
+
+                    <motion.button
+                      whileHover={{ scale: 1.01, y: -2 }}
+                      whileTap={{ scale: 0.99 }}
+                      onClick={handleSubmit}
+                      disabled={loading}
+                      className="btn-premium w-full py-4 rounded-xl flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {loading ? (
+                        <>
+                          <Loader2 className="h-5 w-5 animate-spin" />
+                          <span>Booking...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Check className="h-5 w-5" />
+                          <span>Confirm Booking</span>
+                        </>
+                      )}
+                    </motion.button>
+                  </motion.div>
                 )}
-                Confirm Booking
-              </Button>
+              </AnimatePresence>
             </div>
-          )}
-        </CardContent>
-      </Card>
-    </div>
+          </div>
+        </motion.div>
+      </div>
+    </motion.div>
   )
 }

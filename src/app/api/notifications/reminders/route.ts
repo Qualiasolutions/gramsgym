@@ -10,10 +10,19 @@ import {
 // This endpoint should be called daily by a cron job
 // Vercel Cron, Supabase Edge Functions, or external service
 
-export async function GET(request: NextRequest) {
-  // Simple API key auth for cron jobs
+// SECURITY: Use POST for state-changing operations (sending notifications)
+export async function POST(request: NextRequest) {
+  // SECURITY: Require CRON_SECRET - no hardcoded fallback
   const authHeader = request.headers.get('authorization')
-  const expectedKey = process.env.CRON_SECRET || 'grams-cron-secret'
+  const expectedKey = process.env.CRON_SECRET
+
+  if (!expectedKey) {
+    console.error('CRON_SECRET environment variable is not configured')
+    return NextResponse.json(
+      { error: 'Service misconfigured' },
+      { status: 503 }
+    )
+  }
 
   if (authHeader !== `Bearer ${expectedKey}`) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
