@@ -712,10 +712,13 @@ export async function POST(request: NextRequest) {
           'X-Title': 'Grams Gym Elite Coach',
         },
         body: JSON.stringify({
-          model: 'google/gemini-2.0-flash-001', // Gemini 2.0 Flash (stable)
+          model: 'anthropic/claude-3.5-sonnet', // Claude Sonnet for superior reasoning + vision
           messages,
           temperature: 0.7,
           max_tokens: 4096, // Allow longer, detailed responses
+          top_p: 0.95,
+          frequency_penalty: 0.3, // Reduce repetition
+          presence_penalty: 0.3, // Encourage diverse responses
         }),
         signal: controller.signal,
       })
